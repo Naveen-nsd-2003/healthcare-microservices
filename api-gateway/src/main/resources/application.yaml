@@ -1,0 +1,119 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            # Auth Service
+            - id: auth-service-route
+              uri: lb://auth-service
+              predicates:
+                - Path=/auth/**,/profile
+
+            # Payers Service
+            - id: payers-service-route
+              uri: lb://payers-service
+              predicates:
+                - Path=/api/payers/**,/api/plans/**,/api/enrollments/**,/api/policies/**
+
+            # Member Service
+            - id: member-service-route
+              uri: lb://member-service
+              predicates:
+                - Path=/api/members/**
+
+            # Providers service
+            - id: provider-service-route
+              uri: lb://provider-service
+              predicates:
+                - Path=/api/providers/**,/api/departments/**,/api/doctors/**,/api/availability/**,/api/medical-records/**
+
+            # Appointment service
+            - id: appointment-service-route
+              uri: lb://appointment-service
+              predicates:
+                - Path=/api/appointments/**
+
+            # claim service
+            - id: claim-service-route
+              uri: lb://claim-service
+              predicates:
+                - Path=/api/claims/**
+
+            #Notification service
+            - id: notification-service-route
+              uri: lb://notification-service
+              predicates:
+                - Path=/api/notifications/**
+
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowed-origin-patterns:
+                  - "http://localhost:*"
+
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+
+                allowed-headers:
+                  - Authorization
+                  - Content-Type
+                  - Accept
+                  - Origin
+                  - X-Requested-With
+
+                exposed-headers:
+                  - Authorization
+
+                allow-credentials: true
+                max-age: 3600
+
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: 12345678901234567890123456789012345678901234567890
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - gateway
+
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO

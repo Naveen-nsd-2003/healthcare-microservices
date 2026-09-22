@@ -1,0 +1,111 @@
+server:
+  port: 8082
+
+
+spring:
+
+  application:
+    name: payers-service
+
+
+  # ==========================================
+  # CONFIG SERVER
+  # ==========================================
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+
+  # ==========================================
+  # DATABASE
+  # ==========================================
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/healthcare_payer_db
+    username: root
+    password: Naveen@001
+
+
+  # ==========================================
+  # JPA
+  # ==========================================
+
+  jpa:
+
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+
+      hibernate:
+        format_sql: true
+
+
+# ==========================================
+# EUREKA
+# ==========================================
+
+eureka:
+
+  client:
+
+    service-url:
+
+      defaultZone: http://localhost:8761/eureka/
+
+    register-with-eureka: true
+
+    fetch-registry: true
+
+
+  instance:
+
+    prefer-ip-address: true
+
+
+# ==========================================
+# JWT
+# Must match Auth Service and Gateway
+# ==========================================
+
+jwt:
+  secret: 12345678901234567890123456789012345678901234567890
+
+
+# ==========================================
+# ACTUATOR
+# ==========================================
+
+management:
+
+  endpoints:
+
+    web:
+
+      exposure:
+
+        include:
+          - health
+          - info
+
+
+  endpoint:
+
+    health:
+
+      show-details: always
+
+
+# ==========================================
+# LOGGING
+# ==========================================
+
+logging:
+
+  level:
+
+    org.springframework.security: INFO
+
+    com.naveen.healthcare.payersservice: DEBUG

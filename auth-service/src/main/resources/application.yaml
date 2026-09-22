@@ -1,0 +1,153 @@
+server:
+  port: 8081
+
+
+spring:
+
+  # =====================================================
+  # APPLICATION
+  # =====================================================
+
+  application:
+    name: auth-service
+
+
+  # =====================================================
+  # ACTIVE PROFILE
+  # =====================================================
+
+  profiles:
+    active: dev
+
+
+  # =====================================================
+  # CONFIG SERVER
+  # =====================================================
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+
+  # =====================================================
+  # DATABASE
+  # =====================================================
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/healthcare_auth_db
+    username: root
+    password: Naveen@001
+
+
+  # =====================================================
+  # JPA
+  # =====================================================
+
+  jpa:
+
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+
+      hibernate:
+        format_sql: true
+
+
+  # =====================================================
+  # SMTP EMAIL CONFIGURATION
+  #
+  # These settings are used only when the active
+  # Spring profile is changed from dev to smtp.
+  # =====================================================
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: naveen1nsd@gmail.com
+    password: rzldbgefgqhfexra
+
+    properties:
+
+      mail:
+
+        smtp:
+          auth: true
+
+          starttls:
+            enable: true
+
+
+# =====================================================
+# EUREKA
+# =====================================================
+
+eureka:
+
+  client:
+
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+    register-with-eureka: true
+
+    fetch-registry: true
+
+
+  instance:
+    prefer-ip-address: true
+
+
+# =====================================================
+# JWT
+# =====================================================
+
+jwt:
+  secret: 12345678901234567890123456789012345678901234567890
+  expiration: 86400000
+
+
+# =====================================================
+# ACTUATOR
+# =====================================================
+
+management:
+
+  health:
+
+    mail:
+      enabled: false
+
+
+  endpoints:
+
+    web:
+
+      exposure:
+        include: "*"
+
+
+# =====================================================
+# LOGGING
+# =====================================================
+
+logging:
+
+  level:
+
+    org.springframework.security: DEBUG
+
+    com.naveen.healthcare.authservice: INFO
+
+
+# =====================================================
+# DEFAULT ADMIN
+# =====================================================
+
+app:
+
+  admin:
+    username: systemadmin
+    email: admin@healthcare.com
+    password: Admin@12345
