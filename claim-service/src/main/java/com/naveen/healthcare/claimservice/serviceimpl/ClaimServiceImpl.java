@@ -219,19 +219,12 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setCancelledAt(now);
         claim.setResolvedAt(now);
 
-        /*Claim updatedClaim =
+        Claim updatedClaim =
                 claimRepository.save(claim);
 
-        return mapToResponse(updatedClaim);*/
-
-        Claim updatedClaim =
-                claimRepository.saveAndFlush(claim);
-
-        claimEventPublisher.publishClaimApproved(
-                updatedClaim
-        );
-
         return mapToResponse(updatedClaim);
+
+
     }
 
     @Override
@@ -364,10 +357,29 @@ public class ClaimServiceImpl implements ClaimService {
             claim.setReviewedAt(now);
         }
 
-        claim.setResolvedAt(now);
+       /* claim.setResolvedAt(now);
 
         Claim updatedClaim =
                 claimRepository.save(claim);
+
+        return mapToResponse(updatedClaim);*/
+
+        claim.setResolvedAt(now);
+
+        Claim updatedClaim =
+                claimRepository.saveAndFlush(claim);
+
+        System.out.println(
+                "DEBUG: ABOUT TO PUBLISH CLAIM EVENT"
+        );
+
+        claimEventPublisher.publishClaimApproved(
+                updatedClaim
+        );
+
+        System.out.println(
+                "DEBUG: CLAIM EVENT PUBLISHED METHOD CALLED"
+        );
 
         return mapToResponse(updatedClaim);
     }
