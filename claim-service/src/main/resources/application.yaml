@@ -18,18 +18,42 @@ spring:
       ddl-auto: update
 
     show-sql: true
+    open-in-view: false
 
     properties:
       hibernate:
         format_sql: true
 
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      acks: all
+
+      retries: 3
+
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.in.flight.requests.per.connection: 5
+
+claim:
+  kafka:
+    topics:
+      claim-events: healthcare.claim.events
+
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
     register-with-eureka: true
     fetch-registry: true
+
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
   instance:
     prefer-ip-address: true
@@ -51,6 +75,7 @@ management:
 
 logging:
   level:
-    org.springframework.security: INFO
-    org.springframework.cloud.openfeign: INFO
+    root: INFO
+    org.apache.kafka: WARN
+    org.springframework.kafka: INFO
     com.naveen.healthcare.claimservice: DEBUG

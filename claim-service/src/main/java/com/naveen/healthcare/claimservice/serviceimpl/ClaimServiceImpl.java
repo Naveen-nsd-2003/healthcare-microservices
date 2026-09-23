@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import com.naveen.healthcare.claimservice.service.ClaimEventPublisher;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +56,8 @@ public class ClaimServiceImpl implements ClaimService {
     private final ProviderServiceClient providerServiceClient;
 
     private final PayersServiceClient payersServiceClient;
+
+    private final ClaimEventPublisher claimEventPublisher;
 
     @Override
     @Transactional
@@ -216,8 +219,17 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setCancelledAt(now);
         claim.setResolvedAt(now);
 
-        Claim updatedClaim =
+        /*Claim updatedClaim =
                 claimRepository.save(claim);
+
+        return mapToResponse(updatedClaim);*/
+
+        Claim updatedClaim =
+                claimRepository.saveAndFlush(claim);
+
+        claimEventPublisher.publishClaimApproved(
+                updatedClaim
+        );
 
         return mapToResponse(updatedClaim);
     }
