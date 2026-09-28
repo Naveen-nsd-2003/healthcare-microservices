@@ -1,111 +1,85 @@
 server:
   port: 8082
 
-
 spring:
-
   application:
     name: payers-service
 
-
-  # ==========================================
-  # CONFIG SERVER
-  # ==========================================
-
   config:
     import: optional:configserver:http://localhost:8888
-
-
-  # ==========================================
-  # DATABASE
-  # ==========================================
 
   datasource:
     url: jdbc:mysql://localhost:3306/healthcare_payer_db
     username: root
     password: Naveen@001
-
-
-  # ==========================================
-  # JPA
-  # ==========================================
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-
     hibernate:
       ddl-auto: update
 
     show-sql: true
+    open-in-view: false
 
     properties:
-
       hibernate:
         format_sql: true
 
+  kafka:
+    bootstrap-servers: localhost:9092
 
-# ==========================================
-# EUREKA
-# ==========================================
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.in.flight.requests.per.connection: 5
+
+insurance:
+  kafka:
+    topics:
+      insurance-events: healthcare.insurance.events
+
+  policy-expiration:
+  cron: "0 5 0 * * *"
+  #cron: "0 */1 * * * *"
+  zone: "Asia/Kolkata"
 
 eureka:
-
   client:
-
     service-url:
-
       defaultZone: http://localhost:8761/eureka/
 
     register-with-eureka: true
-
     fetch-registry: true
 
-
   instance:
-
     prefer-ip-address: true
-
-
-# ==========================================
-# JWT
-# Must match Auth Service and Gateway
-# ==========================================
 
 jwt:
   secret: 12345678901234567890123456789012345678901234567890
 
-
-# ==========================================
-# ACTUATOR
-# ==========================================
-
 management:
-
   endpoints:
-
     web:
-
       exposure:
-
         include:
           - health
           - info
 
-
   endpoint:
-
     health:
-
       show-details: always
 
-
-# ==========================================
-# LOGGING
-# ==========================================
-
 logging:
-
   level:
-
+    root: INFO
     org.springframework.security: INFO
-
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
     com.naveen.healthcare.payersservice: DEBUG

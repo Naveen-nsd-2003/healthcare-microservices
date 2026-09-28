@@ -18,6 +18,7 @@ import com.naveen.healthcare.appointmentservice.exception.InvalidAppointmentOper
 import com.naveen.healthcare.appointmentservice.exception.ProviderVerificationException;
 import com.naveen.healthcare.appointmentservice.exception.RemoteServiceCommunicationException;
 import com.naveen.healthcare.appointmentservice.repository.AppointmentRepository;
+import com.naveen.healthcare.appointmentservice.service.AppointmentEventPublisher;
 import com.naveen.healthcare.appointmentservice.service.AppointmentService;
 import com.naveen.healthcare.appointmentservice.service.MemberVerificationService;
 import com.naveen.healthcare.appointmentservice.service.ProviderVerificationService;
@@ -56,6 +57,9 @@ public class AppointmentServiceImpl
             providerVerificationService;
 
     private final ProviderServiceClient providerServiceClient;
+
+    private final AppointmentEventPublisher
+            appointmentEventPublisher;
 
     @Override
     @Transactional
@@ -164,7 +168,14 @@ public class AppointmentServiceImpl
                         .build();
 
         Appointment savedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentBooked(
+                        savedAppointment
+                );
 
         return mapToResponse(savedAppointment);
     }
@@ -240,7 +251,14 @@ public class AppointmentServiceImpl
         );
 
         Appointment updatedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentCancelled(
+                        updatedAppointment
+                );
 
         return mapToResponse(updatedAppointment);
     }
@@ -323,7 +341,14 @@ public class AppointmentServiceImpl
         );
 
         Appointment updatedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentConfirmed(
+                        updatedAppointment
+                );
 
         return mapToResponse(updatedAppointment);
     }
@@ -368,7 +393,14 @@ public class AppointmentServiceImpl
         );
 
         Appointment updatedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentCancelled(
+                        updatedAppointment
+                );
 
         return mapToResponse(updatedAppointment);
     }
@@ -417,7 +449,14 @@ public class AppointmentServiceImpl
         );
 
         Appointment updatedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentCompleted(
+                        updatedAppointment
+                );
 
         return mapToResponse(updatedAppointment);
     }

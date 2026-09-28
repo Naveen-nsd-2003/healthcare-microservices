@@ -123,6 +123,10 @@ public class ClaimServiceImpl implements ClaimService {
             Claim savedClaim =
                     claimRepository.saveAndFlush(claim);
 
+            claimEventPublisher.publishClaimSubmitted(
+                    savedClaim
+            );
+
             return mapToResponse(savedClaim);
 
         } catch (DataIntegrityViolationException exception) {
@@ -220,7 +224,11 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setResolvedAt(now);
 
         Claim updatedClaim =
-                claimRepository.save(claim);
+                claimRepository.saveAndFlush(claim);
+
+        claimEventPublisher.publishClaimCancelled(
+                updatedClaim
+        );
 
         return mapToResponse(updatedClaim);
 
@@ -298,7 +306,11 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setReviewedAt(LocalDateTime.now());
 
         Claim updatedClaim =
-                claimRepository.save(claim);
+                claimRepository.saveAndFlush(claim);
+
+        claimEventPublisher.publishClaimUnderReview(
+                updatedClaim
+        );
 
         return mapToResponse(updatedClaim);
     }
@@ -369,17 +381,11 @@ public class ClaimServiceImpl implements ClaimService {
         Claim updatedClaim =
                 claimRepository.saveAndFlush(claim);
 
-        System.out.println(
-                "DEBUG: ABOUT TO PUBLISH CLAIM EVENT"
-        );
 
         claimEventPublisher.publishClaimApproved(
                 updatedClaim
         );
 
-        System.out.println(
-                "DEBUG: CLAIM EVENT PUBLISHED METHOD CALLED"
-        );
 
         return mapToResponse(updatedClaim);
     }
@@ -440,7 +446,11 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setResolvedAt(now);
 
         Claim updatedClaim =
-                claimRepository.save(claim);
+                claimRepository.saveAndFlush(claim);
+
+        claimEventPublisher.publishClaimRejected(
+                updatedClaim
+        );
 
         return mapToResponse(updatedClaim);
     }

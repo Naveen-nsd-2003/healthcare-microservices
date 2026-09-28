@@ -21,6 +21,7 @@ import com.naveen.healthcare.payersservice.util.PolicyNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.naveen.healthcare.payersservice.service.InsuranceEventPublisher;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,6 +39,8 @@ public class PolicyServiceImpl implements PolicyService {
     private final PayerRepository payerRepository;
 
     private final PolicyNumberGenerator policyNumberGenerator;
+
+    private final InsuranceEventPublisher insuranceEventPublisher;
 
     @Override
     @Transactional
@@ -129,7 +132,13 @@ public class PolicyServiceImpl implements PolicyService {
                         .build();
 
         InsurancePolicy savedPolicy =
-                insurancePolicyRepository.save(insurancePolicy);
+                insurancePolicyRepository.saveAndFlush(
+                        insurancePolicy
+                );
+
+        insuranceEventPublisher.publishPolicyActivated(
+                savedPolicy
+        );
 
         return mapToResponse(savedPolicy);
     }
@@ -239,10 +248,35 @@ public class PolicyServiceImpl implements PolicyService {
                 requestedStatus
         );
 
-        insurancePolicy.setStatus(requestedStatus);
+        insurancePolicy.setStatus(
+                requestedStatus
+        );
 
         InsurancePolicy updatedPolicy =
-                insurancePolicyRepository.save(insurancePolicy);
+                insurancePolicyRepository.saveAndFlush(
+                        insurancePolicy
+                );
+
+        if (requestedStatus == PolicyStatus.SUSPENDED) {
+
+            insuranceEventPublisher.publishPolicySuspended(
+                    updatedPolicy
+            );
+        }
+
+        if (requestedStatus == PolicyStatus.ACTIVE) {
+
+            insuranceEventPublisher.publishPolicyActivated(
+                    updatedPolicy
+            );
+        }
+
+        if (requestedStatus == PolicyStatus.CANCELLED) {
+
+            insuranceEventPublisher.publishPolicyCancelled(
+                    updatedPolicy
+            );
+        }
 
         return mapToResponse(updatedPolicy);
     }

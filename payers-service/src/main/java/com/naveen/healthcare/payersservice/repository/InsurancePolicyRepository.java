@@ -3,7 +3,10 @@ package com.naveen.healthcare.payersservice.repository;
 import com.naveen.healthcare.payersservice.entity.InsurancePolicy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.naveen.healthcare.payersservice.enums.PolicyStatus;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,5 +47,10 @@ public interface InsurancePolicyRepository
     findByIdAndPayerOrganizationAdminEmailIgnoreCase(
             UUID policyId,
             String payerAdminEmail
+    );
+    List<InsurancePolicy>
+    findAllByStatusInAndCoverageEndDateBefore(
+            Collection<PolicyStatus> statuses,
+            LocalDate coverageEndDate
     );
 }

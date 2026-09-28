@@ -25,6 +25,7 @@ import com.naveen.healthcare.payersservice.service.PolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.naveen.healthcare.payersservice.service.InsuranceEventPublisher;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,6 +56,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             memberVerificationService;
 
     private final PolicyService policyService;
+
+    private final InsuranceEventPublisher insuranceEventPublisher;
 
     @Override
     @Transactional
@@ -136,7 +139,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         .build();
 
         InsuranceEnrollment savedEnrollment =
-                insuranceEnrollmentRepository.save(enrollment);
+                insuranceEnrollmentRepository.saveAndFlush(
+                        enrollment
+                );
+
+        insuranceEventPublisher.publishEnrollmentSubmitted(
+                savedEnrollment
+        );
 
         return mapToResponse(savedEnrollment);
     }
@@ -201,9 +210,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setReviewedAt(null);
 
         InsuranceEnrollment updatedEnrollment =
-                insuranceEnrollmentRepository.save(enrollment);
+                insuranceEnrollmentRepository.saveAndFlush(
+                        enrollment
+                );
+
+        insuranceEventPublisher.publishEnrollmentCancelled(
+                updatedEnrollment
+        );
 
         return mapToResponse(updatedEnrollment);
+
     }
 
     @Override
@@ -283,9 +299,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         );
 
         InsuranceEnrollment approvedEnrollment =
-                insuranceEnrollmentRepository.save(enrollment);
+                insuranceEnrollmentRepository.saveAndFlush(
+                        enrollment
+                );
 
         policyService.issuePolicyForApprovedEnrollment(
+                approvedEnrollment
+        );
+
+        insuranceEventPublisher.publishEnrollmentApproved(
                 approvedEnrollment
         );
 
@@ -331,7 +353,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         );
 
         InsuranceEnrollment updatedEnrollment =
-                insuranceEnrollmentRepository.save(enrollment);
+                insuranceEnrollmentRepository.saveAndFlush(
+                        enrollment
+                );
+
+        insuranceEventPublisher.publishEnrollmentRejected(
+                updatedEnrollment
+        );
 
         return mapToResponse(updatedEnrollment);
     }
