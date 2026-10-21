@@ -1,0 +1,380 @@
+<section class="details-page">
+
+    @if (loading()) {
+  
+      <section class="loading-state">
+  
+        <mat-spinner diameter="48">
+        </mat-spinner>
+  
+      </section>
+  
+    } @else if (
+      provider();
+      as organization
+    ) {
+  
+      <header class="hero-header">
+  
+        <div class="hero-icon">
+  
+          <mat-icon>
+            local_hospital
+          </mat-icon>
+  
+        </div>
+  
+        <div class="hero-content">
+  
+          <p class="eyebrow">
+            Organization Governance
+          </p>
+  
+          <h1>
+            {{ organization.organizationName }}
+          </h1>
+  
+          <p>
+            {{ organization.adminEmail }}
+          </p>
+  
+        </div>
+  
+        <span class="status-badge">
+          {{ organization.status }}
+        </span>
+  
+      </header>
+  
+      @if (
+        organization.status === 'PENDING_APPROVAL'
+      ) {
+  
+        <section class="banner pending-banner">
+  
+          <mat-icon>
+            pending_actions
+          </mat-icon>
+  
+          <div>
+  
+            <strong>
+              Pending Approval
+            </strong>
+  
+            <p>
+              Provider organization is awaiting
+              administrator review.
+            </p>
+  
+          </div>
+  
+        </section>
+  
+      }
+  
+      @if (
+        organization.status === 'REJECTED'
+      ) {
+  
+        <section class="banner rejected-banner">
+  
+          <mat-icon>
+            cancel
+          </mat-icon>
+  
+          <div>
+  
+            <strong>
+              Application Rejected
+            </strong>
+  
+            <p>
+              {{
+                organization.rejectionReason
+                || 'No rejection reason provided.'
+              }}
+            </p>
+  
+          </div>
+  
+        </section>
+  
+      }
+  
+      <div class="details-grid">
+  
+        <section class="info-card">
+  
+          <div class="card-title">
+  
+            <mat-icon>
+              medical_services
+            </mat-icon>
+  
+            <h2>
+              Provider Information
+            </h2>
+  
+          </div>
+  
+          <div class="info-row">
+            <span>Provider Type</span>
+            <strong>{{ organization.providerType }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Registration Number</span>
+            <strong>{{ organization.registrationNumber }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>License Number</span>
+            <strong>{{ organization.licenseNumber }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Contact Number</span>
+            <strong>{{ organization.contactNumber }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Website</span>
+            <strong>
+              {{ organization.website || 'Not Provided' }}
+            </strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Emergency Services</span>
+            <strong>
+              {{
+                organization.emergencyServicesAvailable
+                  ? 'Available'
+                  : 'Not Available'
+              }}
+            </strong>
+          </div>
+  
+        </section>
+  
+        <section class="info-card">
+  
+          <div class="card-title">
+  
+            <mat-icon>
+              location_on
+            </mat-icon>
+  
+            <h2>
+              Address Information
+            </h2>
+  
+          </div>
+  
+          <div class="info-row">
+            <span>Address</span>
+            <strong>{{ organization.addressLine }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>City</span>
+            <strong>{{ organization.city }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>State</span>
+            <strong>{{ organization.state }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Postal Code</span>
+            <strong>{{ organization.postalCode }}</strong>
+          </div>
+  
+          <div class="info-row">
+            <span>Country</span>
+            <strong>{{ organization.country }}</strong>
+          </div>
+  
+        </section>
+  
+      </div>
+  
+      <section class="info-card">
+  
+        <div class="card-title">
+  
+          <mat-icon>
+            fact_check
+          </mat-icon>
+  
+          <h2>
+            Review Information
+          </h2>
+  
+        </div>
+  
+        <div class="review-grid">
+  
+          <div class="review-item">
+            <label>Submitted</label>
+            <strong>
+              {{ organization.submittedAt || 'N/A' }}
+            </strong>
+          </div>
+  
+          <div class="review-item">
+            <label>Reviewed By</label>
+            <strong>
+              {{ organization.reviewedByEmail || 'N/A' }}
+            </strong>
+          </div>
+  
+          <div class="review-item">
+            <label>Reviewed At</label>
+            <strong>
+              {{ organization.reviewedAt || 'N/A' }}
+            </strong>
+          </div>
+  
+          <div class="review-item">
+            <label>Review Remarks</label>
+            <strong>
+              {{ organization.reviewRemarks || 'N/A' }}
+            </strong>
+          </div>
+  
+        </div>
+  
+      </section>
+  
+      <section class="info-card">
+  
+        <div class="card-title">
+  
+          <mat-icon>
+            schedule
+          </mat-icon>
+  
+          <h2>
+            Timeline
+          </h2>
+  
+        </div>
+  
+        <div class="review-grid">
+  
+          <div class="review-item">
+            <label>Created At</label>
+            <strong>{{ organization.createdAt }}</strong>
+          </div>
+  
+          <div class="review-item">
+            <label>Updated At</label>
+            <strong>{{ organization.updatedAt }}</strong>
+          </div>
+  
+        </div>
+  
+      </section>
+  
+      <section class="actions">
+  
+        @if (
+          organization.status === 'PENDING_APPROVAL'
+        ) {
+  
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="approve()"
+          >
+            <mat-icon>
+              check_circle
+            </mat-icon>
+  
+            Approve
+          </button>
+  
+          <button
+            mat-stroked-button
+            color="warn"
+            (click)="reject()"
+          >
+            <mat-icon>
+              cancel
+            </mat-icon>
+  
+            Reject
+          </button>
+  
+        }
+  
+        @if (
+          organization.status === 'ACTIVE'
+        ) {
+  
+          <button
+            mat-stroked-button
+            (click)="updateStatus('SUSPENDED')"
+          >
+            <mat-icon>
+              pause_circle
+            </mat-icon>
+  
+            Suspend
+          </button>
+  
+          <button
+            mat-stroked-button
+            (click)="updateStatus('INACTIVE')"
+          >
+            <mat-icon>
+              block
+            </mat-icon>
+  
+            Deactivate
+          </button>
+  
+        }
+  
+        @if (
+          organization.status === 'SUSPENDED'
+        ) {
+  
+          <button
+            mat-flat-button
+            (click)="updateStatus('ACTIVE')"
+          >
+            <mat-icon>
+              play_circle
+            </mat-icon>
+  
+            Reactivate
+          </button>
+  
+        }
+  
+        @if (
+          organization.status === 'INACTIVE'
+        ) {
+  
+          <button
+            mat-flat-button
+            (click)="updateStatus('ACTIVE')"
+          >
+            <mat-icon>
+              check_circle
+            </mat-icon>
+  
+            Activate
+          </button>
+  
+        }
+  
+      </section>
+  
+    }
+  
+  </section>

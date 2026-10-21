@@ -1,0 +1,718 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .submit-claim-page {
+    display: grid;
+    width: min(100%, 1120px);
+    min-width: 0;
+    box-sizing: border-box;
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .page-header {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      68px minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid #dbe8ed;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.05);
+  }
+  
+  .header-icon {
+    display: grid;
+    width: 68px;
+    height: 68px;
+    place-items: center;
+    border-radius: 20px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+  }
+  
+  .header-icon mat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+  }
+  
+  .header-copy {
+    min-width: 0;
+  }
+  
+  .eyebrow {
+    margin: 0 0 6px;
+    color: #0f7180;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  
+  .header-copy h1 {
+    margin: 0;
+    color: #19384d;
+    font-size: clamp(25px, 3vw, 35px);
+    line-height: 1.2;
+  }
+  
+  .header-copy p:last-child {
+    max-width: 720px;
+    margin: 7px 0 0;
+    color: #6d8290;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .verification-banner {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 16px 18px;
+    border: 1px solid #b9d9c7;
+    border-radius: 15px;
+    color: #2c6947;
+    background: #f0fbf4;
+  }
+  
+  .verification-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 13px;
+    color: #ffffff;
+    background: #31835a;
+  }
+  
+  .verification-banner > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .verification-banner strong {
+    color: #245d40;
+    font-size: 12px;
+  }
+  
+  .verification-banner p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .context-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 17px;
+  }
+  
+  .context-card,
+  .form-card {
+    min-width: 0;
+    border: 1px solid #dfe9ed;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(18, 48, 67, 0.04);
+  }
+  
+  .context-card mat-card-content,
+  .form-card mat-card-content {
+    display: grid;
+    min-width: 0;
+    gap: 21px;
+    padding: 23px;
+  }
+  
+  .card-heading {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 13px;
+  }
+  
+  .card-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    place-items: center;
+    border-radius: 15px;
+  }
+  
+  .appointment-icon {
+    color: #176779;
+    background: #e7f6f7;
+  }
+  
+  .medical-record-icon {
+    color: #72509a;
+    background: #f1eafa;
+  }
+  
+  .card-heading > div:last-child {
+    min-width: 0;
+  }
+  
+  .card-heading span {
+    color: #748995;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  
+  .card-heading h2 {
+    margin: 4px 0 0;
+    color: #28475a;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  
+  .context-details {
+    display: grid;
+    margin: 0;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    border-top: 1px solid #dbe6e9;
+    border-left: 1px solid #dbe6e9;
+  }
+  
+  .context-details > div {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+    padding: 12px;
+    border-right: 1px solid #dbe6e9;
+    border-bottom: 1px solid #dbe6e9;
+    background: #fbfdfd;
+  }
+  
+  .context-details dt {
+    color: #819099;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  
+  .context-details dd {
+    margin: 0;
+    color: #345360;
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  
+  .highlight-detail {
+    color: #176779;
+    background: #effafa !important;
+  }
+  
+  .highlight-detail dd {
+    color: #0f6676;
+    font-size: 13px;
+  }
+  
+  .record-status {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 30px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    border-radius: 999px;
+    color: #745813;
+    background: #fff5d7;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  
+  .record-status mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+  
+  .clinical-summary {
+    display: grid;
+    min-width: 0;
+    gap: 13px;
+  }
+  
+  .clinical-summary > div {
+    display: grid;
+    min-width: 0;
+    gap: 7px;
+    padding: 14px;
+    border-left: 4px solid #55a1aa;
+    border-radius: 4px;
+    background: #f8fbfc;
+  }
+  
+  .clinical-summary span {
+    color: #176779;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  
+  .clinical-summary p {
+    margin: 0;
+    color: #425e69;
+    font-size: 11px;
+    line-height: 1.7;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  
+  .form-error {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #f2b8b5;
+    border-radius: 14px;
+    color: #8b1a1a;
+    background: #fff1f0;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  
+  .form-error mat-icon {
+    flex: 0 0 auto;
+  }
+  
+  .claim-form {
+    display: grid;
+    min-width: 0;
+    gap: 20px;
+  }
+  
+  .section-heading {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  
+  .section-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 14px;
+    color: #176779;
+    background: #e6f5f5;
+  }
+  
+  .claim-icon {
+    color: #6e4a92;
+    background: #f2eafa;
+  }
+  
+  .section-heading > div:last-child {
+    min-width: 0;
+  }
+  
+  .section-heading h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 17px;
+  }
+  
+  .section-heading p {
+    margin: 5px 0 0;
+    color: #788b98;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .policy-field {
+    width: 100%;
+  }
+  
+  .policy-summary {
+    display: grid;
+    min-width: 0;
+    gap: 17px;
+    padding: 18px;
+    border: 1px solid #bddddd;
+    border-radius: 16px;
+    background:
+      linear-gradient(
+        135deg,
+        #f4fbfb,
+        #ffffff
+      );
+  }
+  
+  .policy-summary header {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 13px;
+  }
+  
+  .policy-logo {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    place-items: center;
+    border-radius: 15px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #176779,
+        #3ba7a5
+      );
+  }
+  
+  .policy-summary header > div:last-child {
+    min-width: 0;
+  }
+  
+  .policy-summary header span {
+    color: #607d87;
+    font-size: 9px;
+    font-weight: 750;
+  }
+  
+  .policy-summary h3 {
+    margin: 4px 0 3px;
+    color: #244756;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  
+  .policy-summary header p {
+    margin: 0;
+    color: #718892;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+  
+  .policy-metrics {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+    border-top: 1px solid #cfe1e3;
+    border-left: 1px solid #cfe1e3;
+  }
+  
+  .policy-metrics > div {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+    padding: 11px;
+    border-right: 1px solid #cfe1e3;
+    border-bottom: 1px solid #cfe1e3;
+    background: rgba(255, 255, 255, 0.76);
+  }
+  
+  .policy-metrics span {
+    color: #81929a;
+    font-size: 8px;
+    font-weight: 750;
+    text-transform: uppercase;
+  }
+  
+  .policy-metrics strong {
+    color: #2e5562;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+  
+  .policy-summary footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #58747e;
+    font-size: 10px;
+  }
+  
+  .policy-summary footer mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+  
+  .claim-fields {
+    display: grid;
+    min-width: 0;
+    gap: 13px;
+  }
+  
+  .amount-field {
+    width: min(100%, 360px);
+  }
+  
+  .amount-guidance {
+    display: flex;
+    width: min(100%, 620px);
+    min-width: 0;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px;
+    border-radius: 12px;
+    color: #566f7b;
+    background: #f2f6f7;
+  }
+  
+  .amount-guidance > mat-icon {
+    flex: 0 0 auto;
+    color: #477685;
+  }
+  
+  .amount-guidance div {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .amount-guidance strong {
+    color: #355563;
+    font-size: 10px;
+  }
+  
+  .amount-guidance p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.55;
+  }
+  
+  .submission-notice {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #c9daea;
+    border-radius: 15px;
+    color: #47687c;
+    background: #f1f7fc;
+  }
+  
+  .submission-notice > mat-icon {
+    flex: 0 0 auto;
+    color: #3b718e;
+  }
+  
+  .submission-notice div {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .submission-notice strong {
+    color: #315368;
+    font-size: 11px;
+  }
+  
+  .submission-notice p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.65;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 11px;
+  }
+  
+  .form-actions button {
+    min-width: 190px;
+    min-height: 45px;
+    border-radius: 11px;
+  }
+  
+  .submit-button,
+  .primary-button {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .submit-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      #ffffff;
+  }
+  
+  .state-card {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 340px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 36px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(18, 48, 67, 0.04);
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #527d89;
+    background: #eaf5f6;
+  }
+  
+  .error-state .state-icon,
+  .blocked-state .state-icon {
+    color: #9c4c1c;
+    background: #fff0e5;
+  }
+  
+  .state-icon mat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 540px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-card button {
+    min-height: 42px;
+    margin-top: 8px;
+    border-radius: 11px;
+  }
+  
+  .state-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  @media (max-width: 900px) {
+    .context-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .policy-metrics {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 650px) {
+    .submit-claim-page {
+      gap: 18px;
+    }
+  
+    .page-header {
+      grid-template-columns:
+        56px minmax(0, 1fr);
+      padding: 18px;
+    }
+  
+    .header-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 17px;
+    }
+  
+    .header-icon mat-icon {
+      width: 27px;
+      height: 27px;
+      font-size: 27px;
+    }
+  
+    .context-details,
+    .policy-metrics {
+      grid-template-columns: 1fr;
+    }
+  
+    .amount-field {
+      width: 100%;
+    }
+  
+    .form-actions,
+    .state-actions {
+      width: 100%;
+      flex-direction: column-reverse;
+    }
+  
+    .form-actions button,
+    .state-actions button {
+      width: 100%;
+    }
+  
+    .state-card {
+      min-height: 300px;
+      padding: 28px 18px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .page-header {
+      grid-template-columns: 1fr;
+    }
+  
+    .header-icon {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .context-card mat-card-content,
+    .form-card mat-card-content {
+      padding: 18px;
+    }
+  
+    .section-heading {
+      align-items: flex-start;
+    }
+  
+    .policy-summary header {
+      align-items: flex-start;
+    }
+  }

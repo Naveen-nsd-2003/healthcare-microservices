@@ -1,0 +1,345 @@
+<section class="create-availability-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="availabilityState.creating()"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to availability</span>
+    </button>
+  
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">
+          Provider Administration
+        </p>
+  
+        <h1>Create availability</h1>
+  
+        <p class="description">
+          Create a recurring weekly consultation schedule
+          for an active doctor.
+        </p>
+      </div>
+  
+      <span class="status-label">
+        <mat-icon>check_circle</mat-icon>
+        <span>Created as active</span>
+      </span>
+    </header>
+  
+    @if (doctorState.loading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading doctors</strong>
+  
+        <p>
+          Please wait while active doctors are retrieved.
+        </p>
+      </section>
+  
+    } @else if (doctorState.errorMessage()) {
+  
+      <section class="state-card error-state">
+        <mat-icon>error_outline</mat-icon>
+  
+        <strong>Unable to load doctors</strong>
+  
+        <p>
+          {{ doctorState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="reloadDoctors()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+  
+    } @else if (activeDoctors().length === 0) {
+  
+      <section class="state-card">
+        <mat-icon>person_off</mat-icon>
+  
+        <strong>No active doctors available</strong>
+  
+        <p>
+          Create or activate a doctor before adding
+          weekly availability.
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="goToDoctors()"
+        >
+          <mat-icon>medical_services</mat-icon>
+          <span>Manage doctors</span>
+        </button>
+      </section>
+  
+    } @else {
+  
+      @if (availabilityState.errorMessage()) {
+        <section class="form-error">
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ availabilityState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <form
+        class="availability-form"
+        [formGroup]="availabilityForm"
+        (ngSubmit)="createAvailability()"
+        novalidate
+      >
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <h2>Doctor assignment</h2>
+  
+            <mat-form-field
+              appearance="outline"
+              class="full-width"
+            >
+              <mat-label>Doctor</mat-label>
+  
+              <mat-icon matPrefix>
+                medical_services
+              </mat-icon>
+  
+              <mat-select
+                formControlName="doctorId"
+                [disabled]="doctorPreselected()"
+              >
+                <mat-option value="">
+                  Select an active doctor
+                </mat-option>
+  
+                @for (
+                  doctor of activeDoctors();
+                  track doctor.id
+                ) {
+                  <mat-option [value]="doctor.id">
+                    {{ doctor.fullName }}
+                    - {{ doctor.departmentName }}
+                  </mat-option>
+                }
+              </mat-select>
+  
+              @if (
+                availabilityForm.controls.doctorId.touched
+                && availabilityForm.controls.doctorId.hasError('required')
+              ) {
+                <mat-error>
+                  Doctor is required.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            @if (availabilityForm.controls.doctorId.value) {
+              <section class="doctor-summary">
+                <mat-icon>person</mat-icon>
+  
+                <div>
+                  <strong>
+                    {{ getSelectedDoctorName() }}
+                  </strong>
+  
+                  <span>
+                    {{ getSelectedDoctorDepartment() }}
+                  </span>
+                </div>
+              </section>
+            }
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <h2>Weekly schedule</h2>
+  
+            <div class="form-grid">
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Day of week</mat-label>
+  
+                <mat-icon matPrefix>
+                  calendar_today
+                </mat-icon>
+  
+                <mat-select formControlName="dayOfWeek">
+                  @for (
+                    day of dayOptions;
+                    track day.value
+                  ) {
+                    <mat-option [value]="day.value">
+                      {{ day.label }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Start time</mat-label>
+  
+                <input
+                  matInput
+                  type="time"
+                  formControlName="startTime"
+                >
+  
+                @if (
+                  availabilityForm.controls.startTime.touched
+                  && availabilityForm.controls.startTime.hasError('required')
+                ) {
+                  <mat-error>
+                    Start time is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>End time</mat-label>
+  
+                <input
+                  matInput
+                  type="time"
+                  formControlName="endTime"
+                >
+  
+                @if (
+                  availabilityForm.controls.endTime.touched
+                  && availabilityForm.controls.endTime.hasError('required')
+                ) {
+                  <mat-error>
+                    End time is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Slot duration</mat-label>
+  
+                <mat-icon matPrefix>timer</mat-icon>
+  
+                <mat-select
+                  formControlName="slotDurationMinutes"
+                >
+                  @for (
+                    duration of slotDurationOptions;
+                    track duration
+                  ) {
+                    <mat-option [value]="duration">
+                      {{ duration }} minutes
+                    </mat-option>
+                  }
+                </mat-select>
+  
+                @if (
+                  availabilityForm.controls.slotDurationMinutes.touched
+                  && availabilityForm.controls.slotDurationMinutes.hasError('min')
+                ) {
+                  <mat-error>
+                    Slot duration must be at least 10 minutes.
+                  </mat-error>
+                }
+  
+                @if (
+                  availabilityForm.controls.slotDurationMinutes.touched
+                  && availabilityForm.controls.slotDurationMinutes.hasError('max')
+                ) {
+                  <mat-error>
+                    Slot duration must not exceed 120 minutes.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+            <section class="schedule-summary">
+              <div>
+                <span>Schedule duration</span>
+  
+                <strong>
+                  {{ getScheduleDurationLabel() }}
+                </strong>
+              </div>
+  
+              <div>
+                <span>Estimated slots</span>
+  
+                <strong>
+                  {{ getEstimatedSlotCount() }}
+                </strong>
+              </div>
+            </section>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <section class="information-notice">
+          <mat-icon>info</mat-icon>
+  
+          <div>
+            <strong>Recurring weekly schedule</strong>
+  
+            <p>
+              This availability repeats every selected weekday.
+              Date-specific appointment slots are generated by
+              the Appointment Service during booking.
+            </p>
+          </div>
+        </section>
+  
+        <footer class="form-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="availabilityState.creating()"
+            (click)="goBack()"
+          >
+            Cancel
+          </button>
+  
+          <button
+            mat-flat-button
+            type="submit"
+            class="create-button"
+            [disabled]="availabilityState.creating()"
+          >
+            @if (availabilityState.creating()) {
+              <mat-spinner diameter="22"></mat-spinner>
+              <span>Creating...</span>
+            } @else {
+              <mat-icon>add</mat-icon>
+              <span>Create availability</span>
+            }
+          </button>
+        </footer>
+  
+      </form>
+  
+    }
+  
+  </section>

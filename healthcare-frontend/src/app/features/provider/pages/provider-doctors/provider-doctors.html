@@ -1,0 +1,493 @@
+<section class="doctors-page">
+
+    <header class="page-header">
+  
+      <div>
+        <p class="eyebrow">
+          Provider Administration
+        </p>
+  
+        <h1>Doctors</h1>
+  
+        <p class="description">
+          Create and manage doctors associated with your
+          healthcare organization and clinical departments.
+        </p>
+      </div>
+  
+      <div class="page-actions">
+  
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="doctorState.loading()"
+          (click)="loadDoctors()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="create-button"
+          (click)="createDoctor()"
+        >
+          <mat-icon>person_add</mat-icon>
+          <span>Create doctor</span>
+        </button>
+  
+      </div>
+  
+    </header>
+  
+    <section class="summary-grid">
+  
+      <article class="summary-card">
+        <div class="summary-icon total-icon">
+          <mat-icon>medical_services</mat-icon>
+        </div>
+  
+        <div>
+          <span>Total doctors</span>
+          <strong>{{ doctorState.totalCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon active-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+  
+        <div>
+          <span>Active doctors</span>
+          <strong>{{ doctorState.activeCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon inactive-icon">
+          <mat-icon>block</mat-icon>
+        </div>
+  
+        <div>
+          <span>Inactive doctors</span>
+          <strong>{{ doctorState.inactiveCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon department-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <div>
+          <span>Departments represented</span>
+          <strong>{{ doctorState.departmentCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon specialization-icon">
+          <mat-icon>health_and_safety</mat-icon>
+        </div>
+  
+        <div>
+          <span>Specializations</span>
+          <strong>{{ doctorState.specializationCount() }}</strong>
+        </div>
+      </article>
+  
+    </section>
+  
+    <section class="filter-panel">
+  
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Search doctors</mat-label>
+  
+        <mat-icon matPrefix>search</mat-icon>
+  
+        <input
+          #doctorSearch
+          matInput
+          type="search"
+          placeholder="Name, registration, qualification, or specialization"
+          [value]="searchText()"
+          (input)="updateSearch(doctorSearch.value)"
+        >
+  
+        @if (searchText().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Clear doctor search"
+            (click)="updateSearch('')"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Status</mat-label>
+  
+        <mat-icon matPrefix>filter_alt</mat-icon>
+  
+        <mat-select
+          [value]="selectedStatus()"
+          (selectionChange)="updateStatus($event.value)"
+        >
+          <mat-option value="ALL">
+            All statuses
+          </mat-option>
+  
+          <mat-option value="ACTIVE">
+            Active
+          </mat-option>
+  
+          <mat-option value="INACTIVE">
+            Inactive
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Department</mat-label>
+  
+        <mat-icon matPrefix>account_tree</mat-icon>
+  
+        <mat-select
+          [value]="selectedDepartmentId()"
+          (selectionChange)="updateDepartment($event.value)"
+        >
+          <mat-option value="ALL">
+            All departments
+          </mat-option>
+  
+          @for (
+            department of departmentOptions();
+            track department.id
+          ) {
+            <mat-option [value]="department.id">
+              {{ department.name }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Specialization</mat-label>
+  
+        <mat-icon matPrefix>health_and_safety</mat-icon>
+  
+        <mat-select
+          [value]="selectedSpecialization()"
+          (selectionChange)="updateSpecialization($event.value)"
+        >
+          <mat-option value="ALL">
+            All specializations
+          </mat-option>
+  
+          @for (
+            specialization of specializationOptions();
+            track specialization
+          ) {
+            <mat-option [value]="specialization">
+              {{ specialization }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Sort by</mat-label>
+  
+        <mat-icon matPrefix>sort</mat-icon>
+  
+        <mat-select
+          [value]="selectedSort()"
+          (selectionChange)="updateSort($event.value)"
+        >
+          <mat-option value="NAME_ASCENDING">
+            Doctor name
+          </mat-option>
+  
+          <mat-option value="EXPERIENCE_DESCENDING">
+            Most experienced
+          </mat-option>
+  
+          <mat-option value="FEE_ASCENDING">
+            Fee: Low to high
+          </mat-option>
+  
+          <mat-option value="FEE_DESCENDING">
+            Fee: High to low
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <button
+        mat-button
+        type="button"
+        class="clear-filter-button"
+        [disabled]="!filtersApplied()"
+        (click)="clearFilters()"
+      >
+        <mat-icon>filter_alt_off</mat-icon>
+        <span>Clear filters</span>
+      </button>
+  
+      <span class="result-count">
+        {{ filteredDoctors().length }} result(s)
+      </span>
+  
+    </section>
+  
+    @if (doctorState.loading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading doctors</strong>
+  
+        <p>
+          Please wait while your organization doctors
+          are retrieved.
+        </p>
+      </section>
+  
+    } @else if (doctorState.errorMessage()) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load doctors</strong>
+  
+        <p>
+          {{ doctorState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadDoctors()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+  
+    } @else if (filteredDoctors().length === 0) {
+  
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>person_search</mat-icon>
+        </div>
+  
+        <strong>No doctors found</strong>
+  
+        @if (filtersApplied()) {
+  
+          <p>
+            No doctors match the selected search
+            and filter options.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="clearFilters()"
+          >
+            <mat-icon>filter_alt_off</mat-icon>
+            <span>Clear filters</span>
+          </button>
+  
+        } @else {
+  
+          <p>
+            Create the first doctor profile for your
+            healthcare organization.
+          </p>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="create-button"
+            (click)="createDoctor()"
+          >
+            <mat-icon>person_add</mat-icon>
+            <span>Create doctor</span>
+          </button>
+  
+        }
+  
+      </section>
+  
+    } @else {
+  
+      <section class="doctor-grid">
+  
+        @for (
+          doctor of filteredDoctors();
+          track doctor.id
+        ) {
+  
+          <mat-card class="doctor-card">
+            <mat-card-content>
+  
+              <header class="doctor-header">
+  
+                <div class="doctor-avatar">
+                  {{ getInitials(doctor) }}
+                </div>
+  
+                <div class="doctor-heading">
+                  <span class="specialization">
+                    {{ doctor.specialization }}
+                  </span>
+  
+                  <h2>
+                    {{ doctor.fullName }}
+                  </h2>
+  
+                  <p>
+                    {{ doctor.qualification }}
+                  </p>
+                </div>
+  
+                @if (doctor.status === 'ACTIVE') {
+                  <span class="status-badge active-status">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>ACTIVE</span>
+                  </span>
+                } @else {
+                  <span class="status-badge inactive-status">
+                    <mat-icon>block</mat-icon>
+                    <span>INACTIVE</span>
+                  </span>
+                }
+  
+              </header>
+  
+              <section class="doctor-information">
+  
+                <div>
+                  <mat-icon>account_tree</mat-icon>
+  
+                  <span>Department</span>
+  
+                  <strong>
+                    {{ doctor.departmentName }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <mat-icon>workspace_premium</mat-icon>
+  
+                  <span>Experience</span>
+  
+                  <strong>
+                    {{
+                      getExperienceLabel(
+                        doctor.yearsOfExperience
+                      )
+                    }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <mat-icon>payments</mat-icon>
+  
+                  <span>Consultation fee</span>
+  
+                  <strong>
+                    {{
+                      doctor.consultationFee
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </strong>
+                </div>
+  
+              </section>
+  
+              <section class="registration-panel">
+                <mat-icon>badge</mat-icon>
+  
+                <div>
+                  <span>Medical registration</span>
+  
+                  <strong>
+                    {{ doctor.medicalRegistrationNumber }}
+                  </strong>
+                </div>
+              </section>
+  
+              @if (doctor.biography) {
+                <p class="doctor-biography">
+                  {{ doctor.biography }}
+                </p>
+              }
+  
+              @if (doctor.status === 'ACTIVE') {
+                <section class="visibility-notice active-notice">
+                  <mat-icon>visibility</mat-icon>
+  
+                  <span>
+                    Visible to Members when the department
+                    and Provider organization are active
+                  </span>
+                </section>
+              } @else {
+                <section class="visibility-notice inactive-notice">
+                  <mat-icon>visibility_off</mat-icon>
+  
+                  <span>
+                    Hidden from Member discovery
+                  </span>
+                </section>
+              }
+  
+              <footer class="doctor-actions">
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="viewDoctor(doctor)"
+                >
+                  <span>Manage doctor</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </footer>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        }
+  
+      </section>
+  
+    }
+  
+  </section>

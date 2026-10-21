@@ -1,0 +1,601 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .create-provider-page {
+    display: grid;
+    width: min(100%, 1180px);
+    min-width: 0;
+    box-sizing: border-box;
+    gap: 20px;
+  }
+  
+  .page-toolbar {
+    display: flex;
+    align-items: center;
+  }
+  
+  .back-button {
+    color: #496f7d;
+  }
+  
+  .page-header {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      70px minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    padding: 23px;
+    border: 1px solid #dbe7eb;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.05);
+  }
+  
+  .header-icon {
+    display: grid;
+    width: 70px;
+    height: 70px;
+    place-items: center;
+    border-radius: 21px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #176779,
+        #36a6a4
+      );
+  }
+  
+  .header-icon mat-icon {
+    width: 33px;
+    height: 33px;
+    font-size: 33px;
+  }
+  
+  .header-copy {
+    min-width: 0;
+  }
+  
+  .eyebrow,
+  .success-eyebrow {
+    margin: 0 0 6px;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  
+  .header-copy h1 {
+    margin: 0;
+    color: #19384d;
+    font-size: clamp(25px, 3vw, 35px);
+    line-height: 1.2;
+  }
+  
+  .header-copy p:last-child {
+    max-width: 760px;
+    margin: 7px 0 0;
+    color: #718691;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  
+  .provisioning-layout {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      minmax(0, 1.7fr)
+      minmax(280px, 0.8fr);
+    align-items: start;
+    gap: 18px;
+  }
+  
+  .provider-form {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+  }
+  
+  .form-card {
+    display: grid;
+    min-width: 0;
+    gap: 21px;
+    padding: 22px;
+    border: 1px solid #dce7eb;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow:
+      0 7px 23px rgba(18, 48, 67, 0.035);
+  }
+  
+  .form-section-header {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 13px;
+  }
+  
+  .section-icon {
+    display: grid;
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .identity-icon {
+    color: #176779;
+    background: #e7f5f6;
+  }
+  
+  .contact-icon {
+    color: #426e9a;
+    background: #eaf2fa;
+  }
+  
+  .form-section-header > div:last-child {
+    min-width: 0;
+  }
+  
+  .form-section-header p {
+    margin: 0;
+    color: #0f7180;
+    font-size: 8px;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+  
+  .form-section-header h2 {
+    margin: 4px 0 4px;
+    color: #294756;
+    font-size: 17px;
+  }
+  
+  .form-section-header span {
+    color: #788c95;
+    font-size: 10px;
+    line-height: 1.55;
+  }
+  
+  .form-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .form-grid mat-form-field {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .form-grid mat-form-field:first-child {
+    grid-column: 1 / -1;
+  }
+  
+  .contact-grid mat-form-field:first-child {
+    grid-column: auto;
+  }
+  
+  .form-error {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #efb7b3;
+    border-radius: 12px;
+    color: #902923;
+    background: #fff1f0;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  
+  .form-error mat-icon {
+    flex: 0 0 auto;
+  }
+  
+  .provisioning-notice {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #c7dce8;
+    border-radius: 15px;
+    color: #456579;
+    background: #f1f7fb;
+  }
+  
+  .notice-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 13px;
+    color: #ffffff;
+    background: #477b98;
+  }
+  
+  .provisioning-notice > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .provisioning-notice strong {
+    color: #36566a;
+    font-size: 11px;
+  }
+  
+  .provisioning-notice p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.65;
+  }
+  
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .form-actions button {
+    min-width: 190px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  
+  .submit-button,
+  .primary-button {
+    color: #ffffff;
+    background: #126b78;
+  }
+  
+  .submit-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      #ffffff;
+  }
+  
+  .workflow-card {
+    position: sticky;
+    top: 20px;
+    display: grid;
+    min-width: 0;
+    gap: 19px;
+    padding: 20px;
+    border: 1px solid #dce7eb;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow:
+      0 7px 23px rgba(18, 48, 67, 0.035);
+  }
+  
+  .workflow-card > header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .workflow-header-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 14px;
+    color: #75519b;
+    background: #f2eafa;
+  }
+  
+  .workflow-card header p {
+    margin: 0;
+    color: #75519b;
+    font-size: 8px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .workflow-card header h2 {
+    margin: 4px 0 0;
+    color: #314c59;
+    font-size: 16px;
+  }
+  
+  .workflow-list {
+    display: grid;
+    gap: 14px;
+  }
+  
+  .workflow-list article {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 11px;
+  }
+  
+  .workflow-list article > span {
+    display: grid;
+    width: 29px;
+    height: 29px;
+    flex: 0 0 29px;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #176f7c;
+    font-size: 9px;
+    font-weight: 850;
+  }
+  
+  .workflow-list article > div {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .workflow-list strong {
+    color: #3a5662;
+    font-size: 10px;
+  }
+  
+  .workflow-list p {
+    margin: 0;
+    color: #7a8c94;
+    font-size: 9px;
+    line-height: 1.55;
+  }
+  
+  .workflow-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 11px;
+    color: #61777f;
+    background: #f3f6f7;
+  }
+  
+  .workflow-note mat-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    font-size: 18px;
+  }
+  
+  .workflow-note p {
+    margin: 0;
+    font-size: 9px;
+    line-height: 1.55;
+  }
+  
+  .success-card {
+    display: grid;
+    min-width: 0;
+    justify-items: center;
+    gap: 10px;
+    padding: 34px;
+    border: 1px solid #b9d9c6;
+    border-radius: 20px;
+    background:
+      linear-gradient(
+        145deg,
+        #f4fcf7,
+        #ffffff
+      );
+    box-shadow:
+      0 10px 30px rgba(35, 112, 71, 0.07);
+    text-align: center;
+  }
+  
+  .success-icon {
+    display: grid;
+    width: 70px;
+    height: 70px;
+    place-items: center;
+    margin-bottom: 5px;
+    border-radius: 22px;
+    color: #ffffff;
+    background: #31835a;
+  }
+  
+  .success-icon mat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 34px;
+  }
+  
+  .success-card h2 {
+    margin: 0;
+    color: #28543d;
+    font-size: 24px;
+  }
+  
+  .success-message {
+    max-width: 600px;
+    margin: 0;
+    color: #668074;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  
+  .created-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 0 9px;
+    padding: 11px 15px;
+    border: 1px solid #bedcca;
+    border-radius: 11px;
+    color: #276044;
+    background: #ffffff;
+  }
+  
+  .created-email mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+  
+  .created-email strong {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+  
+  .success-workflow {
+    display: grid;
+    width: 100%;
+    max-width: 860px;
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+    gap: 11px;
+    margin-top: 6px;
+  }
+  
+  .success-workflow article {
+    display: grid;
+    justify-items: center;
+    gap: 7px;
+    padding: 15px;
+    border: 1px solid #d4e7da;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.8);
+  }
+  
+  .workflow-number {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #31835a;
+    font-size: 9px;
+    font-weight: 850;
+  }
+  
+  .success-workflow article > div {
+    display: grid;
+    gap: 4px;
+  }
+  
+  .success-workflow strong {
+    color: #315a43;
+    font-size: 10px;
+  }
+  
+  .success-workflow p {
+    margin: 0;
+    color: #73877c;
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  
+  .success-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  
+  .success-actions button {
+    min-width: 190px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 950px) {
+    .provisioning-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .workflow-card {
+      position: static;
+    }
+  
+    .success-workflow {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 680px) {
+    .page-header {
+      grid-template-columns:
+        55px minmax(0, 1fr);
+      padding: 18px;
+    }
+  
+    .header-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 17px;
+    }
+  
+    .header-icon mat-icon {
+      width: 27px;
+      height: 27px;
+      font-size: 27px;
+    }
+  
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .form-grid mat-form-field:first-child,
+    .contact-grid mat-form-field:first-child {
+      grid-column: auto;
+    }
+  
+    .form-actions,
+    .success-actions {
+      align-items: stretch;
+      flex-direction: column-reverse;
+    }
+  
+    .form-actions button,
+    .success-actions button {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .create-provider-page {
+      gap: 16px;
+    }
+  
+    .page-header {
+      grid-template-columns: 1fr;
+    }
+  
+    .form-card,
+    .workflow-card {
+      padding: 16px;
+    }
+  
+    .success-card {
+      padding: 26px 16px;
+    }
+  
+    .success-workflow {
+      grid-template-columns: 1fr;
+    }
+  
+    .created-email {
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+    }
+  }

@@ -1,0 +1,536 @@
+<section class="member-medical-records-page">
+    <header class="page-header">
+      <div class="header-copy">
+        <p class="eyebrow">
+          My Healthcare Records
+        </p>
+  
+        <h1>
+          Medical records
+        </h1>
+  
+        <p class="description">
+          Review the clinical records documented by your
+          doctors after completed appointments.
+        </p>
+      </div>
+  
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="medicalRecordState.listLoading()"
+        (click)="loadMedicalRecords()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+    </header>
+  
+    <section class="summary-grid">
+      <article class="summary-card records-summary">
+        <div class="summary-icon">
+          <mat-icon>folder_shared</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Medical records
+          </span>
+  
+          <strong>
+            {{ totalRecordCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card doctors-summary">
+        <div class="summary-icon">
+          <mat-icon>medical_services</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Doctors consulted
+          </span>
+  
+          <strong>
+            {{ doctorCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card active-summary">
+        <div class="summary-icon">
+          <mat-icon>verified</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Active records
+          </span>
+  
+          <strong>
+            {{ activeRecordCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card follow-up-summary">
+        <div class="summary-icon">
+          <mat-icon>event_available</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Follow-ups documented
+          </span>
+  
+          <strong>
+            {{ followUpRecordCount() }}
+          </strong>
+        </div>
+      </article>
+    </section>
+  
+    <section class="filter-panel">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Search your records
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          search
+        </mat-icon>
+  
+        <input
+          #medicalRecordSearch
+          matInput
+          type="search"
+          placeholder="Doctor, diagnosis, provider, or department"
+          [value]="searchText()"
+          (input)="updateSearch(medicalRecordSearch.value)"
+        />
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Doctor
+        </mat-label>
+  
+        <mat-select
+          [value]="selectedDoctorId()"
+          (selectionChange)="updateDoctor($event.value)"
+        >
+          <mat-option value="ALL">
+            All doctors
+          </mat-option>
+  
+          @for (
+            doctor of doctorOptions();
+            track doctor.doctorId
+          ) {
+            <mat-option [value]="doctor.doctorId">
+              {{ doctor.doctorName }}
+              ·
+              {{ doctor.doctorSpecialization }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Status
+        </mat-label>
+  
+        <mat-select
+          [value]="selectedStatus()"
+          (selectionChange)="updateStatus($event.value)"
+        >
+          <mat-option value="ALL">
+            All statuses
+          </mat-option>
+  
+          <mat-option value="ACTIVE">
+            Active
+          </mat-option>
+  
+          <mat-option value="AMENDED">
+            Amended
+          </mat-option>
+  
+          <mat-option value="VOIDED">
+            Voided
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Sort by
+        </mat-label>
+  
+        <mat-select
+          [value]="selectedSort()"
+          (selectionChange)="updateSort($event.value)"
+        >
+          <mat-option value="APPOINTMENT_DESCENDING">
+            Latest appointment first
+          </mat-option>
+  
+          <mat-option value="APPOINTMENT_ASCENDING">
+            Earliest appointment first
+          </mat-option>
+  
+          <mat-option value="UPDATED_DESCENDING">
+            Recently updated
+          </mat-option>
+  
+          <mat-option value="DOCTOR_ASCENDING">
+            Doctor name
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <div class="filter-actions">
+        <button
+          mat-button
+          type="button"
+          [disabled]="!filtersApplied()"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+  
+        <button
+          mat-button
+          type="button"
+          [disabled]="doctorGroups().length === 0"
+          (click)="expandAll()"
+        >
+          <mat-icon>unfold_more</mat-icon>
+          <span>Expand all</span>
+        </button>
+  
+        <button
+          mat-button
+          type="button"
+          [disabled]="doctorGroups().length === 0"
+          (click)="collapseAll()"
+        >
+          <mat-icon>unfold_less</mat-icon>
+          <span>Collapse all</span>
+        </button>
+      </div>
+  
+      <span class="result-count">
+        {{ doctorGroups().length }} doctor(s),
+        {{ filteredMedicalRecords().length }}
+        medical record(s)
+      </span>
+    </section>
+  
+    @if (medicalRecordState.listLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading your medical records
+        </strong>
+  
+        <p>
+          Please wait while your clinical documentation
+          is retrieved.
+        </p>
+      </section>
+    } @else if (medicalRecordState.errorMessage()) {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load your medical records
+        </strong>
+  
+        <p>
+          {{ medicalRecordState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="loadMedicalRecords()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    } @else if (totalRecordCount() === 0) {
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>medical_information</mat-icon>
+        </div>
+  
+        <strong>
+          No medical records are available
+        </strong>
+  
+        <p>
+          Medical records will appear here after a provider
+          completes your appointment and documents the
+          consultation.
+        </p>
+      </section>
+    } @else if (doctorGroups().length === 0) {
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>search_off</mat-icon>
+        </div>
+  
+        <strong>
+          No matching medical records
+        </strong>
+  
+        <p>
+          No medical records match the current search and
+          filter selections.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+      </section>
+    } @else {
+      <section class="doctor-group-list">
+        @for (
+          group of doctorGroups();
+          track group.doctorId
+        ) {
+          <mat-card class="doctor-group-card">
+            <mat-card-content>
+              <header class="doctor-group-header">
+                <div class="doctor-avatar">
+                  {{ getDoctorInitials(group.doctorName) }}
+                </div>
+  
+                <div class="doctor-copy">
+                  <span>
+                    {{ group.doctorSpecialization }}
+                  </span>
+  
+                  <h2>
+                    {{ group.doctorName }}
+                  </h2>
+  
+                  <p>
+                    {{ group.providerOrganizationName }}
+                    ·
+                    {{ group.departmentName }}
+                  </p>
+                </div>
+  
+                <div class="doctor-counts">
+                  <span class="total-count">
+                    {{ group.totalRecords }}
+                    record(s)
+                  </span>
+  
+                  @if (group.activeRecords > 0) {
+                    <span class="active-count">
+                      {{ group.activeRecords }}
+                      active
+                    </span>
+                  }
+  
+                  @if (group.amendedRecords > 0) {
+                    <span class="amended-count">
+                      {{ group.amendedRecords }}
+                      amended
+                    </span>
+                  }
+  
+                  @if (group.voidedRecords > 0) {
+                    <span class="voided-count">
+                      {{ group.voidedRecords }}
+                      voided
+                    </span>
+                  }
+                </div>
+  
+                <button
+                  mat-icon-button
+                  type="button"
+                  [attr.aria-label]="
+                    isDoctorExpanded(group.doctorId)
+                      ? 'Collapse medical records'
+                      : 'Expand medical records'
+                  "
+                  (click)="toggleDoctorGroup(group.doctorId)"
+                >
+                  <mat-icon>
+                    {{
+                      isDoctorExpanded(group.doctorId)
+                        ? 'expand_less'
+                        : 'expand_more'
+                    }}
+                  </mat-icon>
+                </button>
+              </header>
+  
+              @if (isDoctorExpanded(group.doctorId)) {
+                <section class="medical-record-list">
+                  @for (
+                    record of group.records;
+                    track record.id
+                  ) {
+                    <article
+                      class="medical-record-row"
+                      [class.voided-record]="
+                        record.status === 'VOIDED'
+                      "
+                    >
+                      <div class="record-date-cell">
+                        <div class="date-icon">
+                          <mat-icon>calendar_month</mat-icon>
+                        </div>
+  
+                        <div>
+                          <strong>
+                            {{
+                              getFormattedDate(
+                                record.appointmentDate
+                              )
+                            }}
+                          </strong>
+  
+                          <span>
+                            {{ getTimeRange(record) }}
+                          </span>
+                        </div>
+                      </div>
+  
+                      <div class="record-provider-cell">
+                        <span class="cell-label">
+                          Provider
+                        </span>
+  
+                        <strong>
+                          {{
+                            record.providerOrganizationName
+                          }}
+                        </strong>
+  
+                        <span>
+                          {{ record.departmentName }}
+                        </span>
+                      </div>
+  
+                      <div class="record-clinical-cell">
+                        <span class="cell-label">
+                          Diagnosis
+                        </span>
+  
+                        <p>
+                          {{
+                            getDiagnosisPreview(
+                              record.diagnosis
+                            )
+                          }}
+                        </p>
+                      </div>
+  
+                      <div class="record-follow-up-cell">
+                        <span class="cell-label">
+                          Follow-up
+                        </span>
+  
+                        @if (record.followUpDate) {
+                          <strong>
+                            {{
+                              getFormattedDate(
+                                record.followUpDate
+                              )
+                            }}
+                          </strong>
+                        } @else {
+                          <span class="empty-value">
+                            Not scheduled
+                          </span>
+                        }
+                      </div>
+  
+                      <div class="record-status-cell">
+                        <span
+                          class="status-badge"
+                          [class.active-status]="
+                            record.status === 'ACTIVE'
+                          "
+                          [class.amended-status]="
+                            record.status === 'AMENDED'
+                          "
+                          [class.voided-status]="
+                            record.status === 'VOIDED'
+                          "
+                        >
+                          <mat-icon>
+                            {{
+                              getStatusIcon(
+                                record.status
+                              )
+                            }}
+                          </mat-icon>
+  
+                          <span>
+                            {{
+                              getStatusLabel(
+                                record.status
+                              )
+                            }}
+                          </span>
+                        </span>
+                      </div>
+  
+                      <div class="record-action-cell">
+                        <button
+                          mat-stroked-button
+                          type="button"
+                          (click)="viewMedicalRecord(record)"
+                        >
+                          <span>View record</span>
+  
+                          <mat-icon iconPositionEnd>
+                            arrow_forward
+                          </mat-icon>
+                        </button>
+                      </div>
+                    </article>
+                  }
+                </section>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </section>
+    }
+  </section>

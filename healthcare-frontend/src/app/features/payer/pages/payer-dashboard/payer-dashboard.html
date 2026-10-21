@@ -1,0 +1,1306 @@
+<section class="payer-dashboard-page">
+    <header class="dashboard-header">
+      <div class="header-copy">
+        <p class="eyebrow">
+          Insurance Operations
+        </p>
+  
+        <h1>
+          Payer dashboard
+        </h1>
+  
+        <p class="description">
+          Monitor your insurance organization, plans,
+          enrollment requests, issued policies, claims,
+          and operational notifications.
+        </p>
+      </div>
+  
+      <div class="header-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="dashboardLoading()"
+          (click)="loadDashboard()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="viewClaims()"
+        >
+          <mat-icon>fact_check</mat-icon>
+          <span>Review claims</span>
+        </button>
+      </div>
+    </header>
+  
+    @if (dashboardLoading() && !hasDashboardData()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading Payer dashboard
+        </strong>
+  
+        <p>
+          Please wait while your insurance plans,
+          enrollments, policies, and claims are retrieved.
+        </p>
+      </section>
+    } @else {
+      @if (errorMessages().length > 0) {
+        <section
+          class="dashboard-warning"
+          role="alert"
+        >
+          <mat-icon>warning_amber</mat-icon>
+  
+          <div>
+            <strong>
+              Some dashboard information could not be loaded
+            </strong>
+  
+            @for (
+              message of errorMessages();
+              track message
+            ) {
+              <p>
+                {{ message }}
+              </p>
+            }
+          </div>
+  
+          <button
+            mat-button
+            type="button"
+            (click)="loadDashboard()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Retry</span>
+          </button>
+        </section>
+      }
+  
+      @if (
+        organizationState.organization();
+        as organization
+      ) {
+        <section class="organization-banner">
+          <div class="organization-icon">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+  
+          <div class="organization-copy">
+            <p>
+              Payer Organization
+            </p>
+  
+            <h2>
+              {{ organization.organizationName }}
+            </h2>
+  
+            <div class="organization-meta">
+              <span>
+                <mat-icon>verified_user</mat-icon>
+  
+                {{ organization.registrationNumber }}
+              </span>
+  
+              <span>
+                <mat-icon>location_on</mat-icon>
+  
+                {{ organization.city }},
+                {{ organization.state }}
+              </span>
+  
+              <span>
+                <mat-icon>mail</mat-icon>
+  
+                {{ organization.adminEmail }}
+              </span>
+  
+              <span>
+                <mat-icon>phone</mat-icon>
+  
+                {{ organization.contactNumber }}
+              </span>
+            </div>
+          </div>
+  
+          <div class="organization-actions">
+            <span
+              class="organization-status"
+              [class.active-organization]="
+                organization.status === 'ACTIVE'
+              "
+            >
+              <mat-icon>
+                {{ organizationStatusIcon() }}
+              </mat-icon>
+  
+              <span>
+                {{ organizationStatusLabel() }}
+              </span>
+            </span>
+  
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="viewOrganization()"
+            >
+              <mat-icon>settings</mat-icon>
+              <span>Manage organization</span>
+            </button>
+          </div>
+        </section>
+      } @else {
+        <section class="organization-setup-banner">
+          <div class="organization-icon setup-icon">
+            <mat-icon>domain_add</mat-icon>
+          </div>
+  
+          <div>
+            <strong>
+              Payer organization setup requires attention
+            </strong>
+  
+            <p>
+              Complete the Payer organization profile before
+              creating insurance plans and reviewing Member
+              enrollments.
+            </p>
+          </div>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="viewOrganization()"
+          >
+            <mat-icon>account_balance</mat-icon>
+            <span>Organization profile</span>
+          </button>
+        </section>
+      }
+  
+      <section class="overview-grid">
+        <article class="overview-card plan-card">
+          <div class="overview-icon">
+            <mat-icon>health_and_safety</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Insurance plans
+            </span>
+  
+            <strong>
+              {{ planState.totalCount() }}
+            </strong>
+  
+            <small>
+              {{ planState.activeCount() }}
+              active plan(s)
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card enrollment-card">
+          <div class="overview-icon">
+            <mat-icon>assignment_ind</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Enrollments
+            </span>
+  
+            <strong>
+              {{ totalEnrollmentCount() }}
+            </strong>
+  
+            <small>
+              {{ enrollmentState.pendingCount() }}
+              pending review
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card policy-card">
+          <div class="overview-icon">
+            <mat-icon>policy</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Insurance policies
+            </span>
+  
+            <strong>
+              {{ policyState.totalCount() }}
+            </strong>
+  
+            <small>
+              {{ policyState.activeCount() }}
+              active policy or policies
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card claim-card">
+          <div class="overview-icon">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Insurance claims
+            </span>
+  
+            <strong>
+              {{ totalClaimCount() }}
+            </strong>
+  
+            <small>
+              {{ pendingClaimCount() }}
+              pending decision
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card coverage-card">
+          <div class="overview-icon">
+            <mat-icon>shield</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Active policy coverage
+            </span>
+  
+            <strong>
+              {{
+                totalPolicyCoverage()
+                  | currency: 'INR'
+              }}
+            </strong>
+  
+            <small>
+              Total issued coverage
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card approved-card">
+          <div class="overview-icon">
+            <mat-icon>price_check</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Approved claim amount
+            </span>
+  
+            <strong>
+              {{
+                totalApprovedAmount()
+                  | currency: 'INR'
+              }}
+            </strong>
+  
+            <small>
+              Approved Claim value
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card attention-card">
+          <div class="overview-icon">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Requires attention
+            </span>
+  
+            <strong>
+              {{ requiresAttentionCount() }}
+            </strong>
+  
+            <small>
+              Pending operational items
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card notification-card">
+          <div class="overview-icon">
+            <mat-icon>notifications</mat-icon>
+          </div>
+  
+          <div>
+            <span>
+              Unread notifications
+            </span>
+  
+            <strong>
+              {{ notificationState.unreadCount() }}
+            </strong>
+  
+            <small>
+              Insurance operation updates
+            </small>
+          </div>
+        </article>
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Insurance Products
+            </p>
+  
+            <h2>
+              Insurance plan portfolio
+            </h2>
+  
+            <p>
+              Monitor plan lifecycle, published coverage,
+              premiums, and included healthcare benefits.
+            </p>
+          </div>
+  
+          <div class="section-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="viewPlans()"
+            >
+              <mat-icon>health_and_safety</mat-icon>
+              <span>View plans</span>
+            </button>
+  
+            <button
+              mat-flat-button
+              type="button"
+              class="primary-button"
+              (click)="createPlan()"
+            >
+              <mat-icon>add</mat-icon>
+              <span>Create plan</span>
+            </button>
+          </div>
+        </header>
+  
+        <div class="status-grid">
+          <article>
+            <span>
+              Draft plans
+            </span>
+  
+            <strong>
+              {{ planState.draftCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Active plans
+            </span>
+  
+            <strong>
+              {{ planState.activeCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Inactive plans
+            </span>
+  
+            <strong>
+              {{ planState.inactiveCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Outpatient plans
+            </span>
+  
+            <strong>
+              {{ outpatientPlanCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Hospitalization plans
+            </span>
+  
+            <strong>
+              {{ hospitalizationPlanCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Average monthly premium
+            </span>
+  
+            <strong>
+              {{
+                averageMonthlyPremium()
+                  | currency: 'INR'
+              }}
+            </strong>
+          </article>
+        </div>
+  
+        <div class="financial-strip">
+          <div>
+            <span>
+              Total plan coverage offered
+            </span>
+  
+            <strong>
+              {{
+                totalPlanCoverage()
+                  | currency: 'INR'
+              }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>
+              Monthly premium from active policies
+            </span>
+  
+            <strong>
+              {{
+                monthlyPolicyPremium()
+                  | currency: 'INR'
+              }}
+            </strong>
+          </div>
+        </div>
+  
+        @if (recentPlans().length === 0) {
+          <section class="compact-empty-state">
+            <mat-icon>health_and_safety</mat-icon>
+  
+            <strong>
+              No insurance plans
+            </strong>
+  
+            <p>
+              Create a plan to begin offering insurance
+              products to Members.
+            </p>
+  
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="createPlan()"
+            >
+              <mat-icon>add</mat-icon>
+              <span>Create insurance plan</span>
+            </button>
+          </section>
+        } @else {
+          <div class="entity-list">
+            @for (
+              plan of recentPlans();
+              track plan.id
+            ) {
+              <button
+                type="button"
+                class="entity-row plan-row"
+                (click)="viewPlan(plan)"
+              >
+                <div class="entity-icon plan-icon">
+                  <mat-icon>health_and_safety</mat-icon>
+                </div>
+  
+                <div class="entity-primary">
+                  <strong>
+                    {{ plan.planName }}
+                  </strong>
+  
+                  <span>
+                    {{ plan.planCode }}
+                  </span>
+  
+                  <small>
+                    Coverage:
+                    {{
+                      plan.coverageAmount
+                        | currency: 'INR'
+                    }}
+                  </small>
+                </div>
+  
+                <div class="entity-value">
+                  <span>
+                    Monthly premium
+                  </span>
+  
+                  <strong>
+                    {{
+                      plan.monthlyPremium
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <span
+                  class="status-pill"
+                  [class.draft-status]="
+                    plan.status === 'DRAFT'
+                  "
+                  [class.active-status]="
+                    plan.status === 'ACTIVE'
+                  "
+                  [class.inactive-status]="
+                    plan.status === 'INACTIVE'
+                  "
+                >
+                  {{ getPlanStatusLabel(plan.status) }}
+                </span>
+  
+                <mat-icon class="row-arrow">
+                  chevron_right
+                </mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Member Enrollment
+            </p>
+  
+            <h2>
+              Enrollment request overview
+            </h2>
+  
+            <p>
+              Review Member applications and monitor the
+              insurance enrollment lifecycle.
+            </p>
+          </div>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="viewEnrollments()"
+          >
+            <mat-icon>assignment_ind</mat-icon>
+            <span>Review enrollments</span>
+          </button>
+        </header>
+  
+        <div class="status-grid enrollment-status-grid">
+          <article>
+            <span>
+              Total requests
+            </span>
+  
+            <strong>
+              {{ totalEnrollmentCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Pending
+            </span>
+  
+            <strong>
+              {{ enrollmentState.pendingCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Approved
+            </span>
+  
+            <strong>
+              {{ enrollmentState.approvedCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Rejected
+            </span>
+  
+            <strong>
+              {{ enrollmentState.rejectedCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Cancelled
+            </span>
+  
+            <strong>
+              {{ enrollmentState.cancelledCount() }}
+            </strong>
+          </article>
+        </div>
+  
+        @if (recentEnrollments().length === 0) {
+          <section class="compact-empty-state">
+            <mat-icon>assignment_ind</mat-icon>
+  
+            <strong>
+              No enrollment requests
+            </strong>
+  
+            <p>
+              Member enrollment requests for your plans will
+              appear here.
+            </p>
+          </section>
+        } @else {
+          <div class="entity-list">
+            @for (
+              enrollment of recentEnrollments();
+              track enrollment.id
+            ) {
+              <button
+                type="button"
+                class="entity-row enrollment-row"
+                (click)="viewEnrollment(enrollment)"
+              >
+                <div class="entity-icon enrollment-icon">
+                  <mat-icon>person</mat-icon>
+                </div>
+  
+                <div class="entity-primary">
+                  <strong>
+                    {{ enrollment.memberEmail }}
+                  </strong>
+  
+                  <span>
+                    {{ enrollment.planName }}
+                  </span>
+  
+                  <small>
+                    Requested coverage:
+                    {{
+                      enrollment.requestedCoverageStartDate
+                        | date: 'MMM d, y'
+                    }}
+                  </small>
+                </div>
+  
+                <div class="entity-value">
+                  <span>
+                    Coverage
+                  </span>
+  
+                  <strong>
+                    {{
+                      enrollment.coverageAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <span
+                  class="status-pill"
+                  [class.pending-status]="
+                    enrollment.status === 'PENDING'
+                  "
+                  [class.approved-status]="
+                    enrollment.status === 'APPROVED'
+                  "
+                  [class.rejected-status]="
+                    enrollment.status === 'REJECTED'
+                  "
+                  [class.cancelled-status]="
+                    enrollment.status === 'CANCELLED'
+                  "
+                >
+                  {{
+                    getEnrollmentStatusLabel(
+                      enrollment.status
+                    )
+                  }}
+                </span>
+  
+                <mat-icon class="row-arrow">
+                  chevron_right
+                </mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Policy Portfolio
+            </p>
+  
+            <h2>
+              Issued insurance policies
+            </h2>
+  
+            <p>
+              Monitor active coverage, suspended policies,
+              expired policies, and cancelled policies.
+            </p>
+          </div>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="viewPolicies()"
+          >
+            <mat-icon>policy</mat-icon>
+            <span>View policies</span>
+          </button>
+        </header>
+  
+        <div class="status-grid policy-status-grid">
+          <article>
+            <span>
+              Total policies
+            </span>
+  
+            <strong>
+              {{ policyState.totalCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Active
+            </span>
+  
+            <strong>
+              {{ policyState.activeCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Suspended
+            </span>
+  
+            <strong>
+              {{ policyState.suspendedCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Expired
+            </span>
+  
+            <strong>
+              {{ policyState.expiredCount() }}
+            </strong>
+          </article>
+  
+          <article>
+            <span>
+              Cancelled
+            </span>
+  
+            <strong>
+              {{ policyState.cancelledCount() }}
+            </strong>
+          </article>
+        </div>
+  
+        @if (recentPolicies().length === 0) {
+          <section class="compact-empty-state">
+            <mat-icon>policy</mat-icon>
+  
+            <strong>
+              No insurance policies
+            </strong>
+  
+            <p>
+              Policies generated from approved enrollments
+              will appear here.
+            </p>
+          </section>
+        } @else {
+          <div class="entity-list">
+            @for (
+              policy of recentPolicies();
+              track policy.id
+            ) {
+              <button
+                type="button"
+                class="entity-row policy-row"
+                (click)="viewPolicy(policy)"
+              >
+                <div class="entity-icon policy-icon">
+                  <mat-icon>policy</mat-icon>
+                </div>
+  
+                <div class="entity-primary">
+                  <strong>
+                    {{ policy.policyNumber }}
+                  </strong>
+  
+                  <span>
+                    {{ policy.memberEmail }}
+                  </span>
+  
+                  <small>
+                    {{ policy.planName }}
+                  </small>
+                </div>
+  
+                <div class="entity-value">
+                  <span>
+                    Coverage
+                  </span>
+  
+                  <strong>
+                    {{
+                      policy.coverageAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <div class="coverage-period">
+                  <span>
+                    Coverage period
+                  </span>
+  
+                  <strong>
+                    {{
+                      policy.coverageStartDate
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+  
+                  <small>
+                    to
+                    {{
+                      policy.coverageEndDate
+                        | date: 'MMM d, y'
+                    }}
+                  </small>
+                </div>
+  
+                <span
+                  class="status-pill"
+                  [class.active-status]="
+                    policy.status === 'ACTIVE'
+                  "
+                  [class.suspended-status]="
+                    policy.status === 'SUSPENDED'
+                  "
+                  [class.expired-status]="
+                    policy.status === 'EXPIRED'
+                  "
+                  [class.cancelled-status]="
+                    policy.status === 'CANCELLED'
+                  "
+                >
+                  {{
+                    getPolicyStatusLabel(
+                      policy.status
+                    )
+                  }}
+                </span>
+  
+                <mat-icon class="row-arrow">
+                  chevron_right
+                </mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Claim Review
+            </p>
+  
+            <h2>
+              Insurance claim workload
+            </h2>
+  
+            <p>
+              Review submitted Provider claims and monitor
+              approved, rejected, and cancelled outcomes.
+            </p>
+          </div>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="viewClaims()"
+          >
+            <mat-icon>fact_check</mat-icon>
+            <span>Review claims</span>
+          </button>
+        </header>
+  
+        <div class="claim-summary-grid">
+          <article class="financial-card claimed-financial-card">
+            <span>
+              Total claimed amount
+            </span>
+  
+            <strong>
+              {{
+                totalClaimedAmount()
+                  | currency: 'INR'
+              }}
+            </strong>
+  
+            <small>
+              Across assigned claims
+            </small>
+          </article>
+  
+          <article class="financial-card approved-financial-card">
+            <span>
+              Total approved amount
+            </span>
+  
+            <strong>
+              {{
+                totalApprovedAmount()
+                  | currency: 'INR'
+              }}
+            </strong>
+  
+            <small>
+              Approved claim value
+            </small>
+          </article>
+  
+          <article class="claim-status-card">
+            <span>
+              Submitted
+            </span>
+  
+            <strong>
+              {{ submittedClaimCount() }}
+            </strong>
+          </article>
+  
+          <article class="claim-status-card">
+            <span>
+              Under review
+            </span>
+  
+            <strong>
+              {{ underReviewClaimCount() }}
+            </strong>
+          </article>
+  
+          <article class="claim-status-card">
+            <span>
+              Approved
+            </span>
+  
+            <strong>
+              {{ approvedClaimCount() }}
+            </strong>
+          </article>
+  
+          <article class="claim-status-card">
+            <span>
+              Rejected
+            </span>
+  
+            <strong>
+              {{ rejectedClaimCount() }}
+            </strong>
+          </article>
+  
+          <article class="claim-status-card">
+            <span>
+              Cancelled
+            </span>
+  
+            <strong>
+              {{ cancelledClaimCount() }}
+            </strong>
+          </article>
+        </div>
+  
+        @if (recentClaims().length === 0) {
+          <section class="compact-empty-state">
+            <mat-icon>receipt_long</mat-icon>
+  
+            <strong>
+              No assigned claims
+            </strong>
+  
+            <p>
+              Provider claims submitted against your policies
+              will appear here.
+            </p>
+          </section>
+        } @else {
+          <div class="entity-list">
+            @for (
+              claim of recentClaims();
+              track claim.id
+            ) {
+              <button
+                type="button"
+                class="entity-row claim-row"
+                (click)="viewClaim(claim)"
+              >
+                <div class="entity-icon claim-icon">
+                  <mat-icon>receipt_long</mat-icon>
+                </div>
+  
+                <div class="entity-primary">
+                  <strong>
+                    {{ claim.claimNumber }}
+                  </strong>
+  
+                  <span>
+                    {{ claim.memberEmail }}
+                  </span>
+  
+                  <small>
+                    {{ claim.providerOrganizationName }}
+                  </small>
+                </div>
+  
+                <div class="entity-value">
+                  <span>
+                    Claimed amount
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.claimedAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <div class="claim-service-date">
+                  <span>
+                    Service date
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.serviceDate
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+                </div>
+  
+                <span
+                  class="status-pill"
+                  [class.submitted-status]="
+                    claim.status === 'SUBMITTED'
+                  "
+                  [class.review-status]="
+                    claim.status === 'UNDER_REVIEW'
+                  "
+                  [class.approved-status]="
+                    claim.status === 'APPROVED'
+                  "
+                  [class.rejected-status]="
+                    claim.status === 'REJECTED'
+                  "
+                  [class.cancelled-status]="
+                    claim.status === 'CANCELLED'
+                  "
+                >
+                  {{
+                    getClaimStatusLabel(
+                      claim.status
+                    )
+                  }}
+                </span>
+  
+                <mat-icon class="row-arrow">
+                  chevron_right
+                </mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Quick Actions
+            </p>
+  
+            <h2>
+              Payer operations
+            </h2>
+  
+            <p>
+              Access frequently used insurance administration
+              and review workflows.
+            </p>
+          </div>
+        </header>
+  
+        <div class="quick-action-grid">
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewOrganization()"
+          >
+            <mat-icon>account_balance</mat-icon>
+  
+            <div>
+              <strong>
+                Organization
+              </strong>
+  
+              <span>
+                Review Payer profile
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="createPlan()"
+          >
+            <mat-icon>add_business</mat-icon>
+  
+            <div>
+              <strong>
+                Create Plan
+              </strong>
+  
+              <span>
+                Add an insurance product
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewPlans()"
+          >
+            <mat-icon>health_and_safety</mat-icon>
+  
+            <div>
+              <strong>
+                Insurance Plans
+              </strong>
+  
+              <span>
+                Manage insurance products
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewEnrollments()"
+          >
+            <mat-icon>assignment_ind</mat-icon>
+  
+            <div>
+              <strong>
+                Enrollments
+              </strong>
+  
+              <span>
+                Review Member requests
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewPolicies()"
+          >
+            <mat-icon>policy</mat-icon>
+  
+            <div>
+              <strong>
+                Policies
+              </strong>
+  
+              <span>
+                Manage issued coverage
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewClaims()"
+          >
+            <mat-icon>fact_check</mat-icon>
+  
+            <div>
+              <strong>
+                Claim Review
+              </strong>
+  
+              <span>
+                Review Provider claims
+              </span>
+            </div>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card"
+            (click)="viewNotifications()"
+          >
+            <mat-icon>notifications</mat-icon>
+  
+            <div>
+              <strong>
+                Notifications
+              </strong>
+  
+              <span>
+                {{ notificationState.unreadCount() }}
+                unread update(s)
+              </span>
+            </div>
+          </button>
+        </div>
+      </section>
+    }
+  </section>

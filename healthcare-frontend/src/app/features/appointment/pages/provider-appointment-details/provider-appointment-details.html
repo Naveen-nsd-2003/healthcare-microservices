@@ -1,0 +1,765 @@
+<section class="appointment-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to appointments</span>
+    </button>
+  
+    @if (appointmentState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading appointment</strong>
+  
+        <p>
+          Please wait while the appointment information
+          is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      appointmentState.selectedAppointment();
+      as appointment
+    ) {
+  
+      <header class="appointment-header">
+  
+        <div class="header-icon">
+          <mat-icon>event_note</mat-icon>
+        </div>
+  
+        <div class="header-copy">
+          <p class="eyebrow">
+            Provider Appointment
+          </p>
+  
+          <h1>
+            {{ appointment.memberEmail }}
+          </h1>
+  
+          <p>
+            {{ appointment.doctorName }}
+            ·
+            {{ appointment.departmentName }}
+          </p>
+        </div>
+  
+        <div class="header-status">
+  
+          @if (appointment.status === 'BOOKED') {
+            <span class="status-badge booked-status">
+              <mat-icon>event</mat-icon>
+              <span>Booked</span>
+            </span>
+          }
+  
+          @if (appointment.status === 'CONFIRMED') {
+            <span class="status-badge confirmed-status">
+              <mat-icon>event_available</mat-icon>
+              <span>Confirmed</span>
+            </span>
+          }
+  
+          @if (appointment.status === 'COMPLETED') {
+            <span class="status-badge completed-status">
+              <mat-icon>check_circle</mat-icon>
+              <span>Completed</span>
+            </span>
+          }
+  
+          @if (appointment.status === 'CANCELLED') {
+            <span class="status-badge cancelled-status">
+              <mat-icon>event_busy</mat-icon>
+              <span>Cancelled</span>
+            </span>
+          }
+  
+          @if (appointment.status === 'NO_SHOW') {
+            <span class="status-badge no-show-status">
+              <mat-icon>person_off</mat-icon>
+              <span>No show</span>
+            </span>
+          }
+  
+        </div>
+  
+      </header>
+  
+      @if (appointmentState.errorMessage()) {
+        <section
+          class="action-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ appointmentState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <section class="summary-grid">
+  
+        <article class="summary-item">
+          <mat-icon>calendar_month</mat-icon>
+  
+          <div>
+            <span>Appointment date</span>
+  
+            <strong>
+              {{
+                appointment.appointmentDate
+                  | date: 'MMM d, y'
+              }}
+            </strong>
+          </div>
+        </article>
+  
+        <article class="summary-item">
+          <mat-icon>schedule</mat-icon>
+  
+          <div>
+            <span>Appointment time</span>
+  
+            <strong>
+              {{ getTimeRange(appointment) }}
+            </strong>
+          </div>
+        </article>
+  
+        <article class="summary-item">
+          <mat-icon>timer</mat-icon>
+  
+          <div>
+            <span>Duration</span>
+  
+            <strong>
+              {{ appointment.slotDurationMinutes }}
+              minutes
+            </strong>
+          </div>
+        </article>
+  
+        <article class="summary-item">
+          <mat-icon>payments</mat-icon>
+  
+          <div>
+            <span>Consultation fee</span>
+  
+            <strong>
+              {{
+                appointment.consultationFee
+                  | currency:
+                    'INR':
+                    'symbol':
+                    '1.0-2':
+                    'en-IN'
+              }}
+            </strong>
+          </div>
+        </article>
+  
+      </section>
+  
+      <div class="details-layout">
+  
+        <section class="details-column">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <h2>Appointment information</h2>
+  
+              <dl>
+                <div>
+                  <dt>Member email</dt>
+                  <dd>{{ appointment.memberEmail }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Doctor</dt>
+                  <dd>{{ appointment.doctorName }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Specialization</dt>
+                  <dd>{{ appointment.doctorSpecialization }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Department</dt>
+                  <dd>{{ appointment.departmentName }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Provider organization</dt>
+  
+                  <dd>
+                    {{ appointment.providerOrganizationName }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <h2>Reason for visit</h2>
+  
+              <p class="long-text">
+                {{ appointment.reasonForVisit }}
+              </p>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          @if (appointment.providerNotes) {
+  
+            <mat-card class="detail-card">
+              <mat-card-content>
+  
+                <h2>Provider notes</h2>
+  
+                <p class="long-text">
+                  {{ appointment.providerNotes }}
+                </p>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+          @if (appointment.status === 'CANCELLED') {
+  
+            <mat-card class="detail-card cancellation-card">
+              <mat-card-content>
+  
+                <h2>Cancellation information</h2>
+  
+                <dl>
+                  <div>
+                    <dt>Cancelled by</dt>
+  
+                    <dd>
+                      {{ appointment.cancelledBy || 'Not available' }}
+                    </dd>
+                  </div>
+  
+                  <div>
+                    <dt>Cancellation reason</dt>
+  
+                    <dd>
+                      {{
+                        appointment.cancellationReason
+                        || 'Not available'
+                      }}
+                    </dd>
+                  </div>
+  
+                  <div>
+                    <dt>Cancelled at</dt>
+  
+                    <dd>
+                      @if (appointment.cancelledAt) {
+                        {{
+                          appointment.cancelledAt
+                            | date: 'MMM d, y, h:mm a'
+                        }}
+                      } @else {
+                        Not available
+                      }
+                    </dd>
+                  </div>
+                </dl>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+        </section>
+  
+        <aside class="action-column">
+  
+          <mat-card class="action-card">
+            <mat-card-content>
+  
+              <div class="action-card-icon">
+                <mat-icon>settings</mat-icon>
+              </div>
+  
+              <h2>Manage appointment</h2>
+  
+              <p>
+                Select an action available for the
+                current appointment status.
+              </p>
+  
+              @if (canConfirm()) {
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="confirm-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="confirmAppointment()"
+                >
+                 @if (appointmentState.confirming()) {
+
+                  <mat-spinner diameter="20"></mat-spinner>
+                
+                  <span>Confirming...</span>
+                
+                } @else {
+                
+                  <ng-container>
+                
+                    <mat-icon>
+                      event_available
+                    </mat-icon>
+                
+                    <span>
+                      Confirm appointment
+                    </span>
+                
+                  </ng-container>
+                
+                }
+                </button>
+              }
+  
+              @if (canComplete()) {
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="complete-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="showCompletionForm()"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Complete appointment</span>
+                </button>
+              }
+  
+              @if (canCancel()) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="cancel-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="showCancellationForm()"
+                >
+                  <mat-icon>event_busy</mat-icon>
+                  <span>Cancel appointment</span>
+                </button>
+              }
+  
+              @if (canMarkNoShow()) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="no-show-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="markAsNoShow()"
+                >
+                  @if (appointmentState.markingNoShow()) {
+
+                    <mat-spinner diameter="20"></mat-spinner>
+                  
+                    <span>Updating...</span>
+                  
+                  } @else {
+                  
+                    <ng-container>
+                  
+                      <mat-icon>
+                        person_off
+                      </mat-icon>
+                  
+                      <span>
+                        Mark as no-show
+                      </span>
+                  
+                    </ng-container>
+                  
+                  }
+                </button>
+              }
+  
+              @if (appointment.status === 'COMPLETED') {
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="medical-record-button"
+                  (click)="createMedicalRecord()"
+                >
+                  <mat-icon>description</mat-icon>
+                  <span>Create medical record</span>
+                </button>
+              }
+  
+              @if (isFinalStatus()) {
+                <section class="final-status-notice">
+                  <mat-icon>lock</mat-icon>
+  
+                  <span>
+                    This appointment is in a final state.
+                  </span>
+                </section>
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <h2>Appointment history</h2>
+  
+              <dl>
+                <div>
+                  <dt>Created</dt>
+  
+                  <dd>
+                    {{
+                      appointment.createdAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+                @if (appointment.confirmedAt) {
+                  <div>
+                    <dt>Confirmed</dt>
+  
+                    <dd>
+                      {{
+                        appointment.confirmedAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                @if (appointment.completedAt) {
+                  <div>
+                    <dt>Completed</dt>
+  
+                    <dd>
+                      {{
+                        appointment.completedAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                @if (appointment.cancelledAt) {
+                  <div>
+                    <dt>Cancelled</dt>
+  
+                    <dd>
+                      {{
+                        appointment.cancelledAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                @if (appointment.noShowAt) {
+                  <div>
+                    <dt>Marked no-show</dt>
+  
+                    <dd>
+                      {{
+                        appointment.noShowAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                <div>
+                  <dt>Last updated</dt>
+  
+                  <dd>
+                    {{
+                      appointment.updatedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </aside>
+  
+      </div>
+  
+      @if (visibleForm() === 'CANCEL') {
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <h2>Cancel appointment</h2>
+  
+            <p class="form-description">
+              Enter a clear reason for cancelling this
+              Member appointment.
+            </p>
+  
+            <form
+              [formGroup]="cancellationForm"
+              (ngSubmit)="submitCancellation()"
+              novalidate
+            >
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Cancellation reason</mat-label>
+  
+                <textarea
+                  matInput
+                  rows="5"
+                  maxlength="500"
+                  formControlName="cancellationReason"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    cancellationForm.controls
+                      .cancellationReason.value.length
+                  }}/500
+                </mat-hint>
+  
+                @if (
+                  cancellationForm.controls
+                    .cancellationReason.touched
+                  && cancellationForm.controls
+                    .cancellationReason.hasError('required')
+                ) {
+                  <mat-error>
+                    Cancellation reason is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  cancellationForm.controls
+                    .cancellationReason.touched
+                  && cancellationForm.controls
+                    .cancellationReason.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Cancellation reason must not exceed
+                    500 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <div class="form-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="closeActionForm()"
+                >
+                  Keep appointment
+                </button>
+  
+                <button
+                  mat-flat-button
+                  type="submit"
+                  class="cancel-confirm-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                >
+                  @if (appointmentState.cancelling()) {
+
+                    <mat-spinner diameter="20"></mat-spinner>
+                  
+                    <span>
+                      Cancelling...
+                    </span>
+                  
+                  } @else {
+                  
+                    <ng-container>
+                  
+                      <mat-icon>
+                        event_busy
+                      </mat-icon>
+                  
+                      <span>
+                        Confirm cancellation
+                      </span>
+                  
+                    </ng-container>
+                  
+                  }
+                  
+                </button>
+              </div>
+  
+            </form>
+  
+          </mat-card-content>
+        </mat-card>
+  
+      }
+  
+      @if (visibleForm() === 'COMPLETE') {
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <h2>Complete appointment</h2>
+  
+            <p class="form-description">
+              Enter Provider notes before completing
+              the consultation.
+            </p>
+  
+            <form
+              [formGroup]="completionForm"
+              (ngSubmit)="submitCompletion()"
+              novalidate
+            >
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Provider notes</mat-label>
+  
+                <textarea
+                  matInput
+                  rows="7"
+                  maxlength="1000"
+                  formControlName="providerNotes"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    completionForm.controls
+                      .providerNotes.value.length
+                  }}/1000
+                </mat-hint>
+  
+                @if (
+                  completionForm.controls
+                    .providerNotes.touched
+                  && completionForm.controls
+                    .providerNotes.hasError('required')
+                ) {
+                  <mat-error>
+                    Provider notes are required.
+                  </mat-error>
+                }
+  
+                @if (
+                  completionForm.controls
+                    .providerNotes.touched
+                  && completionForm.controls
+                    .providerNotes.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Provider notes must not exceed
+                    1000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <div class="form-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="appointmentState.actionInProgress()"
+                  (click)="closeActionForm()"
+                >
+                  Cancel
+                </button>
+  
+                <button
+                  mat-flat-button
+                  type="submit"
+                  class="complete-button"
+                  [disabled]="appointmentState.actionInProgress()"
+                >
+                  @if (appointmentState.completing()) {
+
+                    <mat-spinner diameter="20"></mat-spinner>
+                  
+                    <span>
+                      Completing...
+                    </span>
+                  
+                  } @else {
+                  
+                    <ng-container>
+                  
+                      <mat-icon>
+                        check_circle
+                      </mat-icon>
+                  
+                      <span>
+                        Complete appointment
+                      </span>
+                  
+                    </ng-container>
+                  
+                  }
+                  
+                </button>
+              </div>
+  
+            </form>
+  
+          </mat-card-content>
+        </mat-card>
+  
+      }
+  
+    } @else {
+  
+      <section class="state-card error-state">
+  
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load appointment</strong>
+  
+        <p>
+          {{ appointmentState.errorMessage() }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to appointments</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="loadAppointment()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+  
+      </section>
+  
+    }
+  
+  </section>

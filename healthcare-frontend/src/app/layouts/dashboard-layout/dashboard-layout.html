@@ -1,0 +1,51 @@
+<div
+  class="dashboard-shell"
+  [class.dashboard-shell--sidebar-collapsed]="
+    sidebarCollapsed()
+  "
+>
+  <div
+    class="sidebar-container"
+    [class.sidebar-container--collapsed]="
+      sidebarCollapsed()
+    "
+    [class.sidebar-container--mobile-open]="
+      mobileSidebarOpen()
+    "
+  >
+    <app-sidebar
+      [collapsed]="
+        !isMobile()
+        && sidebarCollapsed()
+      "
+      (navigationSelected)="
+        handleNavigationSelected()
+      "
+    />
+  </div>
+
+  @if (
+    isMobile()
+    && mobileSidebarOpen()
+  ) {
+    <button
+      type="button"
+      class="mobile-backdrop"
+      aria-label="Close navigation menu"
+      (click)="closeMobileSidebar()"
+    ></button>
+  }
+
+  <section class="dashboard-main">
+    <app-top-toolbar
+      (menuToggled)="toggleSidebar()"
+      (logoutRequested)="requestLogout()"
+    />
+
+    <main class="dashboard-content">
+      <div class="content-container">
+        <router-outlet />
+      </div>
+    </main>
+  </section>
+</div>

@@ -1,0 +1,202 @@
+<section class="organization-page">
+
+    <header class="hero-header">
+  
+      <div class="hero-icon">
+  
+        <mat-icon>
+          local_hospital
+        </mat-icon>
+  
+      </div>
+  
+      <div class="hero-content">
+  
+        <p class="eyebrow">
+          Organization Governance
+        </p>
+  
+        <h1>
+          Provider Organizations
+        </h1>
+  
+        <p>
+          Review submitted provider organizations,
+          approve onboarding requests, manage
+          lifecycle status, and monitor provider
+          governance activities.
+        </p>
+  
+      </div>
+  
+      <button
+        mat-flat-button
+        class="refresh-button"
+        (click)="loadProviders()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+  
+        Refresh
+  
+      </button>
+  
+    </header>
+  
+    <section class="summary-card">
+  
+      <div class="summary-icon">
+  
+        <mat-icon>
+          pending_actions
+        </mat-icon>
+  
+      </div>
+  
+      <div>
+  
+        <span>
+          Pending Approval
+        </span>
+  
+        <strong>
+          {{ pendingCount() }}
+        </strong>
+  
+      </div>
+  
+    </section>
+  
+    @if (state.loading()) {
+  
+      <section class="loading-state">
+  
+        <mat-spinner diameter="44">
+        </mat-spinner>
+  
+      </section>
+  
+    } @else if (state.errorMessage()) {
+  
+      <section class="error-state">
+  
+        <mat-icon>
+          error_outline
+        </mat-icon>
+  
+        <span>
+          {{ state.errorMessage() }}
+        </span>
+  
+      </section>
+  
+    } @else {
+  
+      <section class="organization-grid">
+  
+        @for (
+          provider of state.organizations();
+          track provider.id
+        ) {
+  
+          <article class="organization-card">
+  
+            <div class="card-header">
+  
+              <div>
+  
+                <h3>
+                  {{ provider.organizationName }}
+                </h3>
+  
+                <p class="organization-email">
+  
+                  <mat-icon>
+                    mail
+                  </mat-icon>
+  
+                  {{ provider.adminEmail }}
+  
+                </p>
+  
+              </div>
+  
+              <span
+                class="status-badge"
+                [ngClass]="
+                  getStatusClass(
+                    provider.status
+                  )
+                "
+              >
+                {{ provider.status }}
+              </span>
+  
+            </div>
+  
+            <div class="card-content">
+  
+              <div class="detail-row">
+  
+                <span class="label">
+                  Provider Type
+                </span>
+  
+                <span class="value">
+                  {{ provider.providerType }}
+                </span>
+  
+              </div>
+  
+              <div class="detail-row">
+  
+                <span class="label">
+                  License Number
+                </span>
+  
+                <span class="value">
+                  {{ provider.licenseNumber }}
+                </span>
+  
+              </div>
+  
+              <div class="detail-row">
+  
+                <span class="label">
+                  Registration
+                </span>
+  
+                <span class="value">
+                  {{ provider.registrationNumber }}
+                </span>
+  
+              </div>
+  
+            </div>
+  
+            <button
+              mat-flat-button
+              color="primary"
+              class="details-button"
+              (click)="openProvider(
+                provider.id
+              )"
+            >
+              <mat-icon>
+                visibility
+              </mat-icon>
+  
+              View Details
+  
+            </button>
+  
+          </article>
+  
+        }
+  
+      </section>
+  
+    }
+  
+  </section>

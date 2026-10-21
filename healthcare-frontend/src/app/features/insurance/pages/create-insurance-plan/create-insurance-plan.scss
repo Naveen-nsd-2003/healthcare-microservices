@@ -1,0 +1,365 @@
+:host {
+    display: block;
+  }
+  
+  .create-plan-page {
+    display: grid;
+    width: min(100%, 1100px);
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  
+  .page-header > div {
+    max-width: 780px;
+  }
+  
+  .eyebrow {
+    margin: 0 0 7px;
+    color: #0f7180;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  
+  h1 {
+    margin: 0;
+    color: #19384d;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 780;
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+  
+  .description {
+    margin: 12px 0 0;
+    color: #6d8290;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  
+  .draft-label {
+    display: inline-flex;
+    min-height: 34px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: #5c4a8b;
+    background: #f1edfb;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  .draft-label mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+  
+  .form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 17px;
+    border: 1px solid #f2b8b5;
+    border-radius: 14px;
+    color: #8b1a1a;
+    background: #fff1f0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .plan-form {
+    display: grid;
+    gap: 18px;
+  }
+  
+  .form-section {
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.05);
+  }
+  
+  .form-section mat-card-content {
+    padding: 24px;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  
+  .section-icon {
+    display: grid;
+    width: 49px;
+    height: 49px;
+    flex: 0 0 49px;
+    place-items: center;
+    border-radius: 15px;
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .financial-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .eligibility-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .benefits-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .section-header h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 17px;
+    font-weight: 750;
+  }
+  
+  .section-header p {
+    margin: 5px 0 0;
+    color: #778b97;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 7px 16px;
+  }
+  
+  .three-column-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+  
+  .full-row {
+    grid-column: 1 / -1;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  .uppercase-input {
+    text-transform: uppercase;
+  }
+  
+  .financial-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 9px;
+    padding: 13px;
+    border-radius: 13px;
+    color: #526b78;
+    background: #f4f8fa;
+  }
+  
+  .financial-help mat-icon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    color: #517c89;
+    font-size: 20px;
+  }
+  
+  .financial-help p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .benefit-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 13px;
+  }
+  
+  .benefit-option {
+    display: grid;
+    gap: 7px;
+    box-sizing: border-box;
+    padding: 16px;
+    border: 1px solid #dfe8ed;
+    border-radius: 15px;
+    background: #f9fbfc;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  
+  .benefit-option:hover {
+    border-color: #b8d7dd;
+    background: #f4fafa;
+  }
+  
+  .benefit-option--selected {
+    border-color: #8fc8c8;
+    background: #edf9f7;
+    box-shadow:
+      0 7px 18px rgba(20, 117, 121, 0.08);
+  }
+  
+  .benefit-option mat-checkbox {
+    color: #29475a;
+    font-size: 13px;
+    font-weight: 750;
+  }
+  
+  .benefit-option > span {
+    padding-left: 32px;
+    color: #758894;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  
+  .benefit-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid #eed59a;
+    border-radius: 13px;
+    color: #73540a;
+    background: #fff8e7;
+    font-size: 11px;
+  }
+  
+  .benefit-warning mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+  
+  .draft-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #d8d0ef;
+    border-radius: 16px;
+    color: #574a7c;
+    background: #f7f4fd;
+  }
+  
+  .draft-notice > mat-icon {
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    font-size: 23px;
+  }
+  
+  .draft-notice strong {
+    font-size: 13px;
+  }
+  
+  .draft-notice p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 4px 0 22px;
+  }
+  
+  .form-actions button {
+    min-width: 150px;
+    min-height: 46px;
+    border-radius: 12px;
+  }
+  
+  .submit-button {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .submit-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      #ffffff;
+  }
+  
+  @media (max-width: 900px) {
+    .three-column-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 720px) {
+    .page-header {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .draft-label {
+      align-self: flex-start;
+    }
+  
+    .form-grid,
+    .three-column-grid,
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .full-row {
+      grid-column: auto;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .form-section mat-card-content {
+      padding: 18px;
+    }
+  
+    .section-header {
+      align-items: flex-start;
+    }
+  
+    .form-actions {
+      align-items: stretch;
+      flex-direction: column-reverse;
+    }
+  
+    .form-actions button {
+      width: 100%;
+    }
+  
+    .benefit-option {
+      padding: 14px;
+    }
+  }

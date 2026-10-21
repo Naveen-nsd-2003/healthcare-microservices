@@ -1,0 +1,170 @@
+:host {
+  display: block;
+}
+
+.review-dialog {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+  padding: 28px;
+  background: #ffffff;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.dialog-icon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  place-items: center;
+  border-radius: 17px;
+}
+
+.dialog-icon mat-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+}
+
+.review-dialog--approve .dialog-icon {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.review-dialog--reject .dialog-icon {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color: #203e51;
+  font-size: 22px;
+  font-weight: 760;
+  line-height: 1.3;
+}
+
+.dialog-header p {
+  margin: 7px 0 0;
+  color: #6f8490;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.enrollment-summary {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+  padding: 15px;
+  border: 1px solid #e1e9ee;
+  border-radius: 14px;
+  background: #f7fafb;
+}
+
+.enrollment-summary div {
+  display: grid;
+  gap: 4px;
+}
+
+.enrollment-summary span {
+  color: #7a8d98;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.enrollment-summary strong {
+  overflow: hidden;
+  color: #29475a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.decision-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px;
+  border-radius: 13px;
+  color: #5d4d21;
+  background: #fff8e7;
+}
+
+.decision-warning mat-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: #8a6a15;
+  font-size: 20px;
+}
+
+.decision-warning p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialog-actions button {
+  min-height: 43px;
+  border-radius: 11px;
+  font-weight: 700;
+}
+
+.cancel-button {
+  min-width: 95px;
+  color: #5f7481;
+}
+
+.decision-button {
+  min-width: 170px;
+  color: #ffffff;
+}
+
+.review-dialog--approve .decision-button {
+  background: #287848;
+}
+
+.review-dialog--reject .decision-button {
+  background: #b3261e;
+}
+
+@media (max-width: 560px) {
+  .review-dialog {
+    padding: 21px;
+  }
+
+  .dialog-header {
+    align-items: flex-start;
+  }
+
+  .dialog-actions {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .dialog-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+}

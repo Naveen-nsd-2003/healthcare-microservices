@@ -1,0 +1,561 @@
+<section class="doctor-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBackToProvider()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+  
+      <span>Back to Provider</span>
+    </button>
+  
+    @if (providerState.doctorDetailsLoading()) {
+  
+      <section class="state-card loading-state">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading doctor details</strong>
+  
+        <p>
+          Please wait while the doctor profile and
+          weekly schedule are retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      providerState.errorMessage()
+      && !providerState.selectedDoctor()
+    ) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load doctor details</strong>
+  
+        <p>{{ providerState.errorMessage() }}</p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBackToProviders()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            Back to Providers
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="retryLoading()"
+          >
+            <mat-icon>refresh</mat-icon>
+            Try again
+          </button>
+        </div>
+      </section>
+  
+    } @else if (
+      providerState.selectedDoctor();
+      as doctor
+    ) {
+  
+      <header class="doctor-hero">
+        <div class="doctor-avatar">
+          {{ getInitials(doctor) }}
+        </div>
+  
+        <div class="doctor-hero-copy">
+          <span class="specialization-label">
+            {{ doctor.specialization }}
+          </span>
+  
+          <h1>{{ doctor.fullName }}</h1>
+  
+          <p class="qualification">
+            {{ doctor.qualification }}
+          </p>
+  
+          <div class="hero-meta">
+            <span>
+              <mat-icon>domain</mat-icon>
+              {{ doctor.departmentName }}
+            </span>
+  
+            <span>
+              <mat-icon>local_hospital</mat-icon>
+              {{ doctor.providerOrganizationName }}
+            </span>
+          </div>
+        </div>
+  
+        <span class="active-badge">
+          <mat-icon>verified</mat-icon>
+          ACTIVE
+        </span>
+      </header>
+  
+      <section class="summary-grid">
+  
+        <article class="summary-card">
+          <div class="summary-icon experience-icon">
+            <mat-icon>workspace_premium</mat-icon>
+          </div>
+  
+          <div>
+            <span>Experience</span>
+  
+            <strong>
+              {{ getExperienceLabel(doctor.yearsOfExperience) }}
+            </strong>
+          </div>
+        </article>
+  
+        <article class="summary-card">
+          <div class="summary-icon fee-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+  
+          <div>
+            <span>Consultation fee</span>
+  
+            <strong>
+              {{
+                doctor.consultationFee
+                  | currency:
+                    'INR':
+                    'symbol':
+                    '1.0-2':
+                    'en-IN'
+              }}
+            </strong>
+          </div>
+        </article>
+  
+        <article class="summary-card">
+          <div class="summary-icon department-icon">
+            <mat-icon>domain</mat-icon>
+          </div>
+  
+          <div>
+            <span>Department</span>
+            <strong>{{ doctor.departmentName }}</strong>
+          </div>
+        </article>
+  
+        <article class="summary-card">
+          <div class="summary-icon schedule-icon">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+  
+          <div>
+            <span>Weekly schedules</span>
+            <strong>{{ getWeeklyScheduleCount() }}</strong>
+          </div>
+        </article>
+  
+      </section>
+  
+      <div class="details-layout">
+  
+        <section class="main-details">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon profile-icon">
+                  <mat-icon>person</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Doctor profile</h2>
+  
+                  <p>
+                    Professional and registration information
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Full name</dt>
+                  <dd>{{ doctor.fullName }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Qualification</dt>
+                  <dd>{{ doctor.qualification }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Specialization</dt>
+                  <dd>{{ doctor.specialization }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Medical registration</dt>
+  
+                  <dd>
+                    {{ doctor.medicalRegistrationNumber }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Experience</dt>
+  
+                  <dd>
+                    {{ getExperienceLabel(doctor.yearsOfExperience) }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Consultation fee</dt>
+  
+                  <dd>
+                    {{
+                      doctor.consultationFee
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon biography-icon">
+                  <mat-icon>description</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Professional biography</h2>
+  
+                  <p>
+                    Professional background and experience
+                  </p>
+                </div>
+              </header>
+  
+              @if (doctor.biography) {
+                <p class="biography">
+                  {{ doctor.biography }}
+                </p>
+              } @else {
+                <section class="biography-empty">
+                  <mat-icon>info</mat-icon>
+  
+                  <span>
+                    No professional biography has been provided.
+                  </span>
+                </section>
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card schedule-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon schedule-card-icon">
+                  <mat-icon>schedule</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Weekly consulting schedule</h2>
+  
+                  <p>
+                    Recurring consulting hours published
+                    by the healthcare Provider
+                  </p>
+                </div>
+              </header>
+  
+              @if (providerState.schedules().length === 0) {
+  
+                <section class="schedule-empty">
+                  <mat-icon>event_busy</mat-icon>
+  
+                  <div>
+                    <strong>
+                      No schedule currently available
+                    </strong>
+  
+                    <p>
+                      No active weekly schedule has been
+                      published for this doctor.
+                    </p>
+                  </div>
+                </section>
+  
+              } @else {
+  
+                <div class="schedule-list">
+  
+                  @for (
+                    schedule of providerState.schedules();
+                    track schedule.id
+                  ) {
+                    <article class="schedule-day">
+  
+                      <header class="schedule-day-header">
+                        <div>
+                          <mat-icon>calendar_today</mat-icon>
+  
+                          <strong>
+                            {{ getDayLabel(schedule.dayOfWeek) }}
+                          </strong>
+                        </div>
+  
+                        <span>
+                          {{
+                            getConsultationDurationLabel(
+                              schedule.slotDurationMinutes
+                            )
+                          }}
+                        </span>
+                      </header>
+  
+                      <div class="schedule-slots">
+                        <div class="schedule-slot">
+  
+                          <div class="schedule-time">
+                            <mat-icon>access_time</mat-icon>
+  
+                            <strong>
+                              {{ getScheduleTimeRange(schedule) }}
+                            </strong>
+                          </div>
+  
+                          <div class="schedule-duration">
+                            <span>Slot duration</span>
+  
+                            <strong>
+                              {{
+                                getConsultationDurationLabel(
+                                  schedule.slotDurationMinutes
+                                )
+                              }}
+                            </strong>
+                          </div>
+  
+                        </div>
+                      </div>
+  
+                    </article>
+                  }
+  
+                </div>
+  
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </section>
+  
+        <aside class="doctor-sidebar">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon provider-icon">
+                  <mat-icon>local_hospital</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Healthcare Provider</h2>
+  
+                  <p>
+                    Organization and department information
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Provider</dt>
+  
+                  <dd>
+                    {{ doctor.providerOrganizationName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Department</dt>
+                  <dd>{{ doctor.departmentName }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Department code</dt>
+                  <dd>{{ doctor.departmentCode }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Doctor status</dt>
+                  <dd>{{ doctor.status }}</dd>
+                </div>
+              </dl>
+  
+              <button
+                mat-stroked-button
+                type="button"
+                class="provider-button"
+                (click)="goBackToProvider()"
+              >
+                <mat-icon>business</mat-icon>
+                View Provider
+              </button>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon reference-icon">
+                  <mat-icon>info</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Record information</h2>
+  
+                  <p>
+                    Doctor and organization identifiers
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Doctor ID</dt>
+  
+                  <dd class="identifier">
+                    {{ doctor.id }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Department ID</dt>
+  
+                  <dd class="identifier">
+                    {{ doctor.departmentId }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Provider ID</dt>
+  
+                  <dd class="identifier">
+                    {{ doctor.providerId }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="appointment-card">
+            <mat-card-content>
+  
+              <div class="appointment-icon">
+                <mat-icon>event_available</mat-icon>
+              </div>
+  
+              <h2>Need an appointment?</h2>
+  
+              @if (providerState.schedules().length > 0) {
+                <p>
+                  Weekly consulting hours are available.
+                  Continue to booking to select a date.
+                </p>
+  
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="appointment-button"
+                  (click)="bookAppointment()"
+                >
+                  <mat-icon>calendar_month</mat-icon>
+                  Book appointment
+                </button>
+              } @else {
+                <p>
+                  Appointment booking is unavailable because
+                  no consulting schedule is published.
+                </p>
+  
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="appointment-button"
+                  disabled
+                >
+                  <mat-icon>event_busy</mat-icon>
+                  Schedule unavailable
+                </button>
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </aside>
+  
+      </div>
+  
+      <section class="schedule-notice">
+        <mat-icon>info</mat-icon>
+  
+        <div>
+          <strong>Weekly schedule information</strong>
+  
+          <p>
+            These are recurring consulting hours.
+            Availability for a specific date will be
+            confirmed during appointment booking.
+          </p>
+        </div>
+      </section>
+  
+    } @else {
+  
+      <section class="state-card">
+        <div class="state-icon unavailable-icon">
+          <mat-icon>person_off</mat-icon>
+        </div>
+  
+        <strong>Doctor information unavailable</strong>
+  
+        <p>
+          The requested doctor profile is not
+          currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBackToProviders()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          Return to Providers
+        </button>
+      </section>
+  
+    }
+  
+  </section>

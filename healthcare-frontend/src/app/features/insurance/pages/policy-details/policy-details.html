@@ -1,0 +1,625 @@
+<section class="policy-details-page">
+
+  <button
+    mat-button
+    type="button"
+    class="back-button"
+    (click)="goBack()"
+  >
+    <mat-icon>
+      arrow_back
+    </mat-icon>
+
+    Back to my policies
+  </button>
+
+  @if (policyState.detailsLoading()) {
+
+    <section class="state-card loading-state">
+      <mat-spinner diameter="44"></mat-spinner>
+
+      <strong>
+        Loading policy details
+      </strong>
+
+      <p>
+        Please wait while your insurance
+        policy information is retrieved.
+      </p>
+    </section>
+
+  } @else if (
+    policyState.errorMessage()
+    && !policyState.selectedPolicy()
+  ) {
+
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load policy
+      </strong>
+
+      <p>
+        {{ policyState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        (click)="goBack()"
+      >
+        Return to policies
+      </button>
+    </section>
+
+  } @else if (
+    policyState.selectedPolicy();
+    as policy
+  ) {
+
+    <header class="policy-hero">
+
+      <div class="hero-icon">
+        <mat-icon>
+          policy
+        </mat-icon>
+      </div>
+
+      <div class="hero-copy">
+        <span>
+          {{ policy.policyNumber }}
+        </span>
+
+        <h1>
+          {{ policy.planName }}
+        </h1>
+
+        <p>
+          Issued by
+          <strong>
+            {{ policy.payerOrganizationName }}
+          </strong>
+        </p>
+      </div>
+
+      <span
+        class="status-badge"
+        [class]="
+          'status-badge '
+          + getStatusClass(policy.status)
+        "
+      >
+        <mat-icon>
+          {{ getStatusIcon(policy.status) }}
+        </mat-icon>
+
+        {{ policy.status }}
+      </span>
+
+    </header>
+
+    <section class="financial-grid">
+
+      <article class="primary-financial-card">
+        <span>
+          Coverage amount
+        </span>
+
+        <strong>
+          {{
+            policy.coverageAmount
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-0':
+                'en-IN'
+          }}
+        </strong>
+
+        <small>
+          Maximum policy coverage
+        </small>
+      </article>
+
+      <article>
+        <span>
+          Monthly premium
+        </span>
+
+        <strong>
+          {{
+            policy.monthlyPremium
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-2':
+                'en-IN'
+          }}
+        </strong>
+
+        <small>
+          Premium payable each month
+        </small>
+      </article>
+
+      <article>
+        <span>
+          Annual deductible
+        </span>
+
+        <strong>
+          {{
+            policy.annualDeductible
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-2':
+                'en-IN'
+          }}
+        </strong>
+
+        <small>
+          Member responsibility before coverage
+        </small>
+      </article>
+
+    </section>
+
+    <section class="coverage-period-panel">
+
+      <div class="coverage-date">
+        <div class="date-icon">
+          <mat-icon>
+            event_available
+          </mat-icon>
+        </div>
+
+        <div>
+          <span>
+            Coverage starts
+          </span>
+
+          <strong>
+            {{
+              policy.coverageStartDate
+                | date: 'MMMM d, y'
+            }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="date-line">
+        <span></span>
+      </div>
+
+      <div class="coverage-date">
+        <div class="date-icon end-date-icon">
+          <mat-icon>
+            event_busy
+          </mat-icon>
+        </div>
+
+        <div>
+          <span>
+            Coverage ends
+          </span>
+
+          <strong>
+            {{
+              policy.coverageEndDate
+                | date: 'MMMM d, y'
+            }}
+          </strong>
+        </div>
+      </div>
+
+      @if (policy.status === 'ACTIVE') {
+        <div class="remaining-days">
+          <strong>
+            {{ getRemainingDays(policy) }}
+          </strong>
+
+          <span>
+            day(s) remaining
+          </span>
+        </div>
+      }
+
+    </section>
+
+    <div class="details-layout">
+
+      <section class="main-details">
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+
+            <header>
+              <div class="card-icon">
+                <mat-icon>
+                  medical_services
+                </mat-icon>
+              </div>
+
+              <div>
+                <h2>
+                  Healthcare benefits
+                </h2>
+
+                <p>
+                  Medical services included in this policy
+                </p>
+              </div>
+            </header>
+
+            <div class="coverage-grid">
+
+              <article
+                [class.coverage-disabled]="
+                  !policy.hospitalizationCoverage
+                "
+              >
+                <mat-icon>
+                  {{
+                    getCoverageIcon(
+                      policy.hospitalizationCoverage
+                    )
+                  }}
+                </mat-icon>
+
+                <div>
+                  <strong>
+                    Hospitalization
+                  </strong>
+
+                  <span>
+                    {{
+                      getCoverageLabel(
+                        policy.hospitalizationCoverage
+                      )
+                    }}
+                  </span>
+                </div>
+              </article>
+
+              <article
+                [class.coverage-disabled]="
+                  !policy.outpatientCoverage
+                "
+              >
+                <mat-icon>
+                  {{
+                    getCoverageIcon(
+                      policy.outpatientCoverage
+                    )
+                  }}
+                </mat-icon>
+
+                <div>
+                  <strong>
+                    Outpatient care
+                  </strong>
+
+                  <span>
+                    {{
+                      getCoverageLabel(
+                        policy.outpatientCoverage
+                      )
+                    }}
+                  </span>
+                </div>
+              </article>
+
+              <article
+                [class.coverage-disabled]="
+                  !policy.prescriptionCoverage
+                "
+              >
+                <mat-icon>
+                  {{
+                    getCoverageIcon(
+                      policy.prescriptionCoverage
+                    )
+                  }}
+                </mat-icon>
+
+                <div>
+                  <strong>
+                    Prescription medicines
+                  </strong>
+
+                  <span>
+                    {{
+                      getCoverageLabel(
+                        policy.prescriptionCoverage
+                      )
+                    }}
+                  </span>
+                </div>
+              </article>
+
+              <article
+                [class.coverage-disabled]="
+                  !policy.maternityCoverage
+                "
+              >
+                <mat-icon>
+                  {{
+                    getCoverageIcon(
+                      policy.maternityCoverage
+                    )
+                  }}
+                </mat-icon>
+
+                <div>
+                  <strong>
+                    Maternity care
+                  </strong>
+
+                  <span>
+                    {{
+                      getCoverageLabel(
+                        policy.maternityCoverage
+                      )
+                    }}
+                  </span>
+                </div>
+              </article>
+
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+
+            <header>
+              <div class="card-icon cost-icon">
+                <mat-icon>
+                  payments
+                </mat-icon>
+              </div>
+
+              <div>
+                <h2>
+                  Cost sharing
+                </h2>
+
+                <p>
+                  Member and insurer payment responsibilities
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Copay percentage
+                </dt>
+
+                <dd>
+                  {{ policy.copayPercentage }}%
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Coinsurance percentage
+                </dt>
+
+                <dd>
+                  {{ policy.coinsurancePercentage }}%
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Annual deductible
+                </dt>
+
+                <dd>
+                  {{
+                    policy.annualDeductible
+                      | currency:
+                        'INR':
+                        'symbol':
+                        '1.0-2':
+                        'en-IN'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Waiting period
+                </dt>
+
+                <dd>
+                  {{ policy.waitingPeriodDays }}
+                  day(s)
+                </dd>
+              </div>
+            </dl>
+
+          </mat-card-content>
+        </mat-card>
+
+      </section>
+
+      <aside class="policy-sidebar">
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+
+            <header>
+              <div class="card-icon information-icon">
+                <mat-icon>
+                  info
+                </mat-icon>
+              </div>
+
+              <div>
+                <h2>
+                  Policy information
+                </h2>
+
+                <p>
+                  Policy and enrollment references
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Policy number
+                </dt>
+
+                <dd>
+                  {{ policy.policyNumber }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Plan code
+                </dt>
+
+                <dd>
+                  {{ policy.planCode }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Policy duration
+                </dt>
+
+                <dd>
+                  {{ policy.policyDurationMonths }}
+                  month(s)
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Policy ID
+                </dt>
+
+                <dd class="identifier">
+                  {{ policy.id }}
+                </dd>
+              </div>
+            </dl>
+
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+
+            <header>
+              <div class="card-icon history-icon">
+                <mat-icon>
+                  history
+                </mat-icon>
+              </div>
+
+              <div>
+                <h2>
+                  Policy history
+                </h2>
+
+                <p>
+                  Creation and update information
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Created
+                </dt>
+
+                <dd>
+                  {{
+                    policy.createdAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Last updated
+                </dt>
+
+                <dd>
+                  {{
+                    policy.updatedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Current status
+                </dt>
+
+                <dd>
+                  {{ policy.status }}
+                </dd>
+              </div>
+            </dl>
+
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="enrollment-reference-card">
+          <mat-card-content>
+
+            <div class="enrollment-reference-icon">
+              <mat-icon>
+                assignment
+              </mat-icon>
+            </div>
+
+            <h2>
+              Original enrollment
+            </h2>
+
+            <p>
+              Review the enrollment request from which
+              this insurance policy was issued.
+            </p>
+
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="viewEnrollment(policy)"
+            >
+              View enrollment
+
+              <mat-icon>
+                arrow_forward
+              </mat-icon>
+            </button>
+
+          </mat-card-content>
+        </mat-card>
+
+      </aside>
+
+    </div>
+
+  }
+
+</section>

@@ -1,0 +1,591 @@
+:host {
+    display: block;
+  }
+  
+  .plan-details-page {
+    display: grid;
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .plan-hero {
+    display: grid;
+    grid-template-columns:
+      72px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 19px;
+    padding: 25px;
+    border: 1px solid #dbe8ed;
+    border-radius: 23px;
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff,
+        #edfafa
+      );
+    box-shadow:
+      0 13px 36px rgba(18, 48, 67, 0.07);
+  }
+  
+  .hero-icon {
+    display: grid;
+    width: 72px;
+    height: 72px;
+    place-items: center;
+    border-radius: 22px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+  }
+  
+  .hero-icon mat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 34px;
+  }
+  
+  .hero-copy {
+    min-width: 0;
+  }
+  
+  .plan-code {
+    display: block;
+    overflow: hidden;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .hero-copy h1 {
+    margin: 5px 0 0;
+    overflow: hidden;
+    color: #19384d;
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .hero-copy p {
+    margin: 6px 0 0;
+    color: #6d8290;
+    font-size: 12px;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    min-height: 31px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  
+  .status-badge mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+  
+  .status-badge--draft {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .status-badge--active {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .status-badge--inactive {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .action-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 17px;
+    border: 1px solid #f2b8b5;
+    border-radius: 14px;
+    color: #8b1a1a;
+    background: #fff1f0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .status-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 15px;
+  }
+  
+  .status-information > mat-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    font-size: 24px;
+  }
+  
+  .status-information strong {
+    font-size: 13px;
+  }
+  
+  .status-information p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .draft-information {
+    border: 1px solid #d8d0ef;
+    color: #574a7c;
+    background: #f7f4fd;
+  }
+  
+  .active-information {
+    border: 1px solid #bce1c9;
+    color: #296744;
+    background: #eff9f2;
+  }
+  
+  .inactive-information {
+    border: 1px solid #d8e1e5;
+    color: #607580;
+    background: #f5f8f9;
+  }
+  
+  .financial-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 15px;
+  }
+  
+  .financial-grid article {
+    display: grid;
+    min-width: 0;
+    gap: 6px;
+    padding: 19px;
+    border: 1px solid #e0e9ee;
+    border-radius: 17px;
+    background: #ffffff;
+  }
+  
+  .financial-grid .primary-financial-card {
+    border-color: #b5dfe2;
+    background: #effafa;
+  }
+  
+  .financial-grid span {
+    color: #748894;
+    font-size: 10px;
+  }
+  
+  .financial-grid strong {
+    overflow: hidden;
+    color: #1d4053;
+    font-size: 22px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .financial-grid small {
+    color: #91a0a9;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  
+  .details-layout {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: 18px;
+  }
+  
+  .main-details,
+  .plan-sidebar {
+    display: grid;
+    gap: 18px;
+  }
+  
+  .description-card,
+  .detail-card {
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.045);
+  }
+  
+  .description-card mat-card-content,
+  .detail-card mat-card-content {
+    padding: 22px;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #edf1f4;
+  }
+  
+  .card-icon {
+    display: grid;
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    place-items: center;
+    border-radius: 15px;
+  }
+  
+  .description-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .benefits-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .cost-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .eligibility-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .information-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .history-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .card-header h2,
+  .management-panel h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 16px;
+    font-weight: 750;
+  }
+  
+  .card-header p {
+    margin: 4px 0 0;
+    color: #778b97;
+    font-size: 11px;
+  }
+  
+  .full-description {
+    margin: 18px 0 0;
+    color: #5f7785;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+  
+  .coverage-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding-top: 18px;
+  }
+  
+  .coverage-grid article {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 14px;
+    border-radius: 14px;
+    color: #236441;
+    background: #edf8f1;
+  }
+  
+  .coverage-grid article > mat-icon {
+    color: #268553;
+  }
+  
+  .coverage-grid article > div {
+    display: grid;
+    gap: 3px;
+  }
+  
+  .coverage-grid strong {
+    font-size: 12px;
+  }
+  
+  .coverage-grid span {
+    font-size: 10px;
+  }
+  
+  .coverage-grid .coverage-disabled {
+    color: #788a95;
+    background: #f1f4f5;
+  }
+  
+  .coverage-grid .coverage-disabled > mat-icon {
+    color: #9aa8af;
+  }
+  
+  .detail-card dl {
+    display: grid;
+    margin: 6px 0 0;
+  }
+  
+  .detail-card dl > div {
+    display: grid;
+    grid-template-columns:
+      150px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f3f5;
+  }
+  
+  .detail-card dl > div:last-child {
+    border-bottom: 0;
+  }
+  
+  .detail-card dt {
+    color: #7b8e99;
+    font-size: 11px;
+  }
+  
+  .detail-card dd {
+    min-width: 0;
+    margin: 0;
+    color: #29475a;
+    font-size: 12px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  
+  .identifier {
+    font-family: monospace;
+    font-size: 10px !important;
+  }
+  
+  .management-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 21px;
+    border: 1px solid #b7dadd;
+    border-radius: 19px;
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff,
+        #eefafa
+      );
+  }
+  
+  .management-panel p {
+    max-width: 650px;
+    margin: 6px 0 0;
+    color: #6c818e;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .management-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+  }
+  
+  .management-actions button {
+    min-width: 145px;
+    min-height: 44px;
+    border-radius: 12px;
+  }
+  
+  .edit-plan-button {
+    color: #0f7180;
+  }
+  
+  .activate-button {
+    color: #ffffff;
+    background: #287848;
+  }
+  
+  .deactivate-button {
+    border-color: #858f95 !important;
+    color: #5e7079 !important;
+  }
+  
+  .activate-button mat-spinner,
+  .deactivate-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      currentColor;
+  }
+  
+  .state-card {
+    display: grid;
+    min-height: 360px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 40px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 430px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .error-state button {
+    margin-top: 8px;
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  @media (max-width: 1050px) {
+    .details-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .plan-sidebar {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .plan-sidebar .detail-card:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .management-panel {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .management-actions {
+      align-self: flex-end;
+    }
+  }
+  
+  @media (max-width: 720px) {
+    .plan-hero {
+      grid-template-columns:
+        58px minmax(0, 1fr);
+    }
+  
+    .hero-icon {
+      width: 58px;
+      height: 58px;
+    }
+  
+    .status-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  
+    .financial-grid,
+    .plan-sidebar {
+      grid-template-columns: 1fr;
+    }
+  
+    .plan-sidebar .detail-card:last-child {
+      grid-column: auto;
+    }
+  
+    .coverage-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .management-actions {
+      width: 100%;
+    }
+  
+    .management-actions button {
+      flex: 1;
+    }
+  }
+  
+  @media (max-width: 520px) {
+    .plan-hero {
+      padding: 18px;
+    }
+  
+    .hero-copy h1 {
+      white-space: normal;
+    }
+  
+    .description-card mat-card-content,
+    .detail-card mat-card-content {
+      padding: 18px;
+    }
+  
+    .card-header {
+      align-items: flex-start;
+    }
+  
+    .detail-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 5px;
+    }
+  
+    .management-actions {
+      flex-direction: column;
+    }
+  
+    .management-actions button {
+      width: 100%;
+    }
+  }

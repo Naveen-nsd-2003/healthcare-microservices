@@ -1,0 +1,489 @@
+<section class="availability-page">
+
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">
+          Provider Administration
+        </p>
+  
+        <h1>
+          Doctor availability
+        </h1>
+  
+        <p class="description">
+          Manage recurring weekly consultation schedules
+          grouped by doctor.
+        </p>
+      </div>
+  
+      <div class="page-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="availabilityState.loading()"
+          (click)="loadAvailabilities()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Load all schedules</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="create-button"
+          (click)="createAvailability()"
+        >
+          <mat-icon>add</mat-icon>
+          <span>Create availability</span>
+        </button>
+      </div>
+    </header>
+  
+    <section class="summary-grid">
+  
+      <article class="summary-card">
+        <mat-icon>schedule</mat-icon>
+  
+        <div>
+          <span>Total schedules</span>
+          <strong>{{ availabilityState.totalCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card active-summary">
+        <mat-icon>check_circle</mat-icon>
+  
+        <div>
+          <span>Active schedules</span>
+          <strong>{{ availabilityState.activeCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card inactive-summary">
+        <mat-icon>block</mat-icon>
+  
+        <div>
+          <span>Inactive schedules</span>
+          <strong>{{ availabilityState.inactiveCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card doctor-summary">
+        <mat-icon>medical_services</mat-icon>
+  
+        <div>
+          <span>Doctors scheduled</span>
+          <strong>{{ availabilityState.doctorCount() }}</strong>
+        </div>
+      </article>
+  
+    </section>
+  
+    <section class="filter-panel">
+  
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Search schedules</mat-label>
+  
+        <mat-icon matPrefix>search</mat-icon>
+  
+        <input
+          #scheduleSearch
+          matInput
+          type="search"
+          placeholder="Doctor, specialization, or department"
+          [value]="searchText()"
+          (input)="updateSearch(scheduleSearch.value)"
+        >
+  
+        @if (searchText().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Clear availability search"
+            (click)="updateSearch('')"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Doctor</mat-label>
+  
+        <mat-select
+          [value]="selectedDoctorId()"
+          (selectionChange)="updateDoctor($event.value)"
+        >
+          <mat-option value="ALL">
+            All doctors
+          </mat-option>
+  
+          @for (doctor of doctorOptions(); track doctor.id) {
+            <mat-option [value]="doctor.id">
+              {{ doctor.name }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Day</mat-label>
+  
+        <mat-select
+          [value]="selectedDay()"
+          (selectionChange)="updateDay($event.value)"
+        >
+          <mat-option value="ALL">
+            All days
+          </mat-option>
+  
+          @for (day of dayOptions; track day.value) {
+            <mat-option [value]="day.value">
+              {{ day.label }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Status</mat-label>
+  
+        <mat-select
+          [value]="selectedStatus()"
+          (selectionChange)="updateStatus($event.value)"
+        >
+          <mat-option value="ALL">
+            All statuses
+          </mat-option>
+  
+          <mat-option value="ACTIVE">
+            Active
+          </mat-option>
+  
+          <mat-option value="INACTIVE">
+            Inactive
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <div class="filter-actions">
+        <button
+          mat-button
+          type="button"
+          [disabled]="!filtersApplied()"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+  
+        <button
+          mat-button
+          type="button"
+          (click)="expandAll()"
+        >
+          <mat-icon>unfold_more</mat-icon>
+          <span>Expand all</span>
+        </button>
+  
+        <button
+          mat-button
+          type="button"
+          (click)="collapseAll()"
+        >
+          <mat-icon>unfold_less</mat-icon>
+          <span>Collapse all</span>
+        </button>
+      </div>
+  
+      <span class="result-count">
+        {{ doctorGroups().length }} doctor(s),
+        {{ filteredAvailabilities().length }} schedule(s)
+      </span>
+  
+    </section>
+  
+    @if (availabilityState.loading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading availability
+        </strong>
+  
+        <p>
+          Please wait while weekly doctor schedules
+          are retrieved.
+        </p>
+      </section>
+  
+    } @else if (availabilityState.errorMessage()) {
+  
+      <section class="state-card error-state">
+        <mat-icon>error_outline</mat-icon>
+  
+        <strong>
+          Unable to load availability
+        </strong>
+  
+        <p>
+          {{ availabilityState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadAvailabilities()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+  
+    } @else if (doctorGroups().length === 0) {
+  
+      <section class="state-card">
+        <mat-icon>event_busy</mat-icon>
+  
+        <strong>
+          No schedules found
+        </strong>
+  
+        @if (filtersApplied()) {
+          <p>
+            No doctor schedules match the selected filters.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="clearFilters()"
+          >
+            <mat-icon>filter_alt_off</mat-icon>
+            <span>Clear filters</span>
+          </button>
+        } @else {
+          <p>
+            Create a weekly availability schedule
+            for an active doctor.
+          </p>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="create-button"
+            (click)="createAvailability()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Create availability</span>
+          </button>
+        }
+      </section>
+  
+    } @else {
+  
+      <section class="doctor-group-list">
+  
+        @for (group of doctorGroups(); track group.doctorId) {
+  
+          <mat-card class="doctor-group-card">
+            <mat-card-content>
+  
+              <header class="doctor-group-header">
+  
+                <div class="doctor-avatar">
+                  {{ getDoctorInitials(group.doctorName) }}
+                </div>
+  
+                <div class="doctor-copy">
+                  <span>
+                    {{ group.specialization }}
+                  </span>
+  
+                  <h2>
+                    {{ group.doctorName }}
+                  </h2>
+  
+                  <p>
+                    {{ group.departmentName }}
+                  </p>
+                </div>
+  
+                <div class="doctor-counts">
+                  <span>
+                    {{ group.totalSchedules }} schedule(s)
+                  </span>
+  
+                  <span class="active-count">
+                    {{ group.activeSchedules }} active
+                  </span>
+  
+                  @if (group.inactiveSchedules > 0) {
+                    <span class="inactive-count">
+                      {{ group.inactiveSchedules }} inactive
+                    </span>
+                  }
+                </div>
+  
+                <div class="group-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="createAvailabilityForDoctor(group.doctorId)"
+                  >
+                    <mat-icon>add</mat-icon>
+                    <span>Add schedule</span>
+                  </button>
+  
+                  <button
+                    mat-icon-button
+                    type="button"
+                    aria-label="Expand or collapse schedules"
+                    (click)="toggleDoctorGroup(group.doctorId)"
+                  >
+                    @if (isDoctorExpanded(group.doctorId)) {
+                      <mat-icon>expand_less</mat-icon>
+                    } @else {
+                      <mat-icon>expand_more</mat-icon>
+                    }
+                  </button>
+                </div>
+  
+              </header>
+  
+              @if (isDoctorExpanded(group.doctorId)) {
+  
+                <section class="schedule-table">
+  
+                  <header class="schedule-table-header">
+                    <span>Day</span>
+                    <span>Consulting hours</span>
+                    <span>Slot duration</span>
+                    <span>Status</span>
+                    <span>Actions</span>
+                  </header>
+  
+                  @for (
+                    schedule of group.availabilities;
+                    track schedule.id
+                  ) {
+  
+                    <article class="schedule-row">
+  
+                      <div class="day-cell">
+                        <mat-icon>calendar_today</mat-icon>
+  
+                        <strong>
+                          {{ getDayLabel(schedule.dayOfWeek) }}
+                        </strong>
+                      </div>
+  
+                      <div class="time-cell">
+                        <mat-icon>schedule</mat-icon>
+  
+                        <strong>
+                          {{ getTimeRange(schedule) }}
+                        </strong>
+                      </div>
+  
+                      <div class="duration-cell">
+                        <span>
+                          {{ schedule.slotDurationMinutes }}
+                          minutes
+                        </span>
+                      </div>
+  
+                      <div class="status-cell">
+                        @if (schedule.status === 'ACTIVE') {
+                          <span class="status-badge active-status">
+                            <mat-icon>check_circle</mat-icon>
+                            <span>ACTIVE</span>
+                          </span>
+                        } @else {
+                          <span class="status-badge inactive-status">
+                            <mat-icon>block</mat-icon>
+                            <span>INACTIVE</span>
+                          </span>
+                        }
+                      </div>
+  
+                      <div class="row-actions">
+                        <button
+                          mat-icon-button
+                          type="button"
+                          aria-label="Edit schedule"
+                          [disabled]="availabilityState.statusUpdating()"
+                          (click)="editAvailability(schedule)"
+                        >
+                          <mat-icon>edit</mat-icon>
+                        </button>
+  
+                        @if (schedule.status === 'ACTIVE') {
+                          <button
+                            mat-icon-button
+                            type="button"
+                            class="deactivate-action"
+                            aria-label="Make schedule inactive"
+                            [disabled]="availabilityState.statusUpdating()"
+                            (click)="deactivateAvailability(schedule)"
+                          >
+                            <mat-icon>block</mat-icon>
+                          </button>
+                        } @else {
+                          <button
+                            mat-icon-button
+                            type="button"
+                            class="activate-action"
+                            aria-label="Activate schedule"
+                            [disabled]="availabilityState.statusUpdating()"
+                            (click)="activateAvailability(schedule)"
+                          >
+                            <mat-icon>check_circle</mat-icon>
+                          </button>
+                        }
+  
+                        <button
+                          mat-icon-button
+                          type="button"
+                          class="delete-action"
+                          aria-label="Delete schedule"
+                          [disabled]="availabilityState.deleting()"
+                          (click)="deleteAvailability(schedule)"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+  
+                    </article>
+  
+                  }
+  
+                </section>
+  
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+        }
+  
+      </section>
+  
+    }
+  
+  </section>

@@ -1,0 +1,1158 @@
+<section class="member-dashboard-page">
+  <header class="dashboard-header">
+    <div class="header-copy">
+      <p class="eyebrow">
+        Personal Healthcare
+      </p>
+
+      <h1>
+        Member dashboard
+      </h1>
+
+      <p class="description">
+        Track your profile, insurance coverage,
+        appointments, Medical Records, claims, and
+        healthcare notifications.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="dashboardLoading()"
+        (click)="loadDashboard()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="primary-button"
+        (click)="findProviders()"
+      >
+        <mat-icon>search</mat-icon>
+        <span>Find Providers</span>
+      </button>
+    </div>
+  </header>
+
+  @if (dashboardLoading() && !hasDashboardData()) {
+    <section class="state-card">
+      <mat-spinner diameter="44"></mat-spinner>
+
+      <strong>
+        Loading Member dashboard
+      </strong>
+
+      <p>
+        Please wait while your healthcare information is
+        retrieved.
+      </p>
+    </section>
+  } @else {
+    @if (errorMessages().length > 0) {
+      <section
+        class="dashboard-warning"
+        role="alert"
+      >
+        <mat-icon>warning_amber</mat-icon>
+
+        <div>
+          <strong>
+            Some dashboard information could not be loaded
+          </strong>
+
+          @for (
+            message of errorMessages();
+            track message
+          ) {
+            <p>
+              {{ message }}
+            </p>
+          }
+        </div>
+
+        <button
+          mat-button
+          type="button"
+          (click)="loadDashboard()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Retry</span>
+        </button>
+      </section>
+    }
+
+    @if (profileState.profile()) {
+      <section class="profile-banner">
+        <div class="profile-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="profile-copy">
+          <p>
+            Member Profile
+          </p>
+
+          <h2>
+            {{ fullName() }}
+          </h2>
+
+          <div class="profile-meta">
+            <span>
+              <mat-icon>mail</mat-icon>
+
+              {{ profileState.profile()?.email }}
+            </span>
+
+            <span>
+              <mat-icon>phone</mat-icon>
+
+              {{ profileState.profile()?.phoneNumber }}
+            </span>
+
+            <span>
+              <mat-icon>location_on</mat-icon>
+
+              {{ profileState.profile()?.city }},
+              {{ profileState.profile()?.state }}
+            </span>
+
+            <span>
+              <mat-icon>emergency</mat-icon>
+
+              {{ profileState.profile()?.emergencyContactName }}
+            </span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <span
+            class="profile-status"
+            [class.active-profile]="
+              profileState.profile()?.status === 'ACTIVE'
+            "
+          >
+            <mat-icon>
+              {{ profileStatusIcon() }}
+            </mat-icon>
+
+            <span>
+              {{ profileStatusLabel() }}
+            </span>
+          </span>
+
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="viewProfile()"
+          >
+            <mat-icon>manage_accounts</mat-icon>
+            <span>Manage profile</span>
+          </button>
+        </div>
+      </section>
+    } @else {
+      <section class="profile-setup-banner">
+        <div class="profile-icon setup-icon">
+          <mat-icon>person_add</mat-icon>
+        </div>
+
+        <div>
+          <strong>
+            Complete your healthcare profile
+          </strong>
+
+          <p>
+            Your Member profile is required before you can
+            browse plans, enroll in insurance, or book
+            appointments.
+          </p>
+        </div>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="viewProfile()"
+        >
+          <mat-icon>person_add</mat-icon>
+          <span>Complete profile</span>
+        </button>
+      </section>
+    }
+
+    <section class="overview-grid">
+      <article class="overview-card appointment-card">
+        <div class="overview-icon">
+          <mat-icon>event_note</mat-icon>
+        </div>
+
+        <div>
+          <span>Appointments</span>
+
+          <strong>
+            {{ appointmentState.totalCount() }}
+          </strong>
+
+          <small>
+            {{ upcomingAppointments().length }}
+            upcoming
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card enrollment-card">
+        <div class="overview-icon">
+          <mat-icon>assignment_ind</mat-icon>
+        </div>
+
+        <div>
+          <span>Enrollments</span>
+
+          <strong>
+            {{ totalEnrollmentCount() }}
+          </strong>
+
+          <small>
+            {{ enrollmentState.pendingCount() }}
+            pending
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card policy-card">
+        <div class="overview-icon">
+          <mat-icon>policy</mat-icon>
+        </div>
+
+        <div>
+          <span>Active policies</span>
+
+          <strong>
+            {{ policyState.activeCount() }}
+          </strong>
+
+          <small>
+            Insurance coverage
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card coverage-card">
+        <div class="overview-icon">
+          <mat-icon>shield</mat-icon>
+        </div>
+
+        <div>
+          <span>Active coverage</span>
+
+          <strong>
+            {{
+              totalPolicyCoverage()
+                | currency: 'INR'
+            }}
+          </strong>
+
+          <small>
+            Total insured coverage
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card record-card">
+        <div class="overview-icon">
+          <mat-icon>medical_information</mat-icon>
+        </div>
+
+        <div>
+          <span>Medical Records</span>
+
+          <strong>
+            {{ medicalRecordState.memberRecords().length }}
+          </strong>
+
+          <small>
+            {{ upcomingFollowUpCount() }}
+            upcoming follow-up
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card claim-card">
+        <div class="overview-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+
+        <div>
+          <span>Insurance claims</span>
+
+          <strong>
+            {{ totalClaimCount() }}
+          </strong>
+
+          <small>
+            {{ activeClaimCount() }}
+            in progress
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card approved-card">
+        <div class="overview-icon">
+          <mat-icon>price_check</mat-icon>
+        </div>
+
+        <div>
+          <span>Approved amount</span>
+
+          <strong>
+            {{
+              totalApprovedAmount()
+                | currency: 'INR'
+            }}
+          </strong>
+
+          <small>
+            Across approved claims
+          </small>
+        </div>
+      </article>
+
+      <article class="overview-card notification-card">
+        <div class="overview-icon">
+          <mat-icon>notifications</mat-icon>
+        </div>
+
+        <div>
+          <span>Unread notifications</span>
+
+          <strong>
+            {{ notificationState.unreadCount() }}
+          </strong>
+
+          <small>
+            Healthcare updates
+          </small>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-section">
+      <header class="section-header">
+        <div>
+          <p class="section-eyebrow">
+            Appointments
+          </p>
+
+          <h2>
+            Your healthcare schedule
+          </h2>
+
+          <p>
+            Track upcoming consultations and your complete
+            appointment lifecycle.
+          </p>
+        </div>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="viewAppointments()"
+        >
+          <mat-icon>event_note</mat-icon>
+          <span>My appointments</span>
+        </button>
+      </header>
+
+      <div class="status-grid">
+        <article>
+          <span>Booked</span>
+
+          <strong>
+            {{ appointmentState.bookedCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Confirmed</span>
+
+          <strong>
+            {{ appointmentState.confirmedCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Completed</span>
+
+          <strong>
+            {{ appointmentState.completedCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Cancelled</span>
+
+          <strong>
+            {{ appointmentState.cancelledCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>No-show</span>
+
+          <strong>
+            {{ appointmentState.noShowCount() }}
+          </strong>
+        </article>
+      </div>
+
+      @if (upcomingAppointments().length === 0) {
+        <section class="compact-empty-state">
+          <mat-icon>event_available</mat-icon>
+
+          <strong>
+            No upcoming appointments
+          </strong>
+
+          <p>
+            Search healthcare Providers and book an
+            appointment when you need care.
+          </p>
+
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="findProviders()"
+          >
+            <mat-icon>search</mat-icon>
+            <span>Find Providers</span>
+          </button>
+        </section>
+      } @else {
+        <div class="entity-list">
+          @for (
+            appointment of upcomingAppointments();
+            track appointment.id
+          ) {
+            <button
+              type="button"
+              class="entity-row appointment-row"
+              (click)="viewAppointment(appointment)"
+            >
+              <div class="date-block">
+                <strong>
+                  {{
+                    appointment.appointmentDate
+                      | date: 'd'
+                  }}
+                </strong>
+
+                <span>
+                  {{
+                    appointment.appointmentDate
+                      | date: 'MMM'
+                  }}
+                </span>
+              </div>
+
+              <div class="entity-primary">
+                <strong>
+                  {{ appointment.doctorName }}
+                </strong>
+
+                <span>
+                  {{ appointment.providerOrganizationName }}
+                </span>
+
+                <small>
+                  {{ appointment.departmentName }}
+                  ·
+                  {{ appointment.startTime }}
+                </small>
+              </div>
+
+              <div class="entity-value">
+                <span>Consultation fee</span>
+
+                <strong>
+                  {{
+                    appointment.consultationFee
+                      | currency: 'INR'
+                  }}
+                </strong>
+              </div>
+
+              <span
+                class="status-pill"
+                [class.booked-status]="
+                  appointment.status === 'BOOKED'
+                "
+                [class.confirmed-status]="
+                  appointment.status === 'CONFIRMED'
+                "
+              >
+                {{
+                  getAppointmentStatusLabel(
+                    appointment.status
+                  )
+                }}
+              </span>
+
+              <mat-icon class="row-arrow">
+                chevron_right
+              </mat-icon>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="dashboard-section">
+      <header class="section-header">
+        <div>
+          <p class="section-eyebrow">
+            Insurance Coverage
+          </p>
+
+          <h2>
+            Enrollments and policies
+          </h2>
+
+          <p>
+            Track insurance applications and active
+            healthcare coverage.
+          </p>
+        </div>
+
+        <div class="section-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="viewEnrollments()"
+          >
+            <mat-icon>assignment_ind</mat-icon>
+            <span>Enrollments</span>
+          </button>
+
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="browseInsurancePlans()"
+          >
+            <mat-icon>health_and_safety</mat-icon>
+            <span>Browse plans</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="insurance-summary-grid">
+        <article>
+          <span>Pending enrollments</span>
+
+          <strong>
+            {{ enrollmentState.pendingCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Approved enrollments</span>
+
+          <strong>
+            {{ enrollmentState.approvedCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Rejected enrollments</span>
+
+          <strong>
+            {{ enrollmentState.rejectedCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Active policies</span>
+
+          <strong>
+            {{ policyState.activeCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Monthly premium</span>
+
+          <strong>
+            {{
+              activePolicyMonthlyPremium()
+                | currency: 'INR'
+            }}
+          </strong>
+        </article>
+      </div>
+
+      <div class="dual-content-grid">
+        <section class="content-panel">
+          <header class="content-panel-header">
+            <div>
+              <p>Recent Applications</p>
+
+              <h3>Insurance enrollments</h3>
+            </div>
+
+            <button
+              mat-button
+              type="button"
+              (click)="viewEnrollments()"
+            >
+              View all
+            </button>
+          </header>
+
+          @if (recentEnrollments().length === 0) {
+            <section class="small-empty-state">
+              <mat-icon>assignment_ind</mat-icon>
+
+              <p>
+                No insurance enrollments yet.
+              </p>
+            </section>
+          } @else {
+            <div class="compact-list">
+              @for (
+                enrollment of recentEnrollments();
+                track enrollment.id
+              ) {
+                <button
+                  type="button"
+                  class="compact-row"
+                  (click)="viewEnrollment(enrollment)"
+                >
+                  <div class="compact-icon enrollment-icon">
+                    <mat-icon>assignment_ind</mat-icon>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {{ enrollment.planName }}
+                    </strong>
+
+                    <span>
+                      Coverage:
+                      {{
+                        enrollment.coverageAmount
+                          | currency: 'INR'
+                      }}
+                    </span>
+                  </div>
+
+                  <span
+                    class="status-pill"
+                    [class.pending-status]="
+                      enrollment.status === 'PENDING'
+                    "
+                    [class.approved-status]="
+                      enrollment.status === 'APPROVED'
+                    "
+                    [class.rejected-status]="
+                      enrollment.status === 'REJECTED'
+                    "
+                    [class.cancelled-status]="
+                      enrollment.status === 'CANCELLED'
+                    "
+                  >
+                    {{
+                      getEnrollmentStatusLabel(
+                        enrollment.status
+                      )
+                    }}
+                  </span>
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="content-panel">
+          <header class="content-panel-header">
+            <div>
+              <p>Current Coverage</p>
+
+              <h3>Active policies</h3>
+            </div>
+
+            <button
+              mat-button
+              type="button"
+              (click)="viewPolicies()"
+            >
+              View all
+            </button>
+          </header>
+
+          @if (activePolicies().length === 0) {
+            <section class="small-empty-state">
+              <mat-icon>policy</mat-icon>
+
+              <p>
+                No active insurance policies.
+              </p>
+            </section>
+          } @else {
+            <div class="compact-list">
+              @for (
+                policy of activePolicies();
+                track policy.id
+              ) {
+                <button
+                  type="button"
+                  class="compact-row"
+                  (click)="viewPolicy(policy)"
+                >
+                  <div class="compact-icon policy-icon">
+                    <mat-icon>policy</mat-icon>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {{ policy.planName }}
+                    </strong>
+
+                    <span>
+                      {{ policy.policyNumber }}
+                    </span>
+                  </div>
+
+                  <span class="status-pill active-status">
+                    {{
+                      getPolicyStatusLabel(
+                        policy.status
+                      )
+                    }}
+                  </span>
+                </button>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <header class="section-header">
+        <div>
+          <p class="section-eyebrow">
+            Clinical History
+          </p>
+
+          <h2>
+            Recent Medical Records
+          </h2>
+
+          <p>
+            Review recent diagnoses, treatment plans, and
+            scheduled follow-up care.
+          </p>
+        </div>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="viewMedicalRecords()"
+        >
+          <mat-icon>medical_information</mat-icon>
+          <span>Medical Records</span>
+        </button>
+      </header>
+
+      @if (recentMedicalRecords().length === 0) {
+        <section class="compact-empty-state">
+          <mat-icon>medical_information</mat-icon>
+
+          <strong>
+            No Medical Records
+          </strong>
+
+          <p>
+            Medical Records created after completed
+            appointments will appear here.
+          </p>
+        </section>
+      } @else {
+        <div class="entity-list">
+          @for (
+            record of recentMedicalRecords();
+            track record.id
+          ) {
+            <button
+              type="button"
+              class="entity-row record-row"
+              (click)="viewMedicalRecord(record)"
+            >
+              <div class="entity-icon record-icon">
+                <mat-icon>medical_information</mat-icon>
+              </div>
+
+              <div class="entity-primary">
+                <strong>
+                  {{ record.diagnosis }}
+                </strong>
+
+                <span>
+                  {{ record.doctorName }}
+                </span>
+
+                <small>
+                  {{ record.providerOrganizationName }}
+                </small>
+              </div>
+
+              <div class="entity-value">
+                <span>Appointment date</span>
+
+                <strong>
+                  {{
+                    record.appointmentDate
+                      | date: 'MMM d, y'
+                  }}
+                </strong>
+              </div>
+
+              <div class="entity-value">
+                <span>Follow-up date</span>
+
+                <strong>
+                  @if (record.followUpDate) {
+                    {{
+                      record.followUpDate
+                        | date: 'MMM d, y'
+                    }}
+                  } @else {
+                    Not scheduled
+                  }
+                </strong>
+              </div>
+
+              <span class="status-pill active-status">
+                {{ record.status }}
+              </span>
+
+              <mat-icon class="row-arrow">
+                chevron_right
+              </mat-icon>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="dashboard-section">
+      <header class="section-header">
+        <div>
+          <p class="section-eyebrow">
+            Insurance Claims
+          </p>
+
+          <h2>
+            Claim tracking summary
+          </h2>
+
+          <p>
+            Track Provider-submitted claims, review progress,
+            and approved insurance amounts.
+          </p>
+        </div>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="viewClaims()"
+        >
+          <mat-icon>receipt_long</mat-icon>
+          <span>My claims</span>
+        </button>
+      </header>
+
+      <div class="claim-summary-grid">
+        <article class="financial-card claimed-card">
+          <span>Total claimed amount</span>
+
+          <strong>
+            {{
+              totalClaimedAmount()
+                | currency: 'INR'
+            }}
+          </strong>
+        </article>
+
+        <article class="financial-card approved-amount-card">
+          <span>Total approved amount</span>
+
+          <strong>
+            {{
+              totalApprovedAmount()
+                | currency: 'INR'
+            }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Submitted</span>
+
+          <strong>
+            {{ submittedClaimCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Under review</span>
+
+          <strong>
+            {{ underReviewClaimCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Approved</span>
+
+          <strong>
+            {{ approvedClaimCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Rejected</span>
+
+          <strong>
+            {{ rejectedClaimCount() }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Cancelled</span>
+
+          <strong>
+            {{ cancelledClaimCount() }}
+          </strong>
+        </article>
+      </div>
+
+      @if (recentClaims().length === 0) {
+        <section class="compact-empty-state">
+          <mat-icon>receipt_long</mat-icon>
+
+          <strong>
+            No insurance claims
+          </strong>
+
+          <p>
+            Provider-submitted claims will appear here.
+          </p>
+        </section>
+      } @else {
+        <div class="entity-list">
+          @for (
+            claim of recentClaims();
+            track claim.id
+          ) {
+            <button
+              type="button"
+              class="entity-row claim-row"
+              (click)="viewClaim(claim)"
+            >
+              <div class="entity-icon claim-icon">
+                <mat-icon>receipt_long</mat-icon>
+              </div>
+
+              <div class="entity-primary">
+                <strong>
+                  {{ claim.claimNumber }}
+                </strong>
+
+                <span>
+                  {{ claim.providerOrganizationName }}
+                </span>
+
+                <small>
+                  {{ claim.payerOrganizationName }}
+                </small>
+              </div>
+
+              <div class="entity-value">
+                <span>Claimed</span>
+
+                <strong>
+                  {{
+                    claim.claimedAmount
+                      | currency: 'INR'
+                  }}
+                </strong>
+              </div>
+
+              <span
+                class="status-pill"
+                [class.submitted-status]="
+                  claim.status === 'SUBMITTED'
+                "
+                [class.review-status]="
+                  claim.status === 'UNDER_REVIEW'
+                "
+                [class.approved-status]="
+                  claim.status === 'APPROVED'
+                "
+                [class.rejected-status]="
+                  claim.status === 'REJECTED'
+                "
+                [class.cancelled-status]="
+                  claim.status === 'CANCELLED'
+                "
+              >
+                {{
+                  getClaimStatusLabel(
+                    claim.status
+                  )
+                }}
+              </span>
+
+              <mat-icon class="row-arrow">
+                chevron_right
+              </mat-icon>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="dashboard-section">
+      <header class="section-header">
+        <div>
+          <p class="section-eyebrow">
+            Quick Actions
+          </p>
+
+          <h2>
+            Healthcare services
+          </h2>
+
+          <p>
+            Access your commonly used healthcare workflows.
+          </p>
+        </div>
+      </header>
+
+      <div class="quick-action-grid">
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewProfile()"
+        >
+          <mat-icon>manage_accounts</mat-icon>
+
+          <div>
+            <strong>My Profile</strong>
+            <span>Manage personal information</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="findProviders()"
+        >
+          <mat-icon>search</mat-icon>
+
+          <div>
+            <strong>Find Providers</strong>
+            <span>Search doctors and hospitals</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="browseInsurancePlans()"
+        >
+          <mat-icon>health_and_safety</mat-icon>
+
+          <div>
+            <strong>Insurance Plans</strong>
+            <span>Browse available coverage</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewEnrollments()"
+        >
+          <mat-icon>assignment_ind</mat-icon>
+
+          <div>
+            <strong>My Enrollments</strong>
+            <span>Track plan applications</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewPolicies()"
+        >
+          <mat-icon>policy</mat-icon>
+
+          <div>
+            <strong>My Policies</strong>
+            <span>Review active coverage</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewAppointments()"
+        >
+          <mat-icon>event_note</mat-icon>
+
+          <div>
+            <strong>My Appointments</strong>
+            <span>Track healthcare visits</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewMedicalRecords()"
+        >
+          <mat-icon>medical_information</mat-icon>
+
+          <div>
+            <strong>Medical Records</strong>
+            <span>Review clinical history</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="quick-action-card"
+          (click)="viewNotifications()"
+        >
+          <mat-icon>notifications</mat-icon>
+
+          <div>
+            <strong>Notifications</strong>
+
+            <span>
+              {{ notificationState.unreadCount() }}
+              unread update(s)
+            </span>
+          </div>
+        </button>
+      </div>
+    </section>
+  }
+</section>

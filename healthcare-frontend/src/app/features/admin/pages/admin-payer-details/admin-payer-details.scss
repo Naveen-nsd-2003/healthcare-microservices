@@ -1,0 +1,242 @@
+:host {
+    display: block;
+  }
+  
+  .details-page {
+    display: grid;
+    gap: 24px;
+  }
+  
+  .hero-header {
+    display: grid;
+    grid-template-columns:
+      80px
+      1fr
+      auto;
+  
+    gap: 20px;
+  
+    align-items: center;
+  
+    padding: 24px;
+  
+    background: #fff;
+  
+    border: 1px solid #e5eaed;
+  
+    border-radius: 22px;
+  
+    box-shadow:
+      0 12px 32px rgba(
+        18,
+        48,
+        67,
+        0.06
+      );
+  }
+  
+  .hero-icon {
+    display: grid;
+  
+    width: 80px;
+    height: 80px;
+  
+    place-items: center;
+  
+    border-radius: 20px;
+  
+    color: white;
+  
+    background:
+      linear-gradient(
+        135deg,
+        #8b6819,
+        #d4a63a
+      );
+  }
+  
+  .hero-icon mat-icon {
+    font-size: 38px;
+    width: 38px;
+    height: 38px;
+  }
+  
+  .eyebrow {
+    margin: 0;
+  
+    color: #8b6819;
+  
+    font-size: 10px;
+  
+    font-weight: 800;
+  
+    letter-spacing: .12em;
+  
+    text-transform: uppercase;
+  }
+  
+  .hero-content h1 {
+    margin: 6px 0;
+  
+    color: #203e51;
+  }
+  
+  .hero-content p:last-child {
+    color: #738893;
+  }
+  
+  .status-badge {
+    padding: 8px 14px;
+  
+    border-radius: 999px;
+  
+    background: #fff2d2;
+  
+    color: #805400;
+  
+    font-size: 12px;
+  
+    font-weight: 700;
+  }
+  
+  .banner {
+    display: flex;
+    gap: 16px;
+  
+    padding: 18px;
+  
+    border-radius: 16px;
+  }
+  
+  .banner mat-icon {
+    flex-shrink: 0;
+  }
+  
+  .pending-banner {
+    background: #fff8de;
+    border: 1px solid #ecd28d;
+  }
+  
+  .rejected-banner {
+    background: #fff2f1;
+    border: 1px solid #efb8b4;
+  }
+  
+  .details-grid {
+    display: grid;
+  
+    grid-template-columns:
+      repeat(
+        auto-fit,
+        minmax(320px, 1fr)
+      );
+  
+    gap: 20px;
+  }
+  
+  .info-card {
+    padding: 24px;
+  
+    background: white;
+  
+    border-radius: 20px;
+  
+    border: 1px solid #e5eaed;
+  
+    box-shadow:
+      0 8px 24px rgba(
+        18,
+        48,
+        67,
+        0.04
+      );
+  }
+  
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  
+    margin-bottom: 20px;
+  }
+  
+  .card-title h2 {
+    margin: 0;
+  }
+  
+  .card-title mat-icon {
+    color: #8b6819;
+  }
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+  
+    padding: 12px 0;
+  
+    border-bottom: 1px solid #edf2f4;
+  }
+  
+  .review-grid {
+    display: grid;
+  
+    grid-template-columns:
+      repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+      );
+  
+    gap: 16px;
+  }
+  
+  .review-item {
+    padding: 16px;
+  
+    border-radius: 14px;
+  
+    background: #f8fafb;
+  }
+  
+  .review-item label {
+    display: block;
+  
+    margin-bottom: 6px;
+  
+    color: #7f949e;
+  
+    font-size: 12px;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .actions button {
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  
+  .loading-state {
+    min-height: 350px;
+  
+    display: grid;
+    place-items: center;
+  }
+  
+  @media (max-width: 768px) {
+  
+    .hero-header {
+      grid-template-columns: 1fr;
+    }
+  
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .actions {
+      flex-direction: column;
+    }
+  }
+  

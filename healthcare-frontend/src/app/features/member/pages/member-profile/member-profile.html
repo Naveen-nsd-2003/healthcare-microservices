@@ -1,0 +1,989 @@
+<section class="profile-page">
+  <header class="page-header">
+    <div class="heading-content">
+      <p class="eyebrow">
+        Member Account
+      </p>
+
+      <h1>
+        {{ pageTitle() }}
+      </h1>
+
+      <p class="page-description">
+        {{ pageDescription() }}
+      </p>
+    </div>
+
+    @if (
+      profileState.hasProfile()
+      && !editing()
+      && !profileState.loading()
+    ) {
+      <button
+        mat-flat-button
+        type="button"
+        class="edit-profile-button"
+        (click)="startEditing()"
+      >
+        <mat-icon>
+          edit
+        </mat-icon>
+
+        Edit profile
+      </button>
+    }
+  </header>
+
+  @if (profileState.loading()) {
+    <section class="state-card">
+      <mat-spinner
+        diameter="44"
+      ></mat-spinner>
+
+      <strong>
+        Loading your profile
+      </strong>
+
+      <p>
+        Please wait while your healthcare
+        information is retrieved.
+      </p>
+    </section>
+  } @else if (
+    profileState.errorMessage()
+    && !showProfileForm()
+  ) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load your profile
+      </strong>
+
+      <p>
+        {{ profileState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        (click)="loadProfile()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+
+        Try again
+      </button>
+    </section>
+  } @else if (showProfileForm()) {
+    <form
+      class="profile-form"
+      [formGroup]="profileForm"
+      (ngSubmit)="submitProfile()"
+      novalidate
+    >
+      @if (profileState.profileMissing()) {
+        <section class="completion-banner">
+          <div class="completion-icon">
+            <mat-icon>
+              assignment_ind
+            </mat-icon>
+          </div>
+
+          <div>
+            <strong>
+              Profile completion required
+            </strong>
+
+            <p>
+              Complete this information before enrolling
+              in insurance plans or booking appointments.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (profileState.errorMessage()) {
+        <section
+          class="form-error"
+          role="alert"
+        >
+          <mat-icon>
+            error_outline
+          </mat-icon>
+
+          <span>
+            {{ profileState.errorMessage() }}
+          </span>
+        </section>
+      }
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>
+                person
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Personal information
+              </h2>
+
+              <p>
+                Enter your name and date of birth
+                exactly as shown on official documents.
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>
+                First name
+              </mat-label>
+
+              <mat-icon matPrefix>
+                person_outline
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="firstName"
+                maxlength="100"
+                autocomplete="given-name"
+              >
+
+              @if (
+                profileForm.controls.firstName.touched
+                && profileForm.controls.firstName
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  First name is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.firstName.touched
+                && profileForm.controls.firstName
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  First name contains invalid characters.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.firstName.touched
+                && profileForm.controls.firstName
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Maximum 100 characters are allowed.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Last name
+              </mat-label>
+
+              <mat-icon matPrefix>
+                badge
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="lastName"
+                maxlength="100"
+                autocomplete="family-name"
+              >
+
+              @if (
+                profileForm.controls.lastName.touched
+                && profileForm.controls.lastName
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Last name is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.lastName.touched
+                && profileForm.controls.lastName
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Last name contains invalid characters.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.lastName.touched
+                && profileForm.controls.lastName
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Maximum 100 characters are allowed.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Date of birth
+              </mat-label>
+
+              <mat-icon matPrefix>
+                cake
+              </mat-icon>
+
+              <input
+                matInput
+                formControlName="dateOfBirth"
+                [matDatepicker]="dateOfBirthPicker"
+                [max]="maximumDateOfBirth"
+                autocomplete="bday"
+                readonly
+              >
+
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dateOfBirthPicker"
+              ></mat-datepicker-toggle>
+
+              <mat-datepicker
+                #dateOfBirthPicker
+                startView="multi-year"
+              ></mat-datepicker>
+
+              @if (
+                profileForm.controls.dateOfBirth.touched
+                && profileForm.controls.dateOfBirth
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Date of birth is required.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>
+                contact_phone
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Contact information
+              </h2>
+
+              <p>
+                Provide a reliable telephone number
+                for healthcare communication.
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Phone number
+              </mat-label>
+
+              <mat-icon matPrefix>
+                phone
+              </mat-icon>
+
+              <input
+                matInput
+                type="tel"
+                formControlName="phoneNumber"
+                maxlength="20"
+                autocomplete="tel"
+                placeholder="+91 98765 43210"
+              >
+
+              @if (
+                profileForm.controls.phoneNumber.touched
+                && profileForm.controls.phoneNumber
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Phone number is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.phoneNumber.touched
+                && profileForm.controls.phoneNumber
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Enter a valid phone number containing
+                  10 to 20 supported characters.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>
+                home
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Residential address
+              </h2>
+
+              <p>
+                Enter your current residential address.
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Address
+              </mat-label>
+
+              <mat-icon matPrefix>
+                location_on
+              </mat-icon>
+
+              <textarea
+                matInput
+                formControlName="addressLine"
+                rows="3"
+                maxlength="255"
+                autocomplete="street-address"
+              ></textarea>
+
+              <mat-hint align="end">
+                {{
+                  profileForm.controls
+                    .addressLine.value.length
+                }}/255
+              </mat-hint>
+
+              @if (
+                profileForm.controls.addressLine.touched
+                && profileForm.controls.addressLine
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Address is required.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                City
+              </mat-label>
+
+              <mat-icon matPrefix>
+                location_city
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="city"
+                maxlength="100"
+                autocomplete="address-level2"
+              >
+
+              @if (
+                profileForm.controls.city.touched
+                && profileForm.controls.city
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  City is required.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                State
+              </mat-label>
+
+              <mat-icon matPrefix>
+                map
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="state"
+                maxlength="100"
+                autocomplete="address-level1"
+              >
+
+              @if (
+                profileForm.controls.state.touched
+                && profileForm.controls.state
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  State is required.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Postal code
+              </mat-label>
+
+              <mat-icon matPrefix>
+                markunread_mailbox
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="postalCode"
+                maxlength="20"
+                autocomplete="postal-code"
+              >
+
+              @if (
+                profileForm.controls.postalCode.touched
+                && profileForm.controls.postalCode
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Postal code is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls.postalCode.touched
+                && profileForm.controls.postalCode
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Postal code contains invalid characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Country
+              </mat-label>
+
+              <mat-icon matPrefix>
+                public
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="country"
+                maxlength="100"
+                autocomplete="country-name"
+              >
+
+              @if (
+                profileForm.controls.country.touched
+                && profileForm.controls.country
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Country is required.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon emergency-icon">
+              <mat-icon>
+                emergency
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Emergency contact
+              </h2>
+
+              <p>
+                Provide someone who can be contacted
+                during a medical emergency.
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Emergency contact name
+              </mat-label>
+
+              <mat-icon matPrefix>
+                contact_emergency
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="emergencyContactName"
+                maxlength="150"
+              >
+
+              @if (
+                profileForm.controls
+                  .emergencyContactName.touched
+                && profileForm.controls
+                  .emergencyContactName
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Emergency contact name is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls
+                  .emergencyContactName.touched
+                && profileForm.controls
+                  .emergencyContactName
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Contact name contains invalid characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Emergency contact number
+              </mat-label>
+
+              <mat-icon matPrefix>
+                phone_in_talk
+              </mat-icon>
+
+              <input
+                matInput
+                type="tel"
+                formControlName="emergencyContactNumber"
+                maxlength="20"
+              >
+
+              @if (
+                profileForm.controls
+                  .emergencyContactNumber.touched
+                && profileForm.controls
+                  .emergencyContactNumber
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Emergency contact number is required.
+                </mat-error>
+              }
+
+              @if (
+                profileForm.controls
+                  .emergencyContactNumber.touched
+                && profileForm.controls
+                  .emergencyContactNumber
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Enter a valid emergency contact number.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <footer class="form-actions">
+        @if (
+          editing()
+          && profileState.hasProfile()
+        ) {
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="profileState.submitting()"
+            (click)="cancelEditing()"
+          >
+            Cancel
+          </button>
+        }
+
+        <button
+  mat-flat-button
+  type="submit"
+  class="save-button"
+  [disabled]="
+    profileState.submitting()
+  "
+>
+  @if (profileState.submitting()) {
+
+    <mat-spinner
+      diameter="22"
+    ></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        {{
+          profileState.profileMissing()
+            ? 'person_add'
+            : 'save'
+        }}
+      </mat-icon>
+
+      <span>
+        {{
+          profileState.profileMissing()
+            ? 'Complete profile'
+            : 'Save changes'
+        }}
+      </span>
+
+    </ng-container>
+
+  }
+</button>
+      </footer>
+    </form>
+  } @else if (
+    profileState.profile();
+    as profile
+  ) {
+    <section class="profile-overview">
+      <mat-card class="identity-card">
+        <mat-card-content>
+          <div class="identity-avatar">
+            {{
+              profile.firstName.charAt(0)
+                + profile.lastName.charAt(0)
+            }}
+          </div>
+
+          <div class="identity-copy">
+            <div class="identity-heading">
+              <div>
+                <p>
+                  Member profile
+                </p>
+
+                <h2>
+                  {{ profile.firstName }}
+                  {{ profile.lastName }}
+                </h2>
+              </div>
+
+              <span
+                class="status-badge"
+                [class]="
+                  'status-badge '
+                  + getStatusClass(profile.status)
+                "
+              >
+                {{ profile.status }}
+              </span>
+            </div>
+
+            <div class="identity-details">
+              <span>
+                <mat-icon>
+                  mail_outline
+                </mat-icon>
+
+                {{ profile.email }}
+              </span>
+
+              <span>
+                <mat-icon>
+                  phone
+                </mat-icon>
+
+                {{ profile.phoneNumber }}
+              </span>
+
+              <span>
+                <mat-icon>
+                  cake
+                </mat-icon>
+
+                {{
+                  profile.dateOfBirth
+                    | date: 'MMMM d, y'
+                }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="details-grid">
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon">
+                <mat-icon>
+                  person
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Personal details
+                </h3>
+
+                <p>
+                  Member identity and contact information
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Full name
+                </dt>
+
+                <dd>
+                  {{ profile.firstName }}
+                  {{ profile.lastName }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Date of birth
+                </dt>
+
+                <dd>
+                  {{
+                    profile.dateOfBirth
+                      | date: 'MMMM d, y'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Email
+                </dt>
+
+                <dd>
+                  {{ profile.email }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Phone number
+                </dt>
+
+                <dd>
+                  {{ profile.phoneNumber }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon">
+                <mat-icon>
+                  home
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Address
+                </h3>
+
+                <p>
+                  Current residential address
+                </p>
+              </div>
+            </header>
+
+            <address>
+              <strong>
+                {{ profile.addressLine }}
+              </strong>
+
+              <span>
+                {{ profile.city }},
+                {{ profile.state }}
+              </span>
+
+              <span>
+                {{ profile.postalCode }}
+              </span>
+
+              <span>
+                {{ profile.country }}
+              </span>
+            </address>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon emergency-detail-icon">
+                <mat-icon>
+                  emergency
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Emergency contact
+                </h3>
+
+                <p>
+                  Contact during a medical emergency
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Contact name
+                </dt>
+
+                <dd>
+                  {{ profile.emergencyContactName }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Contact number
+                </dt>
+
+                <dd>
+                  {{ profile.emergencyContactNumber }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon">
+                <mat-icon>
+                  manage_accounts
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Profile information
+                </h3>
+
+                <p>
+                  Profile status and update history
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Member ID
+                </dt>
+
+                <dd class="identifier">
+                  {{ profile.id }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Created
+                </dt>
+
+                <dd>
+                  {{
+                    profile.createdAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Last updated
+                </dt>
+
+                <dd>
+                  {{
+                    profile.updatedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+  }
+</section>

@@ -1,0 +1,656 @@
+:host {
+  display: block;
+}
+
+.payer-enrollments-page {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.page-header > div {
+  max-width: 760px;
+}
+
+.page-header > button {
+  min-height: 44px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #0f7180;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #19384d;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 780;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.description {
+  margin: 12px 0 0;
+  color: #6d8290;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.summary-card {
+  display: flex;
+  min-width: 0;
+  min-height: 104px;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e0e9ee;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.045);
+}
+
+.summary-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 15px;
+}
+
+.summary-icon mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.summary-icon--all {
+  color: #176779;
+  background: #e9f6f7;
+}
+
+.summary-icon--pending {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.summary-icon--approved {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.summary-icon--rejected {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.summary-card > div:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.summary-card span {
+  overflow: hidden;
+  color: #758894;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+.summary-card strong {
+  color: #1c3b4f;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.filter-panel {
+  display: grid;
+  grid-template-columns:
+    minmax(280px, 1fr)
+    minmax(190px, 220px)
+    auto
+    auto;
+  gap: 14px;
+  align-items: center;
+  padding: 15px 17px;
+  border: 1px solid #e0e9ee;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 22px rgba(18, 48, 67, 0.035);
+}
+
+.search-field,
+.status-field {
+  width: 100%;
+}
+
+.clear-filter-button {
+  min-height: 46px;
+  border-radius: 11px;
+  color: #4e7180;
+  white-space: nowrap;
+}
+
+.result-count {
+  color: #778b97;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.enrollment-list {
+  display: grid;
+  gap: 14px;
+}
+
+.enrollment-card {
+  overflow: hidden;
+  border: 1px solid #dfe8ed;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.05);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.enrollment-card:hover {
+  border-color: #b8d7dd;
+  box-shadow:
+    0 15px 38px rgba(18, 48, 67, 0.08);
+  transform: translateY(-1px);
+}
+
+.enrollment-card mat-card-content {
+  display: grid;
+  grid-template-columns:
+    52px minmax(0, 1fr) auto;
+  gap: 17px;
+  align-items: start;
+  padding: 21px;
+}
+
+.member-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0f7180,
+      #34aaa7
+    );
+  box-shadow:
+    0 10px 22px rgba(15, 113, 128, 0.2);
+}
+
+.member-icon mat-icon {
+  width: 27px;
+  height: 27px;
+  font-size: 27px;
+}
+
+.enrollment-body {
+  min-width: 0;
+}
+
+.heading-row {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.heading-row > div {
+  min-width: 0;
+}
+
+.plan-code {
+  display: block;
+  color: #0f7180;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.heading-row h2 {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: #233f52;
+  font-size: 18px;
+  font-weight: 760;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heading-row p {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #738895;
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-flex;
+  min-height: 29px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.status-badge mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+  line-height: 15px;
+}
+
+.status-badge--pending {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.status-badge--approved {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.status-badge--rejected {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.status-badge--cancelled {
+  color: #657782;
+  background: #edf1f3;
+}
+
+.information-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.information-grid > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  padding: 11px;
+  border-radius: 12px;
+  background: #f5f9fa;
+}
+
+.information-grid span {
+  color: #7b8e99;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.information-grid strong {
+  overflow: hidden;
+  color: #224659;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enrollment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 18px;
+  margin-top: 15px;
+  color: #728793;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.enrollment-meta > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.enrollment-meta mat-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  color: #527d89;
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.enrollment-meta strong {
+  color: #455f6e;
+  font-weight: 750;
+}
+
+.review-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 12px;
+  border: 1px solid #f0da9d;
+  border-radius: 12px;
+  color: #5f4a0d;
+  background: #fff8e7;
+}
+
+.review-preview > mat-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: #8b6b13;
+  font-size: 20px;
+}
+
+.review-preview > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.review-preview strong {
+  color: #665019;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.review-preview p {
+  margin: 0;
+  color: #6c571d;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.review-date {
+  color: #8d7a45;
+  font-size: 9px;
+}
+
+.card-actions {
+  display: flex;
+  align-self: center;
+  justify-content: flex-end;
+}
+
+.card-actions button {
+  min-width: 140px;
+  min-height: 42px;
+  border-radius: 11px;
+  color: #ffffff;
+  background: #0f7180;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.card-actions button:hover {
+  background: #0b6270;
+}
+
+.card-actions mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.state-card {
+  display: grid;
+  min-height: 340px;
+  box-sizing: border-box;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 40px;
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 2px;
+  place-items: center;
+  border-radius: 20px;
+  color: #537c89;
+  background: #e9f6f7;
+}
+
+.state-icon mat-icon {
+  width: 31px;
+  height: 31px;
+  font-size: 31px;
+}
+
+.state-card strong {
+  color: #28475a;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.state-card p {
+  max-width: 430px;
+  margin: 0;
+  color: #788b98;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.state-card button {
+  min-height: 42px;
+  margin-top: 8px;
+  border-radius: 11px;
+}
+
+.error-state .state-icon {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.error-state button {
+  color: #ffffff;
+  background: #0f7180;
+}
+
+.empty-state button {
+  color: #0f7180;
+}
+
+@media (max-width: 1200px) {
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .information-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1050px) {
+  .filter-panel {
+    grid-template-columns:
+      minmax(240px, 1fr)
+      minmax(180px, 220px);
+  }
+
+  .clear-filter-button {
+    justify-self: start;
+  }
+
+  .result-count {
+    justify-self: end;
+  }
+
+  .enrollment-card mat-card-content {
+    grid-template-columns:
+      52px minmax(0, 1fr);
+  }
+
+  .card-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 780px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-header > button {
+    align-self: flex-start;
+  }
+
+  .filter-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .clear-filter-button,
+  .result-count {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-grid,
+  .information-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .enrollment-card mat-card-content {
+    grid-template-columns:
+      44px minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .member-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .member-icon mat-icon {
+    width: 23px;
+    height: 23px;
+    font-size: 23px;
+  }
+
+  .heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .heading-row h2,
+  .heading-row p {
+    white-space: normal;
+  }
+
+  .enrollment-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .enrollment-meta > span {
+    align-items: flex-start;
+  }
+
+  .card-actions {
+    grid-column: 1 / -1;
+  }
+
+  .card-actions button {
+    width: 100%;
+  }
+
+  .state-card {
+    min-height: 300px;
+    padding: 28px 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .enrollment-card mat-card-content {
+    grid-template-columns: 1fr;
+  }
+
+  .member-icon {
+    margin-bottom: 2px;
+  }
+
+  .card-actions {
+    grid-column: auto;
+  }
+
+  .summary-card {
+    min-height: 94px;
+    padding: 15px;
+  }
+
+  .review-preview {
+    padding: 11px;
+  }
+}

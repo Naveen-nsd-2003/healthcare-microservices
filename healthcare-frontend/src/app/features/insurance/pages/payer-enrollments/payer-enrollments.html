@@ -1,0 +1,531 @@
+<section class="payer-enrollments-page">
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        Payer Operations
+      </p>
+
+      <h1>
+        Enrollment requests
+      </h1>
+
+      <p class="description">
+        Review Member insurance enrollment requests,
+        verify nominee details, and record approval
+        or rejection decisions.
+      </p>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="enrollmentState.loading()"
+      (click)="loadEnrollments()"
+    >
+      <mat-icon>
+        refresh
+      </mat-icon>
+
+      <span>
+        Refresh
+      </span>
+    </button>
+  </header>
+
+  <section class="summary-grid">
+
+    <article class="summary-card">
+      <div class="summary-icon summary-icon--all">
+        <mat-icon>
+          assignment
+        </mat-icon>
+      </div>
+
+      <div>
+        <span>
+          Total requests
+        </span>
+
+        <strong>
+          {{ enrollmentState.enrollments().length }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon summary-icon--pending">
+        <mat-icon>
+          pending_actions
+        </mat-icon>
+      </div>
+
+      <div>
+        <span>
+          Awaiting review
+        </span>
+
+        <strong>
+          {{ enrollmentState.pendingCount() }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon summary-icon--approved">
+        <mat-icon>
+          check_circle
+        </mat-icon>
+      </div>
+
+      <div>
+        <span>
+          Approved
+        </span>
+
+        <strong>
+          {{ enrollmentState.approvedCount() }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon summary-icon--rejected">
+        <mat-icon>
+          cancel
+        </mat-icon>
+      </div>
+
+      <div>
+        <span>
+          Rejected
+        </span>
+
+        <strong>
+          {{ enrollmentState.rejectedCount() }}
+        </strong>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="filter-panel">
+
+    <mat-form-field
+      appearance="outline"
+      class="search-field"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>
+        Search enrollments
+      </mat-label>
+
+      <mat-icon matPrefix>
+        search
+      </mat-icon>
+
+      <input
+        #searchInput
+        matInput
+        type="search"
+        placeholder="Member email, plan, code, or nominee"
+        [value]="searchText()"
+        (input)="updateSearch(searchInput.value)"
+      >
+
+      @if (searchText().trim().length > 0) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Clear enrollment search"
+          (click)="updateSearch('')"
+        >
+          <mat-icon>
+            close
+          </mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      class="status-field"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>
+        Enrollment status
+      </mat-label>
+
+      <mat-icon matPrefix>
+        filter_alt
+      </mat-icon>
+
+      <mat-select
+        [value]="selectedStatus()"
+        (selectionChange)="updateStatus($event.value)"
+      >
+        <mat-option value="ALL">
+          All statuses
+        </mat-option>
+
+        <mat-option value="PENDING">
+          Pending
+        </mat-option>
+
+        <mat-option value="APPROVED">
+          Approved
+        </mat-option>
+
+        <mat-option value="REJECTED">
+          Rejected
+        </mat-option>
+
+        <mat-option value="CANCELLED">
+          Cancelled
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-button
+      type="button"
+      class="clear-filter-button"
+      [disabled]="
+        searchText().trim().length === 0
+        && selectedStatus() === 'ALL'
+      "
+      (click)="clearFilters()"
+    >
+      <mat-icon>
+        filter_alt_off
+      </mat-icon>
+
+      <span>
+        Clear filters
+      </span>
+    </button>
+
+    <span class="result-count">
+      {{ filteredEnrollments().length }}
+      result(s)
+    </span>
+
+  </section>
+
+  @if (enrollmentState.loading()) {
+
+    <section class="state-card loading-state">
+      <mat-spinner diameter="44"></mat-spinner>
+
+      <strong>
+        Loading enrollment requests
+      </strong>
+
+      <p>
+        Please wait while the enrollment requests
+        for your payer organization are retrieved.
+      </p>
+    </section>
+
+  } @else if (enrollmentState.errorMessage()) {
+
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load enrollment requests
+      </strong>
+
+      <p>
+        {{ enrollmentState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        (click)="loadEnrollments()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+
+        <span>
+          Try again
+        </span>
+      </button>
+    </section>
+
+  } @else if (filteredEnrollments().length === 0) {
+
+    <section class="state-card empty-state">
+      <div class="state-icon">
+        <mat-icon>
+          assignment_late
+        </mat-icon>
+      </div>
+
+      <strong>
+        No enrollment requests found
+      </strong>
+
+      @if (
+        searchText().trim().length > 0
+        || selectedStatus() !== 'ALL'
+      ) {
+        <p>
+          No enrollment requests match the selected
+          search value and status filter.
+        </p>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+        >
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+          <span>
+            Clear filters
+          </span>
+        </button>
+      } @else {
+        <p>
+          New Member insurance enrollment requests
+          will appear here when submitted.
+        </p>
+      }
+    </section>
+
+  } @else {
+
+    <section class="enrollment-list">
+
+      @for (
+        enrollment of filteredEnrollments();
+        track enrollment.id
+      ) {
+
+        <mat-card class="enrollment-card">
+          <mat-card-content>
+
+            <div class="member-icon">
+              <mat-icon>
+                person
+              </mat-icon>
+            </div>
+
+            <div class="enrollment-body">
+
+              <div class="heading-row">
+
+                <div>
+                  <span class="plan-code">
+                    {{ enrollment.planCode }}
+                  </span>
+
+                  <h2>
+                    {{ enrollment.planName }}
+                  </h2>
+
+                  <p>
+                    {{ enrollment.memberEmail }}
+                  </p>
+                </div>
+
+                <span
+                  class="status-badge"
+                  [class]="
+                    'status-badge '
+                    + getStatusClass(enrollment.status)
+                  "
+                >
+                  <mat-icon>
+                    {{ getStatusIcon(enrollment.status) }}
+                  </mat-icon>
+
+                  <span>
+                    {{ enrollment.status }}
+                  </span>
+                </span>
+
+              </div>
+
+              <div class="information-grid">
+
+                <div>
+                  <span>
+                    Coverage amount
+                  </span>
+
+                  <strong>
+                    {{
+                      enrollment.coverageAmount
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-0':
+                          'en-IN'
+                    }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Monthly premium
+                  </span>
+
+                  <strong>
+                    {{
+                      enrollment.monthlyPremium
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Requested coverage date
+                  </span>
+
+                  <strong>
+                    {{
+                      enrollment.requestedCoverageStartDate
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Submitted date
+                  </span>
+
+                  <strong>
+                    {{
+                      enrollment.createdAt
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+                </div>
+
+              </div>
+
+              <div class="enrollment-meta">
+
+                <span>
+                  <mat-icon>
+                    contact_emergency
+                  </mat-icon>
+
+                  <span>
+                    Nominee:
+                  </span>
+
+                  <strong>
+                    {{ enrollment.nomineeName }}
+                  </strong>
+                </span>
+
+                <span>
+                  <mat-icon>
+                    family_restroom
+                  </mat-icon>
+
+                  <span>
+                    Relationship:
+                  </span>
+
+                  <strong>
+                    {{
+                      getRelationshipLabel(
+                        enrollment.nomineeRelationship
+                      )
+                    }}
+                  </strong>
+                </span>
+
+                <span>
+                  <mat-icon>
+                    phone
+                  </mat-icon>
+
+                  <span>
+                    {{ enrollment.nomineeContactNumber }}
+                  </span>
+                </span>
+
+              </div>
+
+              @if (enrollment.reviewRemarks) {
+
+                <section class="review-preview">
+                  <mat-icon>
+                    rate_review
+                  </mat-icon>
+
+                  <div>
+                    <strong>
+                      Review remarks
+                    </strong>
+
+                    <p>
+                      {{ enrollment.reviewRemarks }}
+                    </p>
+
+                    @if (enrollment.reviewedAt) {
+                      <span class="review-date">
+                        Reviewed on
+                        {{
+                          enrollment.reviewedAt
+                            | date: 'MMM d, y, h:mm a'
+                        }}
+                      </span>
+                    }
+                  </div>
+                </section>
+
+              }
+
+            </div>
+
+            <div class="card-actions">
+              <button
+                mat-flat-button
+                type="button"
+                (click)="viewEnrollment(enrollment)"
+              >
+                <span>
+                  @if (enrollment.status === 'PENDING') {
+                    Review details
+                  } @else {
+                    View details
+                  }
+                </span>
+
+                <mat-icon>
+                  arrow_forward
+                </mat-icon>
+              </button>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+
+      }
+
+    </section>
+
+  }
+
+</section>

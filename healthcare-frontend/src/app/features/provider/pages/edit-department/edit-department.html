@@ -1,0 +1,395 @@
+<section class="edit-department-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="departmentState.updating()"
+      (click)="goBackToDetails()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to department details</span>
+    </button>
+  
+    @if (departmentState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading department</strong>
+  
+        <p>
+          Please wait while the department information
+          is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      departmentState.errorMessage()
+      && !departmentState.selectedDepartment()
+    ) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load department</strong>
+  
+        <p>
+          {{ departmentState.errorMessage() }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBackToDepartments()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to departments</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="loadDepartment()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+  
+    } @else if (
+      departmentState.selectedDepartment();
+      as department
+    ) {
+  
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">
+            Provider Administration
+          </p>
+  
+          <h1>Edit department</h1>
+  
+          <p class="description">
+            Update the department name, clinical description,
+            contact number, and organization location.
+          </p>
+        </div>
+  
+        @if (department.status === 'ACTIVE') {
+          <span class="status-badge status-badge--active">
+            <mat-icon>check_circle</mat-icon>
+            <span>ACTIVE</span>
+          </span>
+        } @else {
+          <span class="status-badge status-badge--inactive">
+            <mat-icon>block</mat-icon>
+            <span>INACTIVE</span>
+          </span>
+        }
+      </header>
+  
+      <section class="department-identity">
+        <div class="identity-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <div>
+          <span>Department code</span>
+          <strong>{{ department.departmentCode }}</strong>
+        </div>
+  
+        <div>
+          <span>Organization</span>
+          <strong>{{ department.providerOrganizationName }}</strong>
+        </div>
+      </section>
+  
+      <section class="read-only-notice">
+        <mat-icon>lock</mat-icon>
+  
+        <div>
+          <strong>Department code cannot be changed</strong>
+  
+          <p>
+            The department code is a permanent identifier.
+            Department status is managed from the Department
+            Details page.
+          </p>
+        </div>
+      </section>
+  
+      @if (departmentState.errorMessage()) {
+        <section
+          class="form-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ departmentState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <form
+        class="department-form"
+        [formGroup]="departmentForm"
+        (ngSubmit)="updateDepartment()"
+        novalidate
+      >
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <header class="section-header">
+              <div class="section-icon">
+                <mat-icon>account_tree</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Department information</h2>
+  
+                <p>
+                  Update the department name and its
+                  clinical-service description.
+                </p>
+              </div>
+            </header>
+  
+            <div class="form-grid">
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Department name</mat-label>
+  
+                <mat-icon matPrefix>domain</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="departmentName"
+                  maxlength="150"
+                  autocomplete="off"
+                >
+  
+                <mat-hint align="end">
+                  {{ departmentForm.controls.departmentName.value.length }}/150
+                </mat-hint>
+  
+                @if (
+                  departmentForm.controls.departmentName.touched
+                  && departmentForm.controls.departmentName.hasError('required')
+                ) {
+                  <mat-error>
+                    Department name is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  departmentForm.controls.departmentName.touched
+                  && departmentForm.controls.departmentName.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Department name must not exceed 150 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Department description</mat-label>
+  
+                <textarea
+                  matInput
+                  formControlName="description"
+                  rows="6"
+                  maxlength="1000"
+                  placeholder="Describe the clinical services provided by this department"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{ departmentForm.controls.description.value.length }}/1000
+                </mat-hint>
+  
+                @if (
+                  departmentForm.controls.description.touched
+                  && departmentForm.controls.description.hasError('required')
+                ) {
+                  <mat-error>
+                    Department description is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  departmentForm.controls.description.touched
+                  && departmentForm.controls.description.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Description must not exceed 1000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <header class="section-header">
+              <div class="section-icon contact-icon">
+                <mat-icon>contact_phone</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Contact and location</h2>
+  
+                <p>
+                  Maintain optional contact and location
+                  information for this department.
+                </p>
+              </div>
+            </header>
+  
+            <div class="form-grid">
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Contact number</mat-label>
+  
+                <mat-icon matPrefix>phone</mat-icon>
+  
+                <input
+                  matInput
+                  type="tel"
+                  formControlName="contactNumber"
+                  maxlength="20"
+                  autocomplete="tel"
+                  placeholder="+91 98765 43210"
+                >
+  
+                <mat-hint>Optional</mat-hint>
+  
+                @if (
+                  departmentForm.controls.contactNumber.touched
+                  && departmentForm.controls.contactNumber.hasError('pattern')
+                ) {
+                  <mat-error>
+                    Enter a valid contact number containing
+                    10 to 20 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Department location</mat-label>
+  
+                <mat-icon matPrefix>location_on</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="location"
+                  maxlength="150"
+                  autocomplete="off"
+                  placeholder="Block A, Second Floor"
+                >
+  
+                <mat-hint align="end">
+                  {{ departmentForm.controls.location.value.length }}/150
+                </mat-hint>
+  
+                @if (
+                  departmentForm.controls.location.touched
+                  && departmentForm.controls.location.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Location must not exceed 150 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <section class="update-notice">
+          <mat-icon>info</mat-icon>
+  
+          <div>
+            <strong>Review department changes</strong>
+  
+            <p>
+              Updating this form does not change the department
+              code or status. Status can be managed from the
+              Department Details page.
+            </p>
+          </div>
+        </section>
+  
+        <footer class="form-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="departmentState.updating()"
+            (click)="goBackToDetails()"
+          >
+            <span>Cancel</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="submit"
+            class="save-button"
+            [disabled]="departmentState.updating()"
+          >
+            @if (departmentState.updating()) {
+              <mat-spinner diameter="22"></mat-spinner>
+              <span>Saving...</span>
+            } @else {
+              <mat-icon>save</mat-icon>
+              <span>Save changes</span>
+            }
+          </button>
+        </footer>
+  
+      </form>
+  
+    } @else {
+  
+      <section class="state-card">
+        <div class="state-icon unavailable-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <strong>Department information unavailable</strong>
+  
+        <p>
+          The requested department information is
+          not currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBackToDepartments()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          <span>Back to departments</span>
+        </button>
+      </section>
+  
+    }
+  
+  </section>

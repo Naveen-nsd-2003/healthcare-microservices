@@ -1,0 +1,354 @@
+<section class="create-department-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="departmentState.creating()"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to departments</span>
+    </button>
+  
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">
+          Provider Administration
+        </p>
+  
+        <h1>
+          Create department
+        </h1>
+  
+        <p class="description">
+          Add a clinical department to your healthcare
+          organization. Doctors can be assigned after
+          the department is created.
+        </p>
+      </div>
+  
+      <span class="status-label">
+        <mat-icon>check_circle</mat-icon>
+        <span>Created as active</span>
+      </span>
+    </header>
+  
+    @if (departmentState.errorMessage()) {
+      <section
+        class="form-error"
+        role="alert"
+      >
+        <mat-icon>error_outline</mat-icon>
+  
+        <span>
+          {{ departmentState.errorMessage() }}
+        </span>
+      </section>
+    }
+  
+    <form
+      class="department-form"
+      [formGroup]="departmentForm"
+      (ngSubmit)="createDepartment()"
+      novalidate
+    >
+  
+      <mat-card class="form-card">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>account_tree</mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Department information
+              </h2>
+  
+              <p>
+                Enter the name, permanent code, and
+                description for this department.
+              </p>
+            </div>
+          </header>
+  
+          <div class="form-grid">
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Department name
+              </mat-label>
+  
+              <mat-icon matPrefix>domain</mat-icon>
+  
+              <input
+                matInput
+                type="text"
+                formControlName="departmentName"
+                maxlength="150"
+                autocomplete="off"
+                placeholder="Cardiology"
+              >
+  
+              <mat-hint align="end">
+                {{ departmentForm.controls.departmentName.value.length }}/150
+              </mat-hint>
+  
+              @if (
+                departmentForm.controls.departmentName.touched
+                && departmentForm.controls.departmentName.hasError('required')
+              ) {
+                <mat-error>
+                  Department name is required.
+                </mat-error>
+              }
+  
+              @if (
+                departmentForm.controls.departmentName.touched
+                && departmentForm.controls.departmentName.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Department name must not exceed 150 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Department code
+              </mat-label>
+  
+              <mat-icon matPrefix>qr_code</mat-icon>
+  
+              <input
+                matInput
+                type="text"
+                formControlName="departmentCode"
+                maxlength="50"
+                autocomplete="off"
+                class="uppercase-input"
+                placeholder="CARD-001"
+              >
+  
+              <mat-hint>
+                Letters, numbers, and hyphens only
+              </mat-hint>
+  
+              @if (
+                departmentForm.controls.departmentCode.touched
+                && departmentForm.controls.departmentCode.hasError('required')
+              ) {
+                <mat-error>
+                  Department code is required.
+                </mat-error>
+              }
+  
+              @if (
+                departmentForm.controls.departmentCode.touched
+                && departmentForm.controls.departmentCode.hasError('minlength')
+              ) {
+                <mat-error>
+                  Department code must contain at least 2 characters.
+                </mat-error>
+              }
+  
+              @if (
+                departmentForm.controls.departmentCode.touched
+                && departmentForm.controls.departmentCode.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Department code must not exceed 50 characters.
+                </mat-error>
+              }
+  
+              @if (
+                departmentForm.controls.departmentCode.touched
+                && departmentForm.controls.departmentCode.hasError('pattern')
+              ) {
+                <mat-error>
+                  Use only letters, numbers, and hyphens.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Department description
+              </mat-label>
+  
+              <textarea
+                matInput
+                formControlName="description"
+                rows="5"
+                maxlength="1000"
+                placeholder="Describe the clinical services provided by this department"
+              ></textarea>
+  
+              <mat-hint align="end">
+                {{ departmentForm.controls.description.value.length }}/1000
+              </mat-hint>
+  
+              @if (
+                departmentForm.controls.description.touched
+                && departmentForm.controls.description.hasError('required')
+              ) {
+                <mat-error>
+                  Department description is required.
+                </mat-error>
+              }
+  
+              @if (
+                departmentForm.controls.description.touched
+                && departmentForm.controls.description.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Description must not exceed 1000 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </div>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="form-card">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon contact-icon">
+              <mat-icon>contact_phone</mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Contact and location
+              </h2>
+  
+              <p>
+                These fields are optional and can
+                be updated later.
+              </p>
+            </div>
+          </header>
+  
+          <div class="form-grid">
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Contact number
+              </mat-label>
+  
+              <mat-icon matPrefix>phone</mat-icon>
+  
+              <input
+                matInput
+                type="tel"
+                formControlName="contactNumber"
+                maxlength="20"
+                autocomplete="tel"
+                placeholder="+91 98765 43210"
+              >
+  
+              <mat-hint>
+                Optional
+              </mat-hint>
+  
+              @if (
+                departmentForm.controls.contactNumber.touched
+                && departmentForm.controls.contactNumber.hasError('pattern')
+              ) {
+                <mat-error>
+                  Enter a valid contact number with
+                  10 to 20 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Department location
+              </mat-label>
+  
+              <mat-icon matPrefix>location_on</mat-icon>
+  
+              <input
+                matInput
+                type="text"
+                formControlName="location"
+                maxlength="150"
+                autocomplete="off"
+                placeholder="Block A, Second Floor"
+              >
+  
+              <mat-hint align="end">
+                {{ departmentForm.controls.location.value.length }}/150
+              </mat-hint>
+  
+              @if (
+                departmentForm.controls.location.touched
+                && departmentForm.controls.location.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Location must not exceed 150 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </div>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <section class="information-notice">
+        <mat-icon>info</mat-icon>
+  
+        <div>
+          <strong>
+            Department lifecycle
+          </strong>
+  
+          <p>
+            The department will be created with ACTIVE status.
+            The department code becomes permanent after creation.
+            Status can be managed from the Department Details page.
+          </p>
+        </div>
+      </section>
+  
+      <footer class="form-actions">
+  
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="departmentState.creating()"
+          (click)="goBack()"
+        >
+          <span>Cancel</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="submit"
+          class="create-button"
+          [disabled]="departmentState.creating()"
+        >
+          @if (departmentState.creating()) {
+            <mat-spinner diameter="22"></mat-spinner>
+            <span>Creating...</span>
+          } @else {
+            <mat-icon>add_circle</mat-icon>
+            <span>Create department</span>
+          }
+        </button>
+  
+      </footer>
+  
+    </form>
+  
+  </section>

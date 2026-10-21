@@ -1,0 +1,1348 @@
+<section class="payer-claim-details-page">
+    <header class="page-toolbar">
+      <button
+        mat-button
+        type="button"
+        class="back-button"
+        [disabled]="actionInProgress()"
+        (click)="goBack()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to claims</span>
+      </button>
+  
+      <button
+        mat-stroked-button
+        type="button"
+        class="refresh-button"
+        [disabled]="
+          claimState.detailsLoading()
+          || actionInProgress()
+        "
+        (click)="loadClaim()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+    </header>
+  
+    @if (claimState.detailsLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading claim review
+        </strong>
+  
+        <p>
+          Please wait while the insurance claim information
+          is retrieved.
+        </p>
+      </section>
+    } @else if (
+      claimState.selectedClaim();
+      as claim
+    ) {
+      <article class="claim-document">
+        <header class="claim-header">
+          <div class="claim-brand">
+            <div class="claim-brand-icon">
+              <mat-icon>fact_check</mat-icon>
+            </div>
+  
+            <div class="claim-brand-copy">
+              <p class="eyebrow">
+                Payer Claim Review
+              </p>
+  
+              <h1>
+                {{ claim.claimNumber }}
+              </h1>
+  
+              <p>
+                Insurance claim submitted by
+                {{ claim.providerOrganizationName }}
+              </p>
+            </div>
+          </div>
+  
+          <div class="claim-header-status">
+            <span
+              class="status-badge"
+              [class.submitted-status]="
+                claim.status === 'SUBMITTED'
+              "
+              [class.review-status]="
+                claim.status === 'UNDER_REVIEW'
+              "
+              [class.approved-status]="
+                claim.status === 'APPROVED'
+              "
+              [class.rejected-status]="
+                claim.status === 'REJECTED'
+              "
+              [class.cancelled-status]="
+                claim.status === 'CANCELLED'
+              "
+            >
+              <mat-icon>
+                {{ getStatusIcon(claim.status) }}
+              </mat-icon>
+  
+              <span>
+                {{ getStatusLabel(claim.status) }}
+              </span>
+            </span>
+  
+            <span class="claim-id-label">
+              Claim ID
+            </span>
+  
+            <strong class="technical-value">
+              {{ claim.id }}
+            </strong>
+          </div>
+        </header>
+  
+        <section
+          class="status-banner"
+          [class.submitted-banner]="
+            claim.status === 'SUBMITTED'
+          "
+          [class.review-banner]="
+            claim.status === 'UNDER_REVIEW'
+          "
+          [class.approved-banner]="
+            claim.status === 'APPROVED'
+          "
+          [class.rejected-banner]="
+            claim.status === 'REJECTED'
+          "
+          [class.cancelled-banner]="
+            claim.status === 'CANCELLED'
+          "
+        >
+          <div class="status-banner-icon">
+            <mat-icon>
+              {{ getStatusIcon(claim.status) }}
+            </mat-icon>
+          </div>
+  
+          <div>
+            <strong>
+              {{ getStatusTitle(claim.status) }}
+            </strong>
+  
+            <p>
+              {{ getStatusDescription(claim.status) }}
+            </p>
+          </div>
+        </section>
+  
+        <section class="claim-timeline">
+          <div class="timeline-stage completed-stage">
+            <div class="timeline-marker">
+              <mat-icon>send</mat-icon>
+            </div>
+  
+            <div>
+              <strong>
+                Submitted
+              </strong>
+  
+              <span>
+                {{
+                  claim.submittedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </span>
+            </div>
+          </div>
+  
+          <div class="timeline-connector"></div>
+  
+          <div
+            class="timeline-stage"
+            [class.current-stage]="
+              claim.status === 'SUBMITTED'
+            "
+            [class.completed-stage]="
+              claim.status === 'UNDER_REVIEW'
+              || claim.status === 'APPROVED'
+              || claim.status === 'REJECTED'
+            "
+            [class.inactive-stage]="
+              claim.status === 'CANCELLED'
+            "
+          >
+            <div class="timeline-marker">
+              <mat-icon>manage_search</mat-icon>
+            </div>
+  
+            <div>
+              <strong>
+                Under review
+              </strong>
+  
+              @if (claim.reviewedAt) {
+                <span>
+                  {{
+                    claim.reviewedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </span>
+              } @else {
+                <span>
+                  Review not started
+                </span>
+              }
+            </div>
+          </div>
+  
+          <div class="timeline-connector"></div>
+  
+          <div
+            class="timeline-stage"
+            [class.approved-stage]="
+              claim.status === 'APPROVED'
+            "
+            [class.rejected-stage]="
+              claim.status === 'REJECTED'
+            "
+            [class.cancelled-stage]="
+              claim.status === 'CANCELLED'
+            "
+            [class.inactive-stage]="
+              claim.status === 'SUBMITTED'
+              || claim.status === 'UNDER_REVIEW'
+            "
+          >
+            <div class="timeline-marker">
+              @if (claim.status === 'REJECTED') {
+                <mat-icon>cancel</mat-icon>
+              } @else if (
+                claim.status === 'CANCELLED'
+              ) {
+                <mat-icon>block</mat-icon>
+              } @else {
+                <mat-icon>verified</mat-icon>
+              }
+            </div>
+  
+            <div>
+              @if (claim.status === 'APPROVED') {
+                <strong>
+                  Approved
+                </strong>
+              } @else if (
+                claim.status === 'REJECTED'
+              ) {
+                <strong>
+                  Rejected
+                </strong>
+              } @else if (
+                claim.status === 'CANCELLED'
+              ) {
+                <strong>
+                  Cancelled
+                </strong>
+              } @else {
+                <strong>
+                  Resolution
+                </strong>
+              }
+  
+              @if (claim.resolvedAt) {
+                <span>
+                  {{
+                    claim.resolvedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </span>
+              } @else {
+                <span>
+                  Pending decision
+                </span>
+              }
+            </div>
+          </div>
+        </section>
+  
+        <section class="review-actions">
+          @if (claim.status === 'SUBMITTED') {
+            <div class="review-guidance">
+              <mat-icon>info</mat-icon>
+  
+              <div>
+                <strong>
+                  Review has not started
+                </strong>
+  
+                <p>
+                  Start the review before recording an approval
+                  or rejection decision.
+                </p>
+              </div>
+            </div>
+  
+            <button
+              mat-flat-button
+              type="button"
+              class="start-review-button"
+              [disabled]="actionInProgress()"
+              (click)="startReview()"
+            >
+              @if (claimState.reviewing()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Starting review...</span>
+              } @else {
+                <mat-icon>manage_search</mat-icon>
+                <span>Start claim review</span>
+              }
+            </button>
+          }
+  
+          @if (claim.status === 'UNDER_REVIEW') {
+            <div class="review-guidance">
+              <mat-icon>rate_review</mat-icon>
+  
+              <div>
+                <strong>
+                  Payer decision required
+                </strong>
+  
+                <p>
+                  Review the claim and record an approval or
+                  rejection decision.
+                </p>
+              </div>
+            </div>
+  
+            <div class="decision-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                class="reject-action-button"
+                [disabled]="actionInProgress()"
+                (click)="openRejectPanel()"
+              >
+                <mat-icon>cancel</mat-icon>
+                <span>Reject claim</span>
+              </button>
+  
+              <button
+                mat-flat-button
+                type="button"
+                class="approve-action-button"
+                [disabled]="actionInProgress()"
+                (click)="openApprovePanel()"
+              >
+                <mat-icon>verified</mat-icon>
+                <span>Approve claim</span>
+              </button>
+            </div>
+          }
+  
+          @if (
+            claim.status === 'APPROVED'
+            || claim.status === 'REJECTED'
+            || claim.status === 'CANCELLED'
+          ) {
+            <div class="review-guidance resolved-guidance">
+              <mat-icon>
+                {{ getStatusIcon(claim.status) }}
+              </mat-icon>
+  
+              <div>
+                <strong>
+                  No additional review action is available
+                </strong>
+  
+                <p>
+                  This claim has reached a final status and is
+                  now read-only.
+                </p>
+              </div>
+            </div>
+          }
+        </section>
+  
+        @if (
+          activeDecisionPanel() === 'APPROVE'
+          && claim.status === 'UNDER_REVIEW'
+        ) {
+          <section class="decision-panel approval-panel">
+            <header>
+              <div class="decision-panel-icon">
+                <mat-icon>verified</mat-icon>
+              </div>
+  
+              <div>
+                <h2>
+                  Approve insurance claim
+                </h2>
+  
+                <p>
+                  Enter the approved amount and document the
+                  Payer's review remarks.
+                </p>
+              </div>
+            </header>
+  
+            @if (claimState.errorMessage()) {
+              <section
+                class="form-error"
+                role="alert"
+              >
+                <mat-icon>error_outline</mat-icon>
+  
+                <span>
+                  {{ claimState.errorMessage() }}
+                </span>
+              </section>
+            }
+  
+            <form
+              [formGroup]="approveForm"
+              (ngSubmit)="approveClaim()"
+              novalidate
+            >
+              <section class="approval-guidance">
+                <div>
+                  <span>
+                    Claimed amount
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.claimedAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <span>
+                    Policy coverage
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.coverageAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <span>
+                    Maximum approval
+                  </span>
+  
+                  <strong>
+                    {{
+                      maximumApprovalAmount()
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+              </section>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Approved amount
+                </mat-label>
+  
+                <span matTextPrefix>
+                  ₹&nbsp;
+                </span>
+  
+                <input
+                  matInput
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  inputmode="decimal"
+                  formControlName="approvedAmount"
+                  placeholder="0.00"
+                  (input)="revalidateApprovedAmount()"
+                />
+  
+                @if (
+                  maximumApprovalAmount() !== null
+                ) {
+                  <mat-hint>
+                    Maximum:
+                    {{
+                      maximumApprovalAmount()
+                        | currency: 'INR'
+                    }}
+                  </mat-hint>
+                }
+  
+                @if (
+                  approveForm.controls
+                    .approvedAmount.touched
+                  && approveForm.controls
+                    .approvedAmount.hasError('required')
+                ) {
+                  <mat-error>
+                    Approved amount is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  approveForm.controls
+                    .approvedAmount.touched
+                  && approveForm.controls
+                    .approvedAmount.hasError(
+                      'positiveAmount'
+                    )
+                ) {
+                  <mat-error>
+                    Approved amount must be greater
+                    than zero.
+                  </mat-error>
+                }
+  
+                @if (
+                  approveForm.controls
+                    .approvedAmount.touched
+                  && approveForm.controls
+                    .approvedAmount.hasError(
+                      'moneyPrecision'
+                    )
+                ) {
+                  <mat-error>
+                    Enter up to 10 integer digits
+                    and 2 decimal places.
+                  </mat-error>
+                }
+  
+                @if (
+                  approveForm.controls
+                    .approvedAmount.touched
+                  && approveForm.controls
+                    .approvedAmount.hasError(
+                      'maximumApprovalAmount'
+                    )
+                ) {
+                  <mat-error>
+                    Approved amount exceeds the
+                    permitted maximum.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Review remarks
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="6"
+                  maxlength="1500"
+                  formControlName="reviewRemarks"
+                  placeholder="Document the approval review and decision"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    approveForm.controls
+                      .reviewRemarks.value.length
+                  }}/1500
+                </mat-hint>
+  
+                @if (
+                  approveForm.controls
+                    .reviewRemarks.touched
+                  && approveForm.controls
+                    .reviewRemarks.hasError('required')
+                ) {
+                  <mat-error>
+                    Review remarks are required.
+                  </mat-error>
+                }
+  
+                @if (
+                  approveForm.controls
+                    .reviewRemarks.touched
+                  && approveForm.controls
+                    .reviewRemarks.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Review remarks must not exceed
+                    1500 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <div class="decision-form-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="actionInProgress()"
+                  (click)="closeDecisionPanel()"
+                >
+                  <mat-icon>close</mat-icon>
+                  <span>Cancel</span>
+                </button>
+  
+                @if (claimState.approving()) {
+                  <button
+                    mat-flat-button
+                    type="button"
+                    class="confirm-approve-button"
+                    disabled
+                  >
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Approving claim...</span>
+                  </button>
+                } @else {
+                  <button
+                    mat-flat-button
+                    type="submit"
+                    class="confirm-approve-button"
+                  >
+                    <mat-icon>verified</mat-icon>
+                    <span>Confirm approval</span>
+                  </button>
+                }
+              </div>
+            </form>
+          </section>
+        }
+  
+        @if (
+          activeDecisionPanel() === 'REJECT'
+          && claim.status === 'UNDER_REVIEW'
+        ) {
+          <section class="decision-panel rejection-panel">
+            <header>
+              <div class="decision-panel-icon">
+                <mat-icon>cancel</mat-icon>
+              </div>
+  
+              <div>
+                <h2>
+                  Reject insurance claim
+                </h2>
+  
+                <p>
+                  Record the rejection reason and provide
+                  complete review remarks.
+                </p>
+              </div>
+            </header>
+  
+            @if (claimState.errorMessage()) {
+              <section
+                class="form-error"
+                role="alert"
+              >
+                <mat-icon>error_outline</mat-icon>
+  
+                <span>
+                  {{ claimState.errorMessage() }}
+                </span>
+              </section>
+            }
+  
+            <form
+              [formGroup]="rejectForm"
+              (ngSubmit)="rejectClaim()"
+              novalidate
+            >
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Rejection reason
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="5"
+                  maxlength="1000"
+                  formControlName="rejectionReason"
+                  placeholder="Explain why the claim is being rejected"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    rejectForm.controls
+                      .rejectionReason.value.length
+                  }}/1000
+                </mat-hint>
+  
+                @if (
+                  rejectForm.controls
+                    .rejectionReason.touched
+                  && rejectForm.controls
+                    .rejectionReason.hasError('required')
+                ) {
+                  <mat-error>
+                    Rejection reason is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  rejectForm.controls
+                    .rejectionReason.touched
+                  && rejectForm.controls
+                    .rejectionReason.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Rejection reason must not exceed
+                    1000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Review remarks
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="6"
+                  maxlength="1500"
+                  formControlName="reviewRemarks"
+                  placeholder="Document the claim review and rejection decision"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    rejectForm.controls
+                      .reviewRemarks.value.length
+                  }}/1500
+                </mat-hint>
+  
+                @if (
+                  rejectForm.controls
+                    .reviewRemarks.touched
+                  && rejectForm.controls
+                    .reviewRemarks.hasError('required')
+                ) {
+                  <mat-error>
+                    Review remarks are required.
+                  </mat-error>
+                }
+  
+                @if (
+                  rejectForm.controls
+                    .reviewRemarks.touched
+                  && rejectForm.controls
+                    .reviewRemarks.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Review remarks must not exceed
+                    1500 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <div class="decision-form-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="actionInProgress()"
+                  (click)="closeDecisionPanel()"
+                >
+                  <mat-icon>close</mat-icon>
+                  <span>Cancel</span>
+                </button>
+  
+                @if (claimState.rejecting()) {
+                  <button
+                    mat-flat-button
+                    type="button"
+                    class="confirm-reject-button"
+                    disabled
+                  >
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Rejecting claim...</span>
+                  </button>
+                } @else {
+                  <button
+                    mat-flat-button
+                    type="submit"
+                    class="confirm-reject-button"
+                  >
+                    <mat-icon>cancel</mat-icon>
+                    <span>Confirm rejection</span>
+                  </button>
+                }
+              </div>
+            </form>
+          </section>
+        }
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              01
+            </span>
+  
+            <div>
+              <p>
+                Claim parties
+              </p>
+  
+              <h2>
+                Member and Provider information
+              </h2>
+            </div>
+          </div>
+  
+          <div class="details-grid">
+            <div>
+              <span>Member email</span>
+              <strong>{{ claim.memberEmail }}</strong>
+            </div>
+  
+            <div>
+              <span>Member ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.memberId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Provider organization</span>
+  
+              <strong>
+                {{ claim.providerOrganizationName }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Provider ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.providerId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Department</span>
+              <strong>{{ claim.departmentName }}</strong>
+            </div>
+  
+            <div>
+              <span>Doctor</span>
+              <strong>{{ claim.doctorName }}</strong>
+            </div>
+  
+            <div>
+              <span>Specialization</span>
+  
+              <strong>
+                {{ claim.doctorSpecialization }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Service date</span>
+  
+              <strong>
+                {{
+                  claim.serviceDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+          </div>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              02
+            </span>
+  
+            <div>
+              <p>
+                Clinical documentation
+              </p>
+  
+              <h2>
+                Verified Medical Record snapshot
+              </h2>
+            </div>
+          </div>
+  
+          <div class="clinical-grid">
+            <article>
+              <header>
+                <mat-icon>fact_check</mat-icon>
+                <span>Diagnosis</span>
+              </header>
+  
+              <p>
+                {{ claim.diagnosisSnapshot }}
+              </p>
+            </article>
+  
+            <article>
+              <header>
+                <mat-icon>health_and_safety</mat-icon>
+                <span>Treatment plan</span>
+              </header>
+  
+              <p>
+                {{ claim.treatmentPlanSnapshot }}
+              </p>
+            </article>
+          </div>
+  
+          <article class="claim-description">
+            <header>
+              <mat-icon>description</mat-icon>
+              <span>Claim description</span>
+            </header>
+  
+            <p>
+              {{ claim.claimDescription }}
+            </p>
+          </article>
+  
+          <div class="reference-grid">
+            <div>
+              <span>Appointment ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.appointmentId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Medical Record ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.medicalRecordId }}
+              </strong>
+            </div>
+          </div>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              03
+            </span>
+  
+            <div>
+              <p>
+                Insurance coverage
+              </p>
+  
+              <h2>
+                Policy and benefit information
+              </h2>
+            </div>
+          </div>
+  
+          <div class="policy-header">
+            <div class="policy-icon">
+              <mat-icon>shield</mat-icon>
+            </div>
+  
+            <div>
+              <span>
+                {{ claim.payerOrganizationName }}
+              </span>
+  
+              <h3>
+                {{ claim.planName }}
+              </h3>
+  
+              <p>
+                {{ claim.planCode }}
+                ·
+                {{ claim.policyNumber }}
+              </p>
+            </div>
+          </div>
+  
+          <div class="details-grid">
+            <div>
+              <span>Coverage amount</span>
+  
+              <strong>
+                {{
+                  claim.coverageAmount
+                    | currency: 'INR'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Annual deductible</span>
+  
+              <strong>
+                {{
+                  claim.annualDeductible
+                    | currency: 'INR'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Copay</span>
+  
+              <strong>
+                {{ claim.copayPercentage }}%
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coinsurance</span>
+  
+              <strong>
+                {{ claim.coinsurancePercentage }}%
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coverage starts</span>
+  
+              <strong>
+                {{
+                  claim.policyCoverageStartDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coverage ends</span>
+  
+              <strong>
+                {{
+                  claim.policyCoverageEndDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Policy ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.policyId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Plan ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.planId }}
+              </strong>
+            </div>
+          </div>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              04
+            </span>
+  
+            <div>
+              <p>
+                Financial review
+              </p>
+  
+              <h2>
+                Claim and coverage amounts
+              </h2>
+            </div>
+          </div>
+  
+          <div class="financial-grid">
+            <article>
+              <span>
+                Consultation fee
+              </span>
+  
+              <strong>
+                {{
+                  claim.consultationFee
+                    | currency: 'INR'
+                }}
+              </strong>
+            </article>
+  
+            <article class="claimed-amount">
+              <span>
+                Claimed amount
+              </span>
+  
+              <strong>
+                {{
+                  claim.claimedAmount
+                    | currency: 'INR'
+                }}
+              </strong>
+            </article>
+  
+            <article
+              [class.approved-amount]="
+                claim.approvedAmount !== null
+              "
+            >
+              <span>
+                Approved amount
+              </span>
+  
+              @if (claim.approvedAmount !== null) {
+                <strong>
+                  {{
+                    claim.approvedAmount
+                      | currency: 'INR'
+                  }}
+                </strong>
+              } @else {
+                <strong class="pending-value">
+                  Not resolved
+                </strong>
+              }
+            </article>
+          </div>
+        </section>
+  
+        @if (claim.reviewRemarks) {
+          <section class="details-section resolution-section">
+            <div class="section-heading">
+              <span class="section-number">
+                05
+              </span>
+  
+              <div>
+                <p>
+                  Claim resolution
+                </p>
+  
+                <h2>
+                  Review remarks
+                </h2>
+              </div>
+            </div>
+  
+            <article class="resolution-card">
+              <header>
+                <mat-icon>rate_review</mat-icon>
+                <span>Review remarks</span>
+              </header>
+  
+              <p>
+                {{ claim.reviewRemarks }}
+              </p>
+            </article>
+          </section>
+        }
+  
+        @if (claim.rejectionReason) {
+          <section class="details-section resolution-section">
+            <div class="section-heading">
+              <span class="section-number">
+                05
+              </span>
+  
+              <div>
+                <p>
+                  Claim resolution
+                </p>
+  
+                <h2>
+                  Rejection information
+                </h2>
+              </div>
+            </div>
+  
+            <article class="resolution-card rejection-card">
+              <header>
+                <mat-icon>cancel</mat-icon>
+                <span>Rejection reason</span>
+              </header>
+  
+              <p>
+                {{ claim.rejectionReason }}
+              </p>
+            </article>
+          </section>
+        }
+  
+        @if (claim.cancellationReason) {
+          <section class="details-section resolution-section">
+            <div class="section-heading">
+              <span class="section-number">
+                05
+              </span>
+  
+              <div>
+                <p>
+                  Claim resolution
+                </p>
+  
+                <h2>
+                  Cancellation information
+                </h2>
+              </div>
+            </div>
+  
+            <article class="resolution-card cancellation-card">
+              <header>
+                <mat-icon>block</mat-icon>
+                <span>Cancellation reason</span>
+              </header>
+  
+              <p>
+                {{ claim.cancellationReason }}
+              </p>
+            </article>
+          </section>
+        }
+  
+        <footer class="claim-audit">
+          <div class="audit-heading">
+            <mat-icon>history</mat-icon>
+  
+            <div>
+              <strong>
+                Claim audit information
+              </strong>
+  
+              <span>
+                System-maintained claim timestamps
+              </span>
+            </div>
+          </div>
+  
+          <div class="audit-grid">
+            <div>
+              <span>Created</span>
+  
+              <strong>
+                {{
+                  claim.createdAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Last updated</span>
+  
+              <strong>
+                {{
+                  claim.updatedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Reviewed</span>
+  
+              @if (claim.reviewedAt) {
+                <strong>
+                  {{
+                    claim.reviewedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>
+                  Not reviewed
+                </strong>
+              }
+            </div>
+  
+            <div>
+              <span>Resolved</span>
+  
+              @if (claim.resolvedAt) {
+                <strong>
+                  {{
+                    claim.resolvedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>
+                  Not resolved
+                </strong>
+              }
+            </div>
+  
+            <div>
+              <span>Cancelled</span>
+  
+              @if (claim.cancelledAt) {
+                <strong>
+                  {{
+                    claim.cancelledAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>
+                  Not cancelled
+                </strong>
+              }
+            </div>
+  
+            <div>
+              <span>Current status</span>
+  
+              <strong>
+                {{ getStatusLabel(claim.status) }}
+              </strong>
+            </div>
+          </div>
+        </footer>
+      </article>
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load claim
+        </strong>
+  
+        <p>
+          {{
+            claimState.errorMessage()
+            || 'The claim information is unavailable.'
+          }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to claims</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="loadClaim()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+    }
+  </section>

@@ -1,0 +1,149 @@
+<section
+  class="review-dialog"
+  [class.review-dialog--approve]="approving()"
+  [class.review-dialog--reject]="!approving()"
+>
+  <header class="dialog-header">
+    <div class="dialog-icon">
+      <mat-icon>
+        {{ actionIcon() }}
+      </mat-icon>
+    </div>
+
+    <div>
+      <h2>
+        {{ dialogTitle() }}
+      </h2>
+
+      <p>
+        {{ dialogDescription() }}
+      </p>
+    </div>
+  </header>
+
+  <section class="enrollment-summary">
+    <div>
+      <span>
+        Insurance plan
+      </span>
+
+      <strong>
+        {{ data.planName }}
+      </strong>
+    </div>
+
+    <div>
+      <span>
+        Member
+      </span>
+
+      <strong>
+        {{ data.memberEmail }}
+      </strong>
+    </div>
+  </section>
+
+  <form
+    [formGroup]="reviewForm"
+    (ngSubmit)="submitReview()"
+    novalidate
+  >
+    <mat-form-field
+      appearance="outline"
+      class="full-width"
+    >
+      <mat-label>
+        Review remarks
+      </mat-label>
+
+      <textarea
+        matInput
+        formControlName="reviewRemarks"
+        rows="5"
+        maxlength="500"
+        [placeholder]="
+          approving()
+            ? 'Enter approval remarks'
+            : 'Enter the reason for rejection'
+        "
+      ></textarea>
+
+      <mat-hint align="end">
+        {{
+          reviewForm.controls
+            .reviewRemarks
+            .value
+            .length
+        }}/500
+      </mat-hint>
+
+      @if (
+        reviewForm.controls
+          .reviewRemarks
+          .touched
+        && reviewForm.controls
+          .reviewRemarks
+          .hasError('required')
+      ) {
+        <mat-error>
+          Review remarks are required.
+        </mat-error>
+      }
+
+      @if (
+        reviewForm.controls
+          .reviewRemarks
+          .touched
+        && reviewForm.controls
+          .reviewRemarks
+          .hasError('maxlength')
+      ) {
+        <mat-error>
+          Review remarks must not exceed
+          500 characters.
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <section class="decision-warning">
+      <mat-icon>
+        info
+      </mat-icon>
+
+      <p>
+        @if (approving()) {
+          Approval may create an insurance policy
+          for the Member. Verify all information
+          before continuing.
+        } @else {
+          Rejection is a final review decision.
+          Provide remarks that clearly explain
+          the rejection reason.
+        }
+      </p>
+    </section>
+
+    <footer class="dialog-actions">
+      <button
+        mat-button
+        type="button"
+        class="cancel-button"
+        (click)="cancel()"
+      >
+        Cancel
+      </button>
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="decision-button"
+      >
+        <mat-icon>
+          {{ actionIcon() }}
+        </mat-icon>
+
+        {{ actionButtonText() }}
+      </button>
+    </footer>
+  </form>
+</section>

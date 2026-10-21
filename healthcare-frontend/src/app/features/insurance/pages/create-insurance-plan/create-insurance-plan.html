@@ -1,0 +1,790 @@
+<section class="create-plan-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>
+        arrow_back
+      </mat-icon>
+  
+      Back to insurance plans
+    </button>
+  
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">
+          Payer Administration
+        </p>
+  
+        <h1>
+          Create insurance plan
+        </h1>
+  
+        <p class="description">
+          Define coverage, pricing, eligibility,
+          policy duration, and included healthcare
+          benefits for a new insurance plan.
+        </p>
+      </div>
+  
+      <span class="draft-label">
+        <mat-icon>
+          edit_note
+        </mat-icon>
+  
+        Created as draft
+      </span>
+    </header>
+  
+    @if (planState.errorMessage()) {
+      <section
+        class="form-error"
+        role="alert"
+      >
+        <mat-icon>
+          error_outline
+        </mat-icon>
+  
+        <span>
+          {{ planState.errorMessage() }}
+        </span>
+      </section>
+    }
+  
+    <form
+      class="plan-form"
+      [formGroup]="planForm"
+      (ngSubmit)="reviewAndCreate()"
+      novalidate
+    >
+  
+      <mat-card class="form-section">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>
+                health_and_safety
+              </mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Plan information
+              </h2>
+  
+              <p>
+                Enter the identifying and descriptive
+                information for this plan.
+              </p>
+            </div>
+          </header>
+  
+          <div class="form-grid">
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Plan name
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                badge
+              </mat-icon>
+  
+              <input
+                matInput
+                type="text"
+                formControlName="planName"
+                maxlength="150"
+                placeholder="Comprehensive Health Plan"
+              >
+  
+              <mat-hint align="end">
+                {{
+                  planForm.controls
+                    .planName.value.length
+                }}/150
+              </mat-hint>
+  
+              @if (
+                planForm.controls.planName.touched
+                && planForm.controls.planName
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Plan name is required.
+                </mat-error>
+              }
+  
+              @if (
+                planForm.controls.planName.touched
+                && planForm.controls.planName
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Plan name must not exceed
+                  150 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Plan code
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                qr_code
+              </mat-icon>
+  
+              <input
+                matInput
+                type="text"
+                formControlName="planCode"
+                maxlength="50"
+                placeholder="CHP-001"
+                class="uppercase-input"
+              >
+  
+              <mat-hint>
+                Letters, numbers, and hyphens only
+              </mat-hint>
+  
+              @if (
+                planForm.controls.planCode.touched
+                && planForm.controls.planCode
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Plan code is required.
+                </mat-error>
+              }
+  
+              @if (
+                planForm.controls.planCode.touched
+                && planForm.controls.planCode
+                  .hasError('pattern')
+              ) {
+                <mat-error>
+                  Use 3 to 50 letters, numbers,
+                  or hyphens.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Plan description
+              </mat-label>
+  
+              <textarea
+                matInput
+                formControlName="description"
+                rows="5"
+                maxlength="1000"
+                placeholder="Describe the plan coverage, eligible services, and intended Members"
+              ></textarea>
+  
+              <mat-hint align="end">
+                {{
+                  planForm.controls
+                    .description.value.length
+                }}/1000
+              </mat-hint>
+  
+              @if (
+                planForm.controls.description.touched
+                && planForm.controls.description
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Plan description is required.
+                </mat-error>
+              }
+  
+              @if (
+                planForm.controls.description.touched
+                && planForm.controls.description
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Description must not exceed
+                  1000 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </div>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="form-section">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon financial-icon">
+              <mat-icon>
+                payments
+              </mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Coverage and pricing
+              </h2>
+  
+              <p>
+                Define the plan coverage value and
+                Member financial responsibilities.
+              </p>
+            </div>
+          </header>
+  
+          <div class="form-grid three-column-grid">
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Coverage amount
+              </mat-label>
+  
+              <span matTextPrefix>
+                ₹&nbsp;
+              </span>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="coverageAmount"
+                min="1"
+                step="1000"
+              >
+  
+              @if (
+                planForm.controls
+                  .coverageAmount.touched
+                && planForm.controls
+                  .coverageAmount
+                  .hasError('min')
+              ) {
+                <mat-error>
+                  Coverage amount must be greater
+                  than zero.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Monthly premium
+              </mat-label>
+  
+              <span matTextPrefix>
+                ₹&nbsp;
+              </span>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="monthlyPremium"
+                min="0.01"
+                step="0.01"
+              >
+  
+              @if (
+                planForm.controls
+                  .monthlyPremium.touched
+                && planForm.controls
+                  .monthlyPremium
+                  .hasError('min')
+              ) {
+                <mat-error>
+                  Monthly premium must be greater
+                  than zero.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Annual deductible
+              </mat-label>
+  
+              <span matTextPrefix>
+                ₹&nbsp;
+              </span>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="annualDeductible"
+                min="0"
+                step="0.01"
+              >
+  
+              @if (
+                planForm.controls
+                  .annualDeductible.touched
+                && planForm.controls
+                  .annualDeductible
+                  .hasError('min')
+              ) {
+                <mat-error>
+                  Annual deductible cannot be negative.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Copay percentage
+              </mat-label>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="copayPercentage"
+                min="0"
+                max="100"
+                step="0.01"
+              >
+  
+              <span matTextSuffix>
+                %
+              </span>
+  
+              @if (
+                planForm.controls
+                  .copayPercentage.touched
+                && (
+                  planForm.controls
+                    .copayPercentage.hasError('min')
+                  || planForm.controls
+                    .copayPercentage.hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Copay must be between 0 and 100.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Coinsurance percentage
+              </mat-label>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="coinsurancePercentage"
+                min="0"
+                max="100"
+                step="0.01"
+              >
+  
+              <span matTextSuffix>
+                %
+              </span>
+  
+              @if (
+                planForm.controls
+                  .coinsurancePercentage.touched
+                && (
+                  planForm.controls
+                    .coinsurancePercentage
+                    .hasError('min')
+                  || planForm.controls
+                    .coinsurancePercentage
+                    .hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Coinsurance must be between
+                  0 and 100.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </div>
+  
+          <section class="financial-help">
+            <mat-icon>
+              info
+            </mat-icon>
+  
+            <p>
+              Coverage amount is the maximum eligible plan
+              coverage. Deductible, copay, and coinsurance
+              define the Member's financial responsibility.
+            </p>
+          </section>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="form-section">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon eligibility-icon">
+              <mat-icon>
+                groups
+              </mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Eligibility and duration
+              </h2>
+  
+              <p>
+                Define eligible Member ages, policy
+                duration, and waiting period.
+              </p>
+            </div>
+          </header>
+  
+          <div class="form-grid">
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Minimum age
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                person
+              </mat-icon>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="minimumAge"
+                min="0"
+                max="120"
+                step="1"
+              >
+  
+              @if (
+                planForm.controls.minimumAge.touched
+                && (
+                  planForm.controls.minimumAge
+                    .hasError('min')
+                  || planForm.controls.minimumAge
+                    .hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Minimum age must be between
+                  0 and 120.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Maximum age
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                person
+              </mat-icon>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="maximumAge"
+                min="1"
+                max="120"
+                step="1"
+              >
+  
+              @if (
+                planForm.controls.maximumAge.touched
+                && planForm.controls.maximumAge
+                  .hasError('ageRange')
+              ) {
+                <mat-error>
+                  Maximum age must be greater than
+                  or equal to minimum age.
+                </mat-error>
+              } @else if (
+                planForm.controls.maximumAge.touched
+                && (
+                  planForm.controls.maximumAge
+                    .hasError('min')
+                  || planForm.controls.maximumAge
+                    .hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Maximum age must be between
+                  1 and 120.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Policy duration
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                calendar_month
+              </mat-icon>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="policyDurationMonths"
+                min="1"
+                max="120"
+                step="1"
+              >
+  
+              <span matTextSuffix>
+                months
+              </span>
+  
+              @if (
+                planForm.controls
+                  .policyDurationMonths.touched
+                && (
+                  planForm.controls
+                    .policyDurationMonths.hasError('min')
+                  || planForm.controls
+                    .policyDurationMonths.hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Policy duration must be between
+                  1 and 120 months.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Waiting period
+              </mat-label>
+  
+              <mat-icon matPrefix>
+                hourglass_bottom
+              </mat-icon>
+  
+              <input
+                matInput
+                type="number"
+                formControlName="waitingPeriodDays"
+                min="0"
+                max="1460"
+                step="1"
+              >
+  
+              <span matTextSuffix>
+                days
+              </span>
+  
+              @if (
+                planForm.controls
+                  .waitingPeriodDays.touched
+                && (
+                  planForm.controls
+                    .waitingPeriodDays.hasError('min')
+                  || planForm.controls
+                    .waitingPeriodDays.hasError('max')
+                )
+              ) {
+                <mat-error>
+                  Waiting period must be between
+                  0 and 1460 days.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </div>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="form-section">
+        <mat-card-content>
+  
+          <header class="section-header">
+            <div class="section-icon benefits-icon">
+              <mat-icon>
+                medical_services
+              </mat-icon>
+            </div>
+  
+            <div>
+              <h2>
+                Healthcare benefits
+              </h2>
+  
+              <p>
+                Select all healthcare services included
+                in this insurance plan.
+              </p>
+            </div>
+          </header>
+  
+          <div class="benefit-grid">
+  
+            <label
+              class="benefit-option"
+              [class.benefit-option--selected]="
+                planForm.controls
+                  .hospitalizationCoverage.value
+              "
+            >
+              <mat-checkbox
+                formControlName="hospitalizationCoverage"
+              >
+                Hospitalization
+              </mat-checkbox>
+  
+              <span>
+                Inpatient treatment and eligible
+                hospital expenses.
+              </span>
+            </label>
+  
+            <label
+              class="benefit-option"
+              [class.benefit-option--selected]="
+                planForm.controls
+                  .outpatientCoverage.value
+              "
+            >
+              <mat-checkbox
+                formControlName="outpatientCoverage"
+              >
+                Outpatient care
+              </mat-checkbox>
+  
+              <span>
+                Eligible consultations and treatments
+                that do not require admission.
+              </span>
+            </label>
+  
+            <label
+              class="benefit-option"
+              [class.benefit-option--selected]="
+                planForm.controls
+                  .prescriptionCoverage.value
+              "
+            >
+              <mat-checkbox
+                formControlName="prescriptionCoverage"
+              >
+                Prescription medicines
+              </mat-checkbox>
+  
+              <span>
+                Eligible medicines prescribed by
+                a healthcare professional.
+              </span>
+            </label>
+  
+            <label
+              class="benefit-option"
+              [class.benefit-option--selected]="
+                planForm.controls
+                  .maternityCoverage.value
+              "
+            >
+              <mat-checkbox
+                formControlName="maternityCoverage"
+              >
+                Maternity care
+              </mat-checkbox>
+  
+              <span>
+                Eligible maternity and related
+                healthcare services.
+              </span>
+            </label>
+  
+          </div>
+  
+          @if (!hasAtLeastOneBenefit()) {
+            <section class="benefit-warning">
+              <mat-icon>
+                warning_amber
+              </mat-icon>
+  
+              <span>
+                Select at least one healthcare benefit.
+              </span>
+            </section>
+          }
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <section class="draft-notice">
+        <mat-icon>
+          edit_note
+        </mat-icon>
+  
+        <div>
+          <strong>
+            New plans are created as drafts
+          </strong>
+  
+          <p>
+            The plan will not appear in the Member marketplace
+            until it is activated from the Plan Details page.
+          </p>
+        </div>
+      </section>
+  
+      <footer class="form-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="planState.submitting()"
+          (click)="goBack()"
+        >
+          Cancel
+        </button>
+  
+        <button
+  mat-flat-button
+  type="submit"
+  class="submit-button"
+  [disabled]="planState.submitting()"
+>
+  @if (planState.submitting()) {
+
+    <mat-spinner diameter="22"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        add_circle
+      </mat-icon>
+
+      <span>
+        Review and create
+      </span>
+
+    </ng-container>
+
+  }
+</button>
+      </footer>
+  
+    </form>
+  
+  </section>

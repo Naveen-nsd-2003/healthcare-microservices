@@ -1,0 +1,945 @@
+<section class="plan-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>
+        arrow_back
+      </mat-icon>
+  
+      <span>
+        Back to insurance plans
+      </span>
+    </button>
+  
+    @if (planState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading insurance plan
+        </strong>
+  
+        <p>
+          Please wait while the insurance plan
+          information is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      planState.errorMessage()
+      && !planState.selectedPlan()
+    ) {
+  
+      <section class="state-card error-state">
+  
+        <div class="state-icon">
+          <mat-icon>
+            error_outline
+          </mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load insurance plan
+        </strong>
+  
+        <p>
+          {{ planState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="goBack()"
+        >
+          <mat-icon>
+            arrow_back
+          </mat-icon>
+  
+          <span>
+            Return to insurance plans
+          </span>
+        </button>
+  
+      </section>
+  
+    } @else if (
+      planState.selectedPlan();
+      as plan
+    ) {
+  
+      <header class="plan-hero">
+  
+        <div class="hero-icon">
+          <mat-icon>
+            health_and_safety
+          </mat-icon>
+        </div>
+  
+        <div class="hero-copy">
+  
+          <span class="plan-code">
+            {{ plan.planCode }}
+          </span>
+  
+          <h1>
+            {{ plan.planName }}
+          </h1>
+  
+          <p>
+            {{ plan.payerOrganizationName }}
+          </p>
+  
+        </div>
+  
+        <span
+          class="status-badge"
+          [class]="
+            'status-badge '
+            + getStatusClass(plan.status)
+          "
+        >
+          <mat-icon>
+            {{ getStatusIcon(plan.status) }}
+          </mat-icon>
+  
+          <span>
+            {{ plan.status }}
+          </span>
+        </span>
+  
+      </header>
+  
+      @if (planState.errorMessage()) {
+  
+        <section
+          class="action-error"
+          role="alert"
+        >
+          <mat-icon>
+            error_outline
+          </mat-icon>
+  
+          <span>
+            {{ planState.errorMessage() }}
+          </span>
+        </section>
+  
+      }
+  
+      @if (plan.status === 'DRAFT') {
+  
+        <section class="status-information draft-information">
+  
+          <mat-icon>
+            edit_note
+          </mat-icon>
+  
+          <div>
+            <strong>
+              This plan is currently a draft
+            </strong>
+  
+            <p>
+              Draft plans are not visible to Members.
+              Review all plan information before activating
+              this insurance plan.
+            </p>
+          </div>
+  
+        </section>
+  
+      } @else if (plan.status === 'ACTIVE') {
+  
+        <section class="status-information active-information">
+  
+          <mat-icon>
+            check_circle
+          </mat-icon>
+  
+          <div>
+            <strong>
+              This plan is available to Members
+            </strong>
+  
+            <p>
+              Eligible Members can currently browse this
+              plan and submit enrollment requests.
+            </p>
+          </div>
+  
+        </section>
+  
+      } @else {
+  
+        <section class="status-information inactive-information">
+  
+          <mat-icon>
+            block
+          </mat-icon>
+  
+          <div>
+            <strong>
+              This plan is currently inactive
+            </strong>
+  
+            <p>
+              This plan is hidden from the Member marketplace
+              and cannot receive new enrollment requests.
+            </p>
+          </div>
+  
+        </section>
+  
+      }
+  
+      <section class="financial-grid">
+  
+        <article class="primary-financial-card">
+  
+          <span>
+            Coverage amount
+          </span>
+  
+          <strong>
+            {{
+              plan.coverageAmount
+                | currency:
+                  'INR':
+                  'symbol':
+                  '1.0-0':
+                  'en-IN'
+            }}
+          </strong>
+  
+          <small>
+            Maximum eligible plan coverage
+          </small>
+  
+        </article>
+  
+        <article>
+  
+          <span>
+            Monthly premium
+          </span>
+  
+          <strong>
+            {{
+              plan.monthlyPremium
+                | currency:
+                  'INR':
+                  'symbol':
+                  '1.0-2':
+                  'en-IN'
+            }}
+          </strong>
+  
+          <small>
+            Member monthly premium
+          </small>
+  
+        </article>
+  
+        <article>
+  
+          <span>
+            Annual deductible
+          </span>
+  
+          <strong>
+            {{
+              plan.annualDeductible
+                | currency:
+                  'INR':
+                  'symbol':
+                  '1.0-2':
+                  'en-IN'
+            }}
+          </strong>
+  
+          <small>
+            Member responsibility before coverage
+          </small>
+  
+        </article>
+  
+      </section>
+  
+      <div class="details-layout">
+  
+        <section class="main-details">
+  
+          <mat-card class="description-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon description-icon">
+                  <mat-icon>
+                    description
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Plan description
+                  </h2>
+  
+                  <p>
+                    Detailed information about this
+                    insurance offering
+                  </p>
+                </div>
+  
+              </header>
+  
+              <p class="full-description">
+                {{ plan.description }}
+              </p>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon benefits-icon">
+                  <mat-icon>
+                    medical_services
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Healthcare benefits
+                  </h2>
+  
+                  <p>
+                    Medical services included in this plan
+                  </p>
+                </div>
+  
+              </header>
+  
+              <div class="coverage-grid">
+  
+                <article
+                  [class.coverage-disabled]="
+                    !plan.hospitalizationCoverage
+                  "
+                >
+                  <mat-icon>
+                    {{
+                      getCoverageIcon(
+                        plan.hospitalizationCoverage
+                      )
+                    }}
+                  </mat-icon>
+  
+                  <div>
+                    <strong>
+                      Hospitalization
+                    </strong>
+  
+                    <span>
+                      {{
+                        getCoverageLabel(
+                          plan.hospitalizationCoverage
+                        )
+                      }}
+                    </span>
+                  </div>
+                </article>
+  
+                <article
+                  [class.coverage-disabled]="
+                    !plan.outpatientCoverage
+                  "
+                >
+                  <mat-icon>
+                    {{
+                      getCoverageIcon(
+                        plan.outpatientCoverage
+                      )
+                    }}
+                  </mat-icon>
+  
+                  <div>
+                    <strong>
+                      Outpatient care
+                    </strong>
+  
+                    <span>
+                      {{
+                        getCoverageLabel(
+                          plan.outpatientCoverage
+                        )
+                      }}
+                    </span>
+                  </div>
+                </article>
+  
+                <article
+                  [class.coverage-disabled]="
+                    !plan.prescriptionCoverage
+                  "
+                >
+                  <mat-icon>
+                    {{
+                      getCoverageIcon(
+                        plan.prescriptionCoverage
+                      )
+                    }}
+                  </mat-icon>
+  
+                  <div>
+                    <strong>
+                      Prescription medicines
+                    </strong>
+  
+                    <span>
+                      {{
+                        getCoverageLabel(
+                          plan.prescriptionCoverage
+                        )
+                      }}
+                    </span>
+                  </div>
+                </article>
+  
+                <article
+                  [class.coverage-disabled]="
+                    !plan.maternityCoverage
+                  "
+                >
+                  <mat-icon>
+                    {{
+                      getCoverageIcon(
+                        plan.maternityCoverage
+                      )
+                    }}
+                  </mat-icon>
+  
+                  <div>
+                    <strong>
+                      Maternity care
+                    </strong>
+  
+                    <span>
+                      {{
+                        getCoverageLabel(
+                          plan.maternityCoverage
+                        )
+                      }}
+                    </span>
+                  </div>
+                </article>
+  
+              </div>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon cost-icon">
+                  <mat-icon>
+                    payments
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Cost sharing
+                  </h2>
+  
+                  <p>
+                    Member and insurer financial responsibilities
+                  </p>
+                </div>
+  
+              </header>
+  
+              <dl>
+  
+                <div>
+                  <dt>
+                    Coverage amount
+                  </dt>
+  
+                  <dd>
+                    {{
+                      plan.coverageAmount
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-0':
+                          'en-IN'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Monthly premium
+                  </dt>
+  
+                  <dd>
+                    {{
+                      plan.monthlyPremium
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Annual deductible
+                  </dt>
+  
+                  <dd>
+                    {{
+                      plan.annualDeductible
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Copay percentage
+                  </dt>
+  
+                  <dd>
+                    {{ plan.copayPercentage }}%
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Coinsurance percentage
+                  </dt>
+  
+                  <dd>
+                    {{ plan.coinsurancePercentage }}%
+                  </dd>
+                </div>
+  
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </section>
+  
+        <aside class="plan-sidebar">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon eligibility-icon">
+                  <mat-icon>
+                    groups
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Eligibility
+                  </h2>
+  
+                  <p>
+                    Member age and policy conditions
+                  </p>
+                </div>
+  
+              </header>
+  
+              <dl>
+  
+                <div>
+                  <dt>
+                    Eligible age
+                  </dt>
+  
+                  <dd>
+                    {{ getAgeEligibilityLabel(plan) }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Minimum age
+                  </dt>
+  
+                  <dd>
+                    {{ plan.minimumAge }} years
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Maximum age
+                  </dt>
+  
+                  <dd>
+                    {{ plan.maximumAge }} years
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Policy duration
+                  </dt>
+  
+                  <dd>
+                    {{ getPolicyDurationLabel(plan) }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Waiting period
+                  </dt>
+  
+                  <dd>
+                    {{ getWaitingPeriodLabel(plan) }}
+                  </dd>
+                </div>
+  
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon information-icon">
+                  <mat-icon>
+                    info
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Plan information
+                  </h2>
+  
+                  <p>
+                    Plan identifiers and ownership
+                  </p>
+                </div>
+  
+              </header>
+  
+              <dl>
+  
+                <div>
+                  <dt>
+                    Plan name
+                  </dt>
+  
+                  <dd>
+                    {{ plan.planName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Plan code
+                  </dt>
+  
+                  <dd>
+                    {{ plan.planCode }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Organization
+                  </dt>
+  
+                  <dd>
+                    {{ plan.payerOrganizationName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Plan ID
+                  </dt>
+  
+                  <dd class="identifier">
+                    {{ plan.id }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Current status
+                  </dt>
+  
+                  <dd>
+                    {{ plan.status }}
+                  </dd>
+                </div>
+  
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+  
+                <div class="card-icon history-icon">
+                  <mat-icon>
+                    history
+                  </mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Plan history
+                  </h2>
+  
+                  <p>
+                    Creation and update information
+                  </p>
+                </div>
+  
+              </header>
+  
+              <dl>
+  
+                <div>
+                  <dt>
+                    Created
+                  </dt>
+  
+                  <dd>
+                    {{
+                      plan.createdAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>
+                    Last updated
+                  </dt>
+  
+                  <dd>
+                    {{
+                      plan.updatedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </aside>
+  
+      </div>
+  
+      <section class="management-panel">
+  
+        <div>
+          <h2>
+            Manage insurance plan
+          </h2>
+  
+          <p>
+            Update plan information or change its
+            marketplace lifecycle status.
+          </p>
+        </div>
+  
+        <div class="management-actions">
+  
+          <button
+            mat-stroked-button
+            type="button"
+            class="edit-plan-button"
+            [disabled]="planState.statusUpdating()"
+            (click)="editPlan()"
+          >
+            <mat-icon>
+              edit
+            </mat-icon>
+  
+            <span>
+              Edit plan
+            </span>
+          </button>
+  
+          @if (plan.status === 'DRAFT') {
+  
+            <button
+  mat-flat-button
+  type="button"
+  class="activate-button"
+  [disabled]="planState.statusUpdating()"
+  (click)="requestActivation()"
+>
+
+  @if (planState.statusUpdating()) {
+
+    <mat-spinner diameter="20"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        check_circle
+      </mat-icon>
+
+      <span>
+        Activate plan
+      </span>
+
+    </ng-container>
+
+  }
+
+</button>
+  
+          } @else if (plan.status === 'ACTIVE') {
+  
+            <button
+  mat-stroked-button
+  type="button"
+  class="deactivate-button"
+  [disabled]="planState.statusUpdating()"
+  (click)="requestDeactivation()"
+>
+
+  @if (planState.statusUpdating()) {
+
+    <mat-spinner diameter="20"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        block
+      </mat-icon>
+
+      <span>
+        Make inactive
+      </span>
+
+    </ng-container>
+
+  }
+
+</button>
+  
+          } @else if (plan.status === 'INACTIVE') {
+  
+            <button
+  mat-flat-button
+  type="button"
+  class="activate-button"
+  [disabled]="planState.statusUpdating()"
+  (click)="requestActivation()"
+>
+
+  @if (planState.statusUpdating()) {
+
+    <mat-spinner diameter="20"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        restart_alt
+      </mat-icon>
+
+      <span>
+        Reactivate plan
+      </span>
+
+    </ng-container>
+
+  }
+
+</button>
+  
+          }
+  
+        </div>
+  
+      </section>
+  
+    } @else {
+  
+      <section class="state-card">
+  
+        <div class="state-icon">
+          <mat-icon>
+            health_and_safety
+          </mat-icon>
+        </div>
+  
+        <strong>
+          Insurance plan unavailable
+        </strong>
+  
+        <p>
+          The requested insurance plan information
+          is not currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBack()"
+        >
+          <mat-icon>
+            arrow_back
+          </mat-icon>
+  
+          <span>
+            Return to insurance plans
+          </span>
+        </button>
+  
+      </section>
+  
+    }
+  
+  </section>

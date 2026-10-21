@@ -1,0 +1,961 @@
+<!-- <section class="appointments-page">
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        Healthcare Appointments
+      </p>
+
+      <h1>
+        My appointments
+      </h1>
+
+      <p class="description">
+        Review upcoming and previous consultations,
+        monitor appointment status, and manage eligible
+        appointments.
+      </p>
+    </div>
+
+    <div class="page-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="appointmentState.loading()"
+        (click)="loadAppointments()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="primary-button"
+        (click)="findProvider()"
+      >
+        <mat-icon>search</mat-icon>
+        <span>Find a doctor</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="summary-grid">
+
+    <article class="summary-card">
+      <div class="summary-icon total-icon">
+        <mat-icon>calendar_month</mat-icon>
+      </div>
+
+      <div>
+        <span>Total</span>
+        <strong>{{ appointmentState.totalCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon booked-icon">
+        <mat-icon>event</mat-icon>
+      </div>
+
+      <div>
+        <span>Booked</span>
+        <strong>{{ appointmentState.bookedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon confirmed-icon">
+        <mat-icon>event_available</mat-icon>
+      </div>
+
+      <div>
+        <span>Confirmed</span>
+        <strong>{{ appointmentState.confirmedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon completed-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <div>
+        <span>Completed</span>
+        <strong>{{ appointmentState.completedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon cancelled-icon">
+        <mat-icon>event_busy</mat-icon>
+      </div>
+
+      <div>
+        <span>Cancelled</span>
+        <strong>{{ appointmentState.cancelledCount() }}</strong>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="filter-panel">
+
+    <mat-form-field
+      appearance="outline"
+      class="search-field"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>
+        Search appointments
+      </mat-label>
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <input
+        #appointmentSearch
+        matInput
+        type="search"
+        placeholder="Doctor, provider, department, or specialization"
+        [value]="searchText()"
+        (input)="updateSearch(appointmentSearch.value)"
+      >
+
+      @if (searchText().length > 0) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Clear appointment search"
+          (click)="updateSearch('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Status</mat-label>
+
+      <mat-select
+        [value]="selectedStatus()"
+        (selectionChange)="updateStatus($event.value)"
+      >
+        <mat-option value="ALL">
+          All statuses
+        </mat-option>
+
+        <mat-option value="BOOKED">
+          Booked
+        </mat-option>
+
+        <mat-option value="CONFIRMED">
+          Confirmed
+        </mat-option>
+
+        <mat-option value="COMPLETED">
+          Completed
+        </mat-option>
+
+        <mat-option value="CANCELLED">
+          Cancelled
+        </mat-option>
+
+        <mat-option value="NO_SHOW">
+          No show
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Period</mat-label>
+
+      <mat-select
+        [value]="selectedPeriod()"
+        (selectionChange)="updatePeriod($event.value)"
+      >
+        <mat-option value="ALL">
+          All appointments
+        </mat-option>
+
+        <mat-option value="UPCOMING">
+          Upcoming
+        </mat-option>
+
+        <mat-option value="PAST">
+          Past and final
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Sort by</mat-label>
+
+      <mat-select
+        [value]="selectedSort()"
+        (selectionChange)="updateSort($event.value)"
+      >
+        <mat-option value="DATE_ASCENDING">
+          Earliest first
+        </mat-option>
+
+        <mat-option value="DATE_DESCENDING">
+          Latest first
+        </mat-option>
+
+        <mat-option value="DOCTOR_ASCENDING">
+          Doctor name
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-button
+      type="button"
+      class="clear-filter-button"
+      [disabled]="!filtersApplied()"
+      (click)="clearFilters()"
+    >
+      <mat-icon>filter_alt_off</mat-icon>
+      <span>Clear filters</span>
+    </button>
+
+    <span class="result-count">
+      {{ filteredAppointments().length }} appointment(s)
+    </span>
+
+  </section>
+
+  @if (appointmentState.loading()) {
+
+    <section class="state-card">
+      <mat-spinner diameter="44"></mat-spinner>
+
+      <strong>
+        Loading appointments
+      </strong>
+
+      <p>
+        Please wait while your appointments are retrieved.
+      </p>
+    </section>
+
+  } @else if (appointmentState.errorMessage()) {
+
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+
+      <strong>
+        Unable to load appointments
+      </strong>
+
+      <p>
+        {{ appointmentState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="primary-button"
+        (click)="loadAppointments()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Try again</span>
+      </button>
+    </section>
+
+  } @else if (filteredAppointments().length === 0) {
+
+    <section class="state-card">
+      <div class="state-icon">
+        <mat-icon>event_busy</mat-icon>
+      </div>
+
+      <strong>
+        No appointments found
+      </strong>
+
+      @if (filtersApplied()) {
+        <p>
+          No appointments match the selected filters.
+        </p>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+      } @else {
+        <p>
+          Find an available doctor and book your first
+          healthcare appointment.
+        </p>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="findProvider()"
+        >
+          <mat-icon>search</mat-icon>
+          <span>Find a doctor</span>
+        </button>
+      }
+    </section>
+
+  } @else {
+
+    <section class="appointment-list">
+
+      <header class="list-header">
+        <span>Date and time</span>
+        <span>Doctor</span>
+        <span>Provider and department</span>
+        <span>Status</span>
+        <span>Action</span>
+      </header>
+
+      @for (
+        appointment of filteredAppointments();
+        track appointment.id
+      ) {
+
+        <article
+          class="appointment-row"
+          [class.upcoming-row]="isUpcomingAppointment(appointment)"
+        >
+
+          <div class="date-column">
+            <div class="date-icon">
+              <mat-icon>calendar_month</mat-icon>
+            </div>
+
+            <div>
+              <strong>
+                {{
+                  appointment.appointmentDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+
+              <span>
+                {{ getTimeRange(appointment) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="doctor-column">
+            <div class="doctor-icon">
+              <mat-icon>medical_services</mat-icon>
+            </div>
+
+            <div>
+              <strong>
+                {{ appointment.doctorName }}
+              </strong>
+
+              <span>
+                {{ appointment.doctorSpecialization }}
+              </span>
+            </div>
+          </div>
+
+          <div class="provider-column">
+            <strong>
+              {{ appointment.providerOrganizationName }}
+            </strong>
+
+            <span>
+              {{ appointment.departmentName }}
+            </span>
+          </div>
+
+          <div class="status-column">
+
+            @if (appointment.status === 'BOOKED') {
+              <span class="status-badge booked-status">
+                <mat-icon>event</mat-icon>
+                <span>Booked</span>
+              </span>
+            }
+
+            @if (appointment.status === 'CONFIRMED') {
+              <span class="status-badge confirmed-status">
+                <mat-icon>event_available</mat-icon>
+                <span>Confirmed</span>
+              </span>
+            }
+
+            @if (appointment.status === 'COMPLETED') {
+              <span class="status-badge completed-status">
+                <mat-icon>check_circle</mat-icon>
+                <span>Completed</span>
+              </span>
+            }
+
+            @if (appointment.status === 'CANCELLED') {
+              <span class="status-badge cancelled-status">
+                <mat-icon>event_busy</mat-icon>
+                <span>Cancelled</span>
+              </span>
+            }
+
+            @if (appointment.status === 'NO_SHOW') {
+              <span class="status-badge no-show-status">
+                <mat-icon>person_off</mat-icon>
+                <span>No show</span>
+              </span>
+            }
+
+            @if (isUpcomingAppointment(appointment)) {
+              <span class="upcoming-indicator">
+                Upcoming
+              </span>
+            }
+
+          </div>
+
+          <div class="action-column">
+            <button
+              mat-stroked-button
+              type="button"
+              class="view-button"
+              (click)="viewAppointment(appointment)"
+            >
+              <span>View</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+          <div class="mobile-details">
+
+            <div>
+              <mat-icon>timer</mat-icon>
+
+              <span>
+                {{ appointment.slotDurationMinutes }}
+                minutes
+              </span>
+            </div>
+
+            <div>
+              <mat-icon>payments</mat-icon>
+
+              <span>
+                {{
+                  appointment.consultationFee
+                    | currency:
+                      'INR':
+                      'symbol':
+                      '1.0-2':
+                      'en-IN'
+                }}
+              </span>
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+</section> -->
+
+<section class="appointments-page">
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        Healthcare Appointments
+      </p>
+
+      <h1>
+        My appointments
+      </h1>
+
+      <p class="description">
+        Review upcoming and previous consultations,
+        monitor appointment status, and manage eligible
+        appointments.
+      </p>
+    </div>
+
+    <div class="page-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="appointmentState.loading()"
+        (click)="loadAppointments()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="primary-button"
+        (click)="findProvider()"
+      >
+        <mat-icon>search</mat-icon>
+        <span>Find a doctor</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="summary-grid">
+
+    <article class="summary-card">
+      <div class="summary-icon total-icon">
+        <mat-icon>calendar_month</mat-icon>
+      </div>
+
+      <div>
+        <span>Total</span>
+        <strong>{{ appointmentState.totalCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon booked-icon">
+        <mat-icon>event</mat-icon>
+      </div>
+
+      <div>
+        <span>Booked</span>
+        <strong>{{ appointmentState.bookedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon confirmed-icon">
+        <mat-icon>event_available</mat-icon>
+      </div>
+
+      <div>
+        <span>Confirmed</span>
+        <strong>{{ appointmentState.confirmedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon completed-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <div>
+        <span>Completed</span>
+        <strong>{{ appointmentState.completedCount() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon cancelled-icon">
+        <mat-icon>event_busy</mat-icon>
+      </div>
+
+      <div>
+        <span>Cancelled</span>
+        <strong>{{ appointmentState.cancelledCount() }}</strong>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="filter-panel">
+
+    <mat-form-field
+      appearance="outline"
+      class="search-field"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>
+        Search appointments
+      </mat-label>
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <input
+        #appointmentSearch
+        matInput
+        type="search"
+        placeholder="Doctor, provider, department, or specialization"
+        [value]="searchText()"
+        (input)="updateSearch(appointmentSearch.value)"
+      >
+
+      @if (searchText().length > 0) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Clear appointment search"
+          (click)="updateSearch('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Status</mat-label>
+
+      <mat-select
+        [value]="selectedStatus()"
+        (selectionChange)="updateStatus($event.value)"
+      >
+        <mat-option value="ALL">
+          All statuses
+        </mat-option>
+
+        <mat-option value="BOOKED">
+          Booked
+        </mat-option>
+
+        <mat-option value="CONFIRMED">
+          Confirmed
+        </mat-option>
+
+        <mat-option value="COMPLETED">
+          Completed
+        </mat-option>
+
+        <mat-option value="CANCELLED">
+          Cancelled
+        </mat-option>
+
+        <mat-option value="NO_SHOW">
+          No show
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Period</mat-label>
+
+      <mat-select
+        [value]="selectedPeriod()"
+        (selectionChange)="updatePeriod($event.value)"
+      >
+        <mat-option value="ALL">
+          All appointments
+        </mat-option>
+
+        <mat-option value="UPCOMING">
+          Upcoming
+        </mat-option>
+
+        <mat-option value="PAST">
+          Past and final
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Sort by</mat-label>
+
+      <mat-select
+        [value]="selectedSort()"
+        (selectionChange)="updateSort($event.value)"
+      >
+        <mat-option value="DATE_ASCENDING">
+          Earliest first
+        </mat-option>
+
+        <mat-option value="DATE_DESCENDING">
+          Latest first
+        </mat-option>
+
+        <mat-option value="DOCTOR_ASCENDING">
+          Doctor name
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-button
+      type="button"
+      class="clear-filter-button"
+      [disabled]="!filtersApplied()"
+      (click)="clearFilters()"
+    >
+      <mat-icon>filter_alt_off</mat-icon>
+      <span>Clear filters</span>
+    </button>
+
+    <span class="result-count">
+      {{ filteredAppointments().length }} appointment(s)
+    </span>
+
+  </section>
+
+  @if (appointmentState.loading()) {
+
+    <section class="state-card">
+      <mat-spinner diameter="44"></mat-spinner>
+
+      <strong>
+        Loading appointments
+      </strong>
+
+      <p>
+        Please wait while your appointments are retrieved.
+      </p>
+    </section>
+
+  } @else if (appointmentState.errorMessage()) {
+
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+
+      <strong>
+        Unable to load appointments
+      </strong>
+
+      <p>
+        {{ appointmentState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="primary-button"
+        (click)="loadAppointments()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Try again</span>
+      </button>
+    </section>
+
+  } @else if (filteredAppointments().length === 0) {
+
+    <section class="state-card">
+      <div class="state-icon">
+        <mat-icon>event_busy</mat-icon>
+      </div>
+
+      <strong>
+        No appointments found
+      </strong>
+
+      @if (filtersApplied()) {
+        <p>
+          No appointments match the selected filters.
+        </p>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+      } @else {
+        <p>
+          Find an available doctor and book your first
+          healthcare appointment.
+        </p>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="findProvider()"
+        >
+          <mat-icon>search</mat-icon>
+          <span>Find a doctor</span>
+        </button>
+      }
+    </section>
+
+  } @else {
+
+    <section class="appointment-list">
+
+      <header class="list-header">
+        <span>Date and time</span>
+        <span>Doctor</span>
+        <span>Provider and department</span>
+        <span>Status</span>
+        <span>Action</span>
+      </header>
+
+      @for (
+        appointment of filteredAppointments();
+        track appointment.id
+      ) {
+
+        <article
+          class="appointment-row"
+          [class.upcoming-row]="isUpcomingAppointment(appointment)"
+        >
+
+          <div class="date-column">
+            <div class="date-icon">
+              <mat-icon>calendar_month</mat-icon>
+            </div>
+
+            <div>
+              <strong>
+                {{
+                  appointment.appointmentDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+
+              <span>
+                {{ getTimeRange(appointment) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="doctor-column">
+            <div class="doctor-icon">
+              <mat-icon>medical_services</mat-icon>
+            </div>
+
+            <div>
+              <strong>
+                {{ appointment.doctorName }}
+              </strong>
+
+              <span>
+                {{ appointment.doctorSpecialization }}
+              </span>
+            </div>
+          </div>
+
+          <div class="provider-column">
+            <strong>
+              {{ appointment.providerOrganizationName }}
+            </strong>
+
+            <span>
+              {{ appointment.departmentName }}
+            </span>
+          </div>
+
+          <div class="status-column">
+
+            @if (appointment.status === 'BOOKED') {
+              <span class="status-badge booked-status">
+                <mat-icon>event</mat-icon>
+                <span>Booked</span>
+              </span>
+            }
+
+            @if (appointment.status === 'CONFIRMED') {
+              <span class="status-badge confirmed-status">
+                <mat-icon>event_available</mat-icon>
+                <span>Confirmed</span>
+              </span>
+            }
+
+            @if (appointment.status === 'COMPLETED') {
+              <span class="status-badge completed-status">
+                <mat-icon>check_circle</mat-icon>
+                <span>Completed</span>
+              </span>
+            }
+
+            @if (appointment.status === 'CANCELLED') {
+              <span class="status-badge cancelled-status">
+                <mat-icon>event_busy</mat-icon>
+                <span>Cancelled</span>
+              </span>
+            }
+
+            @if (appointment.status === 'NO_SHOW') {
+              <span class="status-badge no-show-status">
+                <mat-icon>person_off</mat-icon>
+                <span>No show</span>
+              </span>
+            }
+
+            @if (isUpcomingAppointment(appointment)) {
+              <span class="upcoming-indicator">
+                Upcoming
+              </span>
+            }
+
+          </div>
+
+          <div class="action-column">
+            <button
+              mat-stroked-button
+              type="button"
+              class="view-button"
+              (click)="viewAppointment(appointment)"
+            >
+              <span>View</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+          <div class="mobile-details">
+
+            <div>
+              <mat-icon>timer</mat-icon>
+
+              <span>
+                {{ appointment.slotDurationMinutes }}
+                minutes
+              </span>
+            </div>
+
+            <div>
+              <mat-icon>payments</mat-icon>
+
+              <span>
+                {{
+                  appointment.consultationFee
+                    | currency:
+                      'INR':
+                      'symbol':
+                      '1.0-2':
+                      'en-IN'
+                }}
+              </span>
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+</section>

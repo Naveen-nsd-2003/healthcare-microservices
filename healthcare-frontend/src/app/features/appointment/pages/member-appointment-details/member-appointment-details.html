@@ -1,0 +1,780 @@
+<section class="appointment-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to appointments</span>
+    </button>
+  
+    @if (appointmentState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading appointment details</strong>
+  
+        <p>
+          Please wait while your appointment information
+          is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      appointmentState.errorMessage()
+      && !appointmentState.selectedAppointment()
+    ) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load appointment</strong>
+  
+        <p>
+          {{ appointmentState.errorMessage() }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to appointments</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="loadAppointment()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+  
+    } @else if (
+      appointmentState.selectedAppointment();
+      as appointment
+    ) {
+  
+      <header class="appointment-hero">
+  
+        <div class="hero-icon">
+          <mat-icon>
+            {{ getStatusIcon(appointment.status) }}
+          </mat-icon>
+        </div>
+  
+        <div class="hero-copy">
+          <span class="specialization">
+            {{ appointment.doctorSpecialization }}
+          </span>
+  
+          <h1>
+            Appointment with {{ appointment.doctorName }}
+          </h1>
+  
+          <p>
+            {{ appointment.providerOrganizationName }}
+          </p>
+        </div>
+  
+        <span
+          class="status-badge"
+          [class]="
+            'status-badge '
+            + getStatusClass(appointment.status)
+          "
+        >
+          <mat-icon>
+            {{ getStatusIcon(appointment.status) }}
+          </mat-icon>
+  
+          <span>
+            {{ getStatusLabel(appointment.status) }}
+          </span>
+        </span>
+  
+      </header>
+  
+      <section
+        class="status-panel"
+        [class.status-panel--booked]="
+          appointment.status === 'BOOKED'
+        "
+        [class.status-panel--confirmed]="
+          appointment.status === 'CONFIRMED'
+        "
+        [class.status-panel--completed]="
+          appointment.status === 'COMPLETED'
+        "
+        [class.status-panel--cancelled]="
+          appointment.status === 'CANCELLED'
+        "
+        [class.status-panel--no-show]="
+          appointment.status === 'NO_SHOW'
+        "
+      >
+        <mat-icon>
+          {{ getStatusIcon(appointment.status) }}
+        </mat-icon>
+  
+        <div>
+          <strong>
+            {{ getStatusLabel(appointment.status) }}
+          </strong>
+  
+          <p>
+            {{ getStatusDescription(appointment) }}
+          </p>
+        </div>
+      </section>
+  
+      @if (
+        appointmentState.errorMessage()
+        && appointmentState.selectedAppointment()
+      ) {
+        <section
+          class="action-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ appointmentState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <section class="appointment-summary">
+  
+        <article>
+          <div class="summary-icon date-icon">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+  
+          <div>
+            <span>Appointment date</span>
+  
+            <strong>
+              {{
+                appointment.appointmentDate
+                  | date: 'EEEE, MMMM d, y'
+              }}
+            </strong>
+          </div>
+        </article>
+  
+        <article>
+          <div class="summary-icon time-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+  
+          <div>
+            <span>Appointment time</span>
+  
+            <strong>
+              {{ getTimeRange(appointment) }}
+            </strong>
+          </div>
+        </article>
+  
+        <article>
+          <div class="summary-icon duration-icon">
+            <mat-icon>timer</mat-icon>
+          </div>
+  
+          <div>
+            <span>Consultation duration</span>
+  
+            <strong>
+              {{
+                getDurationLabel(
+                  appointment.slotDurationMinutes
+                )
+              }}
+            </strong>
+          </div>
+        </article>
+  
+        <article>
+          <div class="summary-icon fee-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+  
+          <div>
+            <span>Consultation fee</span>
+  
+            <strong>
+              {{
+                appointment.consultationFee
+                  | currency:
+                    'INR':
+                    'symbol':
+                    '1.0-2':
+                    'en-IN'
+              }}
+            </strong>
+          </div>
+        </article>
+  
+      </section>
+  
+      <div class="details-layout">
+  
+        <section class="main-details">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon doctor-icon">
+                  <mat-icon>medical_services</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Doctor information</h2>
+  
+                  <p>
+                    Doctor, specialization, and department
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Doctor</dt>
+                  <dd>{{ appointment.doctorName }}</dd>
+                </div>
+  
+                <div>
+                  <dt>Specialization</dt>
+  
+                  <dd>
+                    {{ appointment.doctorSpecialization }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Department</dt>
+  
+                  <dd>
+                    {{ appointment.departmentName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Healthcare Provider</dt>
+  
+                  <dd>
+                    {{ appointment.providerOrganizationName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Consultation fee</dt>
+  
+                  <dd>
+                    {{
+                      appointment.consultationFee
+                        | currency:
+                          'INR':
+                          'symbol':
+                          '1.0-2':
+                          'en-IN'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+  
+              <div class="card-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="viewDoctor()"
+                >
+                  <mat-icon>person</mat-icon>
+                  <span>View doctor</span>
+                </button>
+  
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="viewProvider()"
+                >
+                  <mat-icon>local_hospital</mat-icon>
+                  <span>View Provider</span>
+                </button>
+              </div>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon reason-icon">
+                  <mat-icon>description</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Reason for visit</h2>
+  
+                  <p>
+                    Information submitted while booking
+                  </p>
+                </div>
+              </header>
+  
+              <p class="reason-text">
+                {{ appointment.reasonForVisit }}
+              </p>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          @if (appointment.providerNotes) {
+  
+            <mat-card class="detail-card">
+              <mat-card-content>
+  
+                <header class="card-header">
+                  <div class="card-icon notes-icon">
+                    <mat-icon>clinical_notes</mat-icon>
+                  </div>
+  
+                  <div>
+                    <h2>Provider notes</h2>
+  
+                    <p>
+                      Notes recorded after the consultation
+                    </p>
+                  </div>
+                </header>
+  
+                <p class="notes-text">
+                  {{ appointment.providerNotes }}
+                </p>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+          @if (appointment.status === 'CANCELLED') {
+  
+            <mat-card class="detail-card cancellation-card">
+              <mat-card-content>
+  
+                <header class="card-header">
+                  <div class="card-icon cancellation-icon">
+                    <mat-icon>event_busy</mat-icon>
+                  </div>
+  
+                  <div>
+                    <h2>Cancellation information</h2>
+  
+                    <p>
+                      Details about the appointment cancellation
+                    </p>
+                  </div>
+                </header>
+  
+                <dl>
+                  <div>
+                    <dt>Cancelled by</dt>
+  
+                    <dd>
+                      {{ getCancelledByLabel(appointment) }}
+                    </dd>
+                  </div>
+  
+                  <div>
+                    <dt>Cancellation reason</dt>
+  
+                    <dd>
+                      {{ appointment.cancellationReason }}
+                    </dd>
+                  </div>
+  
+                  <div>
+                    <dt>Cancelled at</dt>
+  
+                    <dd>
+                      {{
+                        appointment.cancelledAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                </dl>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+          @if (cancellationVisible()) {
+  
+            <mat-card class="cancellation-form-card">
+              <mat-card-content>
+  
+                <header class="card-header">
+                  <div class="card-icon cancellation-icon">
+                    <mat-icon>event_busy</mat-icon>
+                  </div>
+  
+                  <div>
+                    <h2>Cancel appointment</h2>
+  
+                    <p>
+                      Enter a reason before cancelling
+                      this healthcare appointment.
+                    </p>
+                  </div>
+                </header>
+  
+                <form
+                  class="cancellation-form"
+                  [formGroup]="cancellationForm"
+                  (ngSubmit)="submitCancellation()"
+                  novalidate
+                >
+                  <mat-form-field appearance="outline">
+                    <mat-label>Cancellation reason</mat-label>
+  
+                    <textarea
+                      matInput
+                      formControlName="cancellationReason"
+                      rows="5"
+                      maxlength="500"
+                      placeholder="Explain why you need to cancel this appointment"
+                    ></textarea>
+  
+                    <mat-hint align="end">
+                      {{
+                        cancellationForm.controls
+                          .cancellationReason.value.length
+                      }}/500
+                    </mat-hint>
+  
+                    @if (
+                      cancellationForm.controls
+                        .cancellationReason.touched
+                      && cancellationForm.controls
+                        .cancellationReason.hasError('required')
+                    ) {
+                      <mat-error>
+                        Cancellation reason is required.
+                      </mat-error>
+                    }
+  
+                    @if (
+                      cancellationForm.controls
+                        .cancellationReason.touched
+                      && cancellationForm.controls
+                        .cancellationReason.hasError('maxlength')
+                    ) {
+                      <mat-error>
+                        Cancellation reason must not exceed
+                        500 characters.
+                      </mat-error>
+                    }
+                  </mat-form-field>
+  
+                  <section class="cancellation-warning">
+                    <mat-icon>warning_amber</mat-icon>
+  
+                    <p>
+                      Cancelling this appointment will release
+                      the selected time slot. This action cannot
+                      be reversed.
+                    </p>
+                  </section>
+  
+                  <div class="cancellation-actions">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      [disabled]="appointmentState.cancelling()"
+                      (click)="hideCancellationForm()"
+                    >
+                      Keep appointment
+                    </button>
+  
+                    <button
+  mat-flat-button
+  type="submit"
+  class="confirm-cancellation-button"
+  [disabled]="appointmentState.cancelling()"
+>
+  @if (appointmentState.cancelling()) {
+
+    <mat-spinner diameter="21"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        event_busy
+      </mat-icon>
+
+      <span>
+        Confirm cancellation
+      </span>
+
+    </ng-container>
+
+  }
+</button>
+                  </div>
+                </form>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+        </section>
+  
+        <aside class="appointment-sidebar">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon schedule-icon">
+                  <mat-icon>event</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Appointment schedule</h2>
+  
+                  <p>
+                    Date, time, and duration information
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Date</dt>
+  
+                  <dd>
+                    {{
+                      appointment.appointmentDate
+                        | date: 'MMMM d, y'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Start time</dt>
+  
+                  <dd>
+                    {{ getTimeLabel(appointment.startTime) }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>End time</dt>
+  
+                  <dd>
+                    {{ getTimeLabel(appointment.endTime) }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Duration</dt>
+  
+                  <dd>
+                    {{
+                      getDurationLabel(
+                        appointment.slotDurationMinutes
+                      )
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Upcoming</dt>
+  
+                  <dd>
+                    @if (isUpcoming(appointment)) {
+                      <span class="yes-label">Yes</span>
+                    } @else {
+                      <span class="no-label">No</span>
+                    }
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon history-icon">
+                  <mat-icon>history</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Appointment history</h2>
+  
+                  <p>
+                    Status and lifecycle timestamps
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Appointment ID</dt>
+  
+                  <dd class="identifier">
+                    {{ appointment.id }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Created</dt>
+  
+                  <dd>
+                    {{
+                      appointment.createdAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Last updated</dt>
+  
+                  <dd>
+                    {{
+                      appointment.updatedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+                @if (appointment.confirmedAt) {
+                  <div>
+                    <dt>Confirmed</dt>
+  
+                    <dd>
+                      {{
+                        appointment.confirmedAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                @if (appointment.completedAt) {
+                  <div>
+                    <dt>Completed</dt>
+  
+                    <dd>
+                      {{
+                        appointment.completedAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+  
+                @if (appointment.noShowAt) {
+                  <div>
+                    <dt>Marked no-show</dt>
+  
+                    <dd>
+                      {{
+                        appointment.noShowAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </dd>
+                  </div>
+                }
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          @if (
+            canCancelAppointment()
+            && !cancellationVisible()
+          ) {
+  
+            <mat-card class="manage-card">
+              <mat-card-content>
+  
+                <div class="manage-icon">
+                  <mat-icon>event_busy</mat-icon>
+                </div>
+  
+                <h2>Need to cancel?</h2>
+  
+                <p>
+                  This appointment can still be cancelled.
+                  Please provide a reason before continuing.
+                </p>
+  
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="cancel-button"
+                  (click)="showCancellationForm()"
+                >
+                  <mat-icon>event_busy</mat-icon>
+                  <span>Cancel appointment</span>
+                </button>
+  
+              </mat-card-content>
+            </mat-card>
+  
+          }
+  
+        </aside>
+  
+      </div>
+  
+    } @else {
+  
+      <section class="state-card">
+        <div class="state-icon unavailable-icon">
+          <mat-icon>event_busy</mat-icon>
+        </div>
+  
+        <strong>Appointment information unavailable</strong>
+  
+        <p>
+          The requested healthcare appointment is not
+          currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBack()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          <span>Back to appointments</span>
+        </button>
+      </section>
+  
+    }
+  
+  </section>

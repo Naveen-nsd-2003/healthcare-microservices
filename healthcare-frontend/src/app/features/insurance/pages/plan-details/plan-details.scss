@@ -1,0 +1,411 @@
+:host {
+  display: block;
+}
+
+.details-page {
+  display: grid;
+  gap: 22px;
+}
+
+.back-button {
+  justify-self: start;
+  color: #496f7d;
+}
+
+.plan-hero {
+  display: grid;
+  grid-template-columns:
+    76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 27px;
+  border: 1px solid #dbe8ed;
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #ecf9f9
+    );
+  box-shadow:
+    0 14px 38px rgba(18, 48, 67, 0.07);
+}
+
+.hero-icon {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  border-radius: 23px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0f7180,
+      #35aaa7
+    );
+}
+
+.hero-icon mat-icon {
+  width: 37px;
+  height: 37px;
+  font-size: 37px;
+}
+
+.plan-code {
+  color: #0f7180;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-copy h1 {
+  margin: 5px 0 0;
+  color: #19384d;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.2;
+}
+
+.hero-copy p {
+  margin: 7px 0 0;
+  color: #6d8290;
+  font-size: 13px;
+}
+
+.active-badge {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #17653a;
+  background: #e8f7ee;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.financial-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.financial-card {
+  display: grid;
+  gap: 6px;
+  padding: 20px;
+  border: 1px solid #e0e9ee;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.financial-card span {
+  color: #748894;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.financial-card strong {
+  color: #1d4053;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.financial-card small {
+  color: #91a0a9;
+  font-size: 10px;
+}
+
+.primary-card {
+  border-color: #b5dfe2;
+  background: #effafa;
+}
+
+.details-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) 330px;
+  gap: 18px;
+  align-items: start;
+}
+
+.main-details,
+.plan-sidebar {
+  display: grid;
+  gap: 18px;
+}
+
+.detail-card,
+.eligibility-card,
+.enrollment-card {
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.05);
+}
+
+.detail-card mat-card-content,
+.eligibility-card mat-card-content,
+.enrollment-card mat-card-content {
+  padding: 22px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.section-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 15px;
+  color: #176779;
+  background: #e9f6f7;
+}
+
+.section-header h2,
+.eligibility-card h2,
+.enrollment-card h2 {
+  margin: 0;
+  color: #233f52;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.section-header p {
+  margin: 5px 0 0;
+  color: #778b97;
+  font-size: 12px;
+}
+
+.description {
+  margin: 18px 0 0;
+  color: #617987;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 18px;
+}
+
+.coverage-grid article {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px;
+  border-radius: 14px;
+  color: #236441;
+  background: #edf8f1;
+}
+
+.coverage-grid article > mat-icon {
+  color: #268553;
+}
+
+.coverage-grid article div {
+  display: grid;
+  gap: 3px;
+}
+
+.coverage-grid strong {
+  font-size: 12px;
+}
+
+.coverage-grid span {
+  font-size: 10px;
+}
+
+.coverage-grid .coverage-disabled {
+  color: #788a95;
+  background: #f1f4f5;
+}
+
+.coverage-grid .coverage-disabled > mat-icon {
+  color: #9aa8af;
+}
+
+.detail-list,
+.eligibility-card dl {
+  display: grid;
+  margin: 7px 0 0;
+}
+
+.detail-list div,
+.eligibility-card dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #eff2f4;
+}
+
+.detail-list div:last-child,
+.eligibility-card dl div:last-child {
+  border-bottom: 0;
+}
+
+.detail-list dt,
+.eligibility-card dt {
+  color: #768a96;
+  font-size: 11px;
+}
+
+.detail-list dd,
+.eligibility-card dd {
+  margin: 0;
+  color: #29475a;
+  font-size: 12px;
+  font-weight: 750;
+  text-align: right;
+}
+
+.active-text {
+  color: #1c743f !important;
+}
+
+.enrollment-card {
+  border-color: #abd9dc;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #ebf9f9
+    );
+}
+
+.enrollment-card mat-card-content {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.enrollment-icon {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 15px;
+  place-items: center;
+  border-radius: 19px;
+  color: #ffffff;
+  background: #0f7180;
+}
+
+.enrollment-card p {
+  margin: 10px 0 18px;
+  color: #66808d;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.enrollment-card button {
+  width: 100%;
+  min-height: 45px;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #0f7180;
+}
+
+.state-card {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 40px;
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-card strong {
+  color: #28475a;
+  font-size: 16px;
+}
+
+.state-card p {
+  max-width: 430px;
+  margin: 0;
+  color: #788b98;
+  font-size: 13px;
+}
+
+.state-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 20px;
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.error-state button {
+  color: #ffffff;
+  background: #0f7180;
+}
+
+@media (max-width: 1000px) {
+  .details-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-sidebar {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .plan-hero {
+    grid-template-columns:
+      62px minmax(0, 1fr);
+  }
+
+  .hero-icon {
+    width: 62px;
+    height: 62px;
+  }
+
+  .active-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .financial-grid,
+  .plan-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .coverage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .plan-hero {
+    padding: 19px;
+  }
+
+  .detail-card mat-card-content,
+  .eligibility-card mat-card-content,
+  .enrollment-card mat-card-content {
+    padding: 18px;
+  }
+}

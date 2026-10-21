@@ -1,1 +1,212 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
 /* You can add global styles to this file, and also import other style files */
+.success-snackbar {
+  --mdc-snackbar-container-color: #176b3a;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #d9ffe6;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #a12622;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffe1df;
+}
+
+.information-snackbar {
+  --mdc-snackbar-container-color: #155e75;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #d9f5ff;
+}
+
+.healthcare-dialog-panel {
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow:
+      0 24px 70px
+      rgba(18, 48, 67, 0.22);
+  }
+
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape:
+      22px;
+  }
+}
+/*
+ * Notification dropdown panel.
+ *
+ * Material menus are rendered inside the global CDK overlay,
+ * so these styles must remain in styles.scss.
+ */
+.mat-mdc-menu-panel.notification-menu-panel {
+  width: 420px !important;
+  min-width: 420px !important;
+  max-width: 420px !important;
+  overflow: hidden !important;
+  border: 1px solid #e1e9ee;
+  border-radius: 18px !important;
+  background: #ffffff;
+  box-shadow:
+    0 24px 64px
+    rgba(15, 43, 59, 0.2) !important;
+}
+
+.notification-menu-panel
+.mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+/*
+ * Remove the standard menu-item width limitations
+ * from our custom notification panel.
+ */
+.notification-menu-panel
+.notification-panel {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+/*
+ * Keep the notification menu inside smaller screens.
+ */
+@media (max-width: 480px) {
+  .mat-mdc-menu-panel.notification-menu-panel {
+    width: calc(100vw - 20px) !important;
+    min-width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    border-radius: 16px !important;
+  }
+}
+
+.enrollment-review-dialog-panel {
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow:
+      0 24px 70px
+      rgba(18, 48, 67, 0.22);
+  }
+}
+@media print {
+  html,
+  body {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  app-dashboard-layout app-sidebar,
+  app-dashboard-layout app-top-toolbar,
+  app-sidebar,
+  app-top-toolbar,
+  .sidebar-container,
+  .mobile-backdrop,
+  .toolbar,
+  .page-toolbar,
+  .record-actions,
+  .section-action,
+  .back-button,
+  .download-record-button,
+  .edit-record-button {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+  }
+
+  app-dashboard-layout,
+  app-provider-medical-record-details,
+  app-member-medical-record-details {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .dashboard-shell,
+  .dashboard-main,
+  .dashboard-content,
+  .content-container {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .medical-record-page,
+  .member-medical-record-page {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .cdk-overlay-container,
+  .cdk-global-overlay-wrapper,
+  .cdk-overlay-pane,
+  .mat-mdc-menu-panel,
+  .mat-mdc-snack-bar-container,
+  .mat-mdc-dialog-container {
+    display: none !important;
+  }
+}

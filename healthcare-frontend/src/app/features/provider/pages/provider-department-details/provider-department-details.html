@@ -1,0 +1,457 @@
+<section class="department-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to departments</span>
+    </button>
+  
+    @if (departmentState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading department</strong>
+  
+        <p>
+          Please wait while the department
+          information is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      departmentState.errorMessage()
+      && !departmentState.selectedDepartment()
+    ) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load department</strong>
+  
+        <p>
+          {{ departmentState.errorMessage() }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to departments</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="loadDepartment()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+  
+    } @else if (
+      departmentState.selectedDepartment();
+      as department
+    ) {
+  
+      <header class="department-hero">
+  
+        <div class="hero-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <div class="hero-copy">
+          <span class="department-code">
+            {{ department.departmentCode }}
+          </span>
+  
+          <h1>
+            {{ department.departmentName }}
+          </h1>
+  
+          <p>
+            {{ department.providerOrganizationName }}
+          </p>
+        </div>
+  
+        @if (department.status === 'ACTIVE') {
+          <span class="status-badge status-badge--active">
+            <mat-icon>check_circle</mat-icon>
+            <span>ACTIVE</span>
+          </span>
+        } @else {
+          <span class="status-badge status-badge--inactive">
+            <mat-icon>block</mat-icon>
+            <span>INACTIVE</span>
+          </span>
+        }
+  
+      </header>
+  
+      @if (departmentState.errorMessage()) {
+        <section
+          class="action-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ departmentState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      @if (department.status === 'ACTIVE') {
+  
+        <section class="status-notice active-notice">
+          <mat-icon>visibility</mat-icon>
+  
+          <div>
+            <strong>Department is active</strong>
+  
+            <p>
+              This department is visible to Members and
+              can be used when assigning doctors.
+            </p>
+          </div>
+        </section>
+  
+      } @else {
+  
+        <section class="status-notice inactive-notice">
+          <mat-icon>visibility_off</mat-icon>
+  
+          <div>
+            <strong>Department is inactive</strong>
+  
+            <p>
+              This department is hidden from Member discovery.
+              Activate it before offering services through
+              this department.
+            </p>
+          </div>
+        </section>
+  
+      }
+  
+      <div class="details-layout">
+  
+        <section class="main-details">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon information-icon">
+                  <mat-icon>account_tree</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Department information</h2>
+  
+                  <p>
+                    Department identity and organization
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Department name</dt>
+  
+                  <dd>
+                    {{ department.departmentName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Department code</dt>
+  
+                  <dd>
+                    {{ department.departmentCode }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Organization</dt>
+  
+                  <dd>
+                    {{ department.providerOrganizationName }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Status</dt>
+  
+                  <dd>
+                    {{ department.status }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon description-icon">
+                  <mat-icon>description</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Department description</h2>
+  
+                  <p>
+                    Clinical services provided by
+                    this department
+                  </p>
+                </div>
+              </header>
+  
+              <p class="description-text">
+                {{ department.description }}
+              </p>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon contact-icon">
+                  <mat-icon>contact_phone</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Contact and location</h2>
+  
+                  <p>
+                    Department contact information
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Contact number</dt>
+  
+                  <dd>
+                    @if (department.contactNumber) {
+                      <span>
+                        {{ department.contactNumber }}
+                      </span>
+                    } @else {
+                      <span class="not-provided">
+                        Not provided
+                      </span>
+                    }
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Department location</dt>
+  
+                  <dd>
+                    @if (department.location) {
+                      <span>
+                        {{ department.location }}
+                      </span>
+                    } @else {
+                      <span class="not-provided">
+                        Not provided
+                      </span>
+                    }
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </section>
+  
+        <aside class="department-sidebar">
+  
+          <mat-card class="detail-card">
+            <mat-card-content>
+  
+              <header class="card-header">
+                <div class="card-icon history-icon">
+                  <mat-icon>history</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>Record information</h2>
+  
+                  <p>
+                    Identifier and timestamps
+                  </p>
+                </div>
+              </header>
+  
+              <dl>
+                <div>
+                  <dt>Department ID</dt>
+  
+                  <dd class="identifier">
+                    {{ department.id }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Provider ID</dt>
+  
+                  <dd class="identifier">
+                    {{ department.providerId }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Created</dt>
+  
+                  <dd>
+                    {{
+                      department.createdAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+  
+                <div>
+                  <dt>Last updated</dt>
+  
+                  <dd>
+                    {{
+                      department.updatedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+  
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="management-card">
+            <mat-card-content>
+  
+              <div class="management-icon">
+                <mat-icon>settings</mat-icon>
+              </div>
+  
+              <h2>Manage department</h2>
+  
+              <p>
+                Update department details or change
+                its Member visibility status.
+              </p>
+  
+              <button
+                mat-stroked-button
+                type="button"
+                class="edit-button"
+                [disabled]="departmentState.statusUpdating()"
+                (click)="editDepartment()"
+              >
+                <mat-icon>edit</mat-icon>
+                <span>Edit department</span>
+              </button>
+  
+              @if (department.status === 'ACTIVE') {
+  
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="deactivate-button"
+                  [disabled]="departmentState.statusUpdating()"
+                  (click)="deactivateDepartment()"
+                >
+                  @if (departmentState.statusUpdating()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <mat-icon>block</mat-icon>
+                    <span>Make inactive</span>
+                  }
+                </button>
+  
+              } @else {
+  
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="activate-button"
+                  [disabled]="departmentState.statusUpdating()"
+                  (click)="activateDepartment()"
+                >
+                  @if (departmentState.statusUpdating()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Activate department</span>
+                  }
+                </button>
+  
+              }
+  
+            </mat-card-content>
+          </mat-card>
+  
+        </aside>
+  
+      </div>
+  
+      <section class="code-notice">
+        <mat-icon>lock</mat-icon>
+  
+        <div>
+          <strong>Department code is permanent</strong>
+  
+          <p>
+            The department code cannot be changed after
+            creation. Other department information can be
+            updated from the Edit Department page.
+          </p>
+        </div>
+      </section>
+  
+    } @else {
+  
+      <section class="state-card">
+        <div class="state-icon unavailable-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <strong>Department information unavailable</strong>
+  
+        <p>
+          The requested department information is
+          not currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBack()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          <span>Back to departments</span>
+        </button>
+      </section>
+  
+    }
+  
+  </section>

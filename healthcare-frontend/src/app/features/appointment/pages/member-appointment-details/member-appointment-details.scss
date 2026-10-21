@@ -1,0 +1,701 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .appointment-details-page {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .appointment-hero {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      72px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 19px;
+    padding: 24px;
+    border: 1px solid #dbe8ed;
+    border-radius: 22px;
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff,
+        #edfafa
+      );
+    box-shadow:
+      0 12px 34px rgba(18, 48, 67, 0.07);
+  }
+  
+  .hero-icon {
+    display: grid;
+    width: 72px;
+    height: 72px;
+    place-items: center;
+    border-radius: 22px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+  }
+  
+  .hero-icon mat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 34px;
+  }
+  
+  .hero-copy {
+    min-width: 0;
+  }
+  
+  .specialization {
+    display: block;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .hero-copy h1 {
+    margin: 5px 0 0;
+    color: #19384d;
+    font-size: clamp(24px, 3vw, 35px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  
+  .hero-copy p {
+    margin: 6px 0 0;
+    color: #6d8290;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    min-height: 31px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .status-badge mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+  
+  .status-badge--booked {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .status-badge--confirmed {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .status-badge--completed {
+    color: #176779;
+    background: #e1f4f2;
+  }
+  
+  .status-badge--cancelled {
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .status-badge--no-show {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .status-panel {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 15px;
+  }
+  
+  .status-panel > mat-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    font-size: 24px;
+  }
+  
+  .status-panel strong {
+    font-size: 13px;
+  }
+  
+  .status-panel p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .status-panel--booked {
+    border: 1px solid #d8d0ef;
+    color: #574a7c;
+    background: #f7f4fd;
+  }
+  
+  .status-panel--confirmed {
+    border: 1px solid #bce1c9;
+    color: #296744;
+    background: #eff9f2;
+  }
+  
+  .status-panel--completed {
+    border: 1px solid #b9dfdc;
+    color: #176779;
+    background: #effafa;
+  }
+  
+  .status-panel--cancelled {
+    border: 1px solid #efbdb9;
+    color: #86251f;
+    background: #fff2f1;
+  }
+  
+  .status-panel--no-show {
+    border: 1px solid #d8e1e5;
+    color: #607580;
+    background: #f5f8f9;
+  }
+  
+  .action-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 17px;
+    border: 1px solid #f2b8b5;
+    border-radius: 14px;
+    color: #8b1a1a;
+    background: #fff1f0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .appointment-summary {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .appointment-summary article {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e0e9ee;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(18, 48, 67, 0.04);
+  }
+  
+  .summary-icon {
+    display: grid;
+    width: 45px;
+    height: 45px;
+    flex: 0 0 45px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .date-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .time-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .duration-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .fee-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .appointment-summary article > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .appointment-summary span {
+    color: #7b8e99;
+    font-size: 9px;
+  }
+  
+  .appointment-summary strong {
+    min-width: 0;
+    color: #29475a;
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+  
+  .details-layout {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: 18px;
+  }
+  
+  .main-details,
+  .appointment-sidebar {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+  }
+  
+  .detail-card,
+  .cancellation-form-card,
+  .manage-card {
+    min-width: 0;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.045);
+  }
+  
+  .detail-card mat-card-content,
+  .cancellation-form-card mat-card-content,
+  .manage-card mat-card-content {
+    padding: 22px;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #edf1f4;
+  }
+  
+  .card-icon {
+    display: grid;
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    place-items: center;
+    border-radius: 15px;
+  }
+  
+  .doctor-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .reason-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .notes-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .cancellation-icon {
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .schedule-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .history-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .card-header h2,
+  .manage-card h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 16px;
+    font-weight: 750;
+  }
+  
+  .card-header p {
+    margin: 4px 0 0;
+    color: #778b97;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  
+  .detail-card dl {
+    display: grid;
+    margin: 6px 0 0;
+  }
+  
+  .detail-card dl > div {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      165px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f3f5;
+  }
+  
+  .detail-card dl > div:last-child {
+    border-bottom: 0;
+  }
+  
+  .detail-card dt {
+    color: #7b8e99;
+    font-size: 11px;
+  }
+  
+  .detail-card dd {
+    min-width: 0;
+    margin: 0;
+    color: #29475a;
+    font-size: 12px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  
+  .card-actions button {
+    min-height: 42px;
+    border-radius: 11px;
+    color: #0f7180;
+  }
+  
+  .reason-text,
+  .notes-text {
+    margin: 18px 0 0;
+    color: #5f7785;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  
+  .cancellation-card {
+    border-color: #efcfcc;
+  }
+  
+  .cancellation-form {
+    display: grid;
+    gap: 14px;
+    padding-top: 18px;
+  }
+  
+  .cancellation-form mat-form-field {
+    width: 100%;
+  }
+  
+  .cancellation-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 13px;
+    border: 1px solid #eed59a;
+    border-radius: 13px;
+    color: #73540a;
+    background: #fff8e7;
+  }
+  
+  .cancellation-warning mat-icon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    font-size: 20px;
+  }
+  
+  .cancellation-warning p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .cancellation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .cancellation-actions button {
+    min-width: 145px;
+    min-height: 44px;
+    border-radius: 11px;
+  }
+  
+  .confirm-cancellation-button {
+    color: #ffffff;
+    background: #a33b34;
+  }
+  
+  .confirm-cancellation-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      #ffffff;
+  }
+  
+  .identifier {
+    font-family: monospace;
+    font-size: 10px !important;
+  }
+  
+  .yes-label {
+    color: #1e6a3d;
+  }
+  
+  .no-label {
+    color: #657782;
+  }
+  
+  .manage-card {
+    border-color: #efcfcc;
+    background:
+      linear-gradient(
+        145deg,
+        #ffffff,
+        #fff5f4
+      );
+  }
+  
+  .manage-card mat-card-content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  
+  .manage-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 13px;
+    place-items: center;
+    border-radius: 18px;
+    color: #ffffff;
+    background: #a33b34;
+  }
+  
+  .manage-icon mat-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+  }
+  
+  .manage-card p {
+    margin: 9px 0 16px;
+    color: #6f7f87;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .cancel-button {
+    width: 100%;
+    min-height: 43px;
+    border-radius: 11px;
+    border-color: #b85049 !important;
+    color: #9c302a !important;
+  }
+  
+  .state-card {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 360px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 40px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .unavailable-icon {
+    color: #537c89;
+    background: #e9f6f7;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 450px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  
+  .state-actions button {
+    min-height: 42px;
+    border-radius: 11px;
+  }
+  
+  .state-actions button[mat-flat-button] {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  @media (max-width: 1100px) {
+    .appointment-summary {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .details-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .appointment-sidebar {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .manage-card {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .appointment-hero {
+      grid-template-columns:
+        58px minmax(0, 1fr);
+      padding: 18px;
+    }
+  
+    .hero-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+    }
+  
+    .hero-icon mat-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+    }
+  
+    .status-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  
+    .appointment-sidebar {
+      grid-template-columns: 1fr;
+    }
+  
+    .manage-card {
+      grid-column: auto;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .appointment-summary {
+      grid-template-columns: 1fr;
+    }
+  
+    .detail-card mat-card-content,
+    .cancellation-form-card mat-card-content,
+    .manage-card mat-card-content {
+      padding: 18px;
+    }
+  
+    .card-header {
+      align-items: flex-start;
+    }
+  
+    .detail-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 5px;
+    }
+  
+    .card-actions,
+    .cancellation-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .card-actions button,
+    .cancellation-actions button {
+      width: 100%;
+    }
+  
+    .state-actions {
+      width: 100%;
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .state-actions button {
+      width: 100%;
+    }
+  
+    .state-card {
+      min-height: 300px;
+      padding: 28px 18px;
+    }
+  }

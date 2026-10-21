@@ -1,0 +1,603 @@
+<section class="provider-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to healthcare Providers</span>
+    </button>
+  
+    @if (providerState.providerDetailsLoading()) {
+  
+      <section class="state-card loading-state">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading Provider details</strong>
+  
+        <p>
+          Please wait while the Provider,
+          departments, and doctors are retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      providerState.errorMessage()
+      && !providerState.selectedProvider()
+    ) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load healthcare Provider</strong>
+  
+        <p>{{ providerState.errorMessage() }}</p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            Back to Providers
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="retryLoading()"
+          >
+            <mat-icon>refresh</mat-icon>
+            Try again
+          </button>
+        </div>
+      </section>
+  
+    } @else if (
+      providerState.selectedProvider();
+      as provider
+    ) {
+  
+      <header class="provider-hero">
+        <div class="hero-icon">
+          <mat-icon>
+            {{ getProviderTypeIcon(provider.providerType) }}
+          </mat-icon>
+        </div>
+  
+        <div class="hero-copy">
+          <span class="provider-type">
+            {{ getProviderTypeLabel(provider.providerType) }}
+          </span>
+  
+          <h1>{{ provider.organizationName }}</h1>
+  
+          <p>
+            <mat-icon>location_on</mat-icon>
+  
+            <span>
+              {{ provider.city }},
+              {{ provider.state }},
+              {{ provider.country }}
+            </span>
+          </p>
+        </div>
+  
+        <div class="hero-badges">
+          <span class="active-badge">
+            <mat-icon>verified</mat-icon>
+            Active
+          </span>
+  
+          @if (provider.emergencyServicesAvailable) {
+            <span class="emergency-badge">
+              <mat-icon>emergency</mat-icon>
+              Emergency services
+            </span>
+          }
+        </div>
+      </header>
+  
+      @if (provider.emergencyServicesAvailable) {
+        <section class="emergency-notice">
+          <mat-icon>emergency</mat-icon>
+  
+          <div>
+            <strong>Emergency services available</strong>
+  
+            <p>
+              This Provider has indicated that
+              emergency services are available.
+            </p>
+          </div>
+        </section>
+      }
+  
+      <div class="provider-information-grid">
+  
+        <mat-card class="information-card">
+          <mat-card-content>
+            <header class="card-header">
+              <div class="card-icon">
+                <mat-icon>business</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Provider information</h2>
+                <p>Registration and licensing details</p>
+              </div>
+            </header>
+  
+            <dl>
+              <div>
+                <dt>Provider type</dt>
+  
+                <dd>
+                  {{ getProviderTypeLabel(provider.providerType) }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Registration number</dt>
+                <dd>{{ provider.registrationNumber }}</dd>
+              </div>
+  
+              <div>
+                <dt>License number</dt>
+                <dd>{{ provider.licenseNumber }}</dd>
+              </div>
+  
+              <div>
+                <dt>Status</dt>
+                <dd>{{ provider.status }}</dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="information-card">
+          <mat-card-content>
+            <header class="card-header">
+              <div class="card-icon contact-icon">
+                <mat-icon>contact_phone</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Contact information</h2>
+                <p>Phone and website information</p>
+              </div>
+            </header>
+  
+            <dl>
+              <div>
+                <dt>Contact number</dt>
+                <dd>{{ provider.contactNumber }}</dd>
+              </div>
+  
+              <div>
+                <dt>Website</dt>
+  
+                <dd>
+                  @if (
+                    getWebsiteUrl(provider.website);
+                    as websiteUrl
+                  ) {
+                    <a
+                      [href]="websiteUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ provider.website }}
+                    </a>
+                  } @else {
+                    <span>Not provided</span>
+                  }
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Emergency services</dt>
+  
+                <dd>
+                  @if (provider.emergencyServicesAvailable) {
+                    <span>Available</span>
+                  } @else {
+                    <span>Not listed</span>
+                  }
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="information-card address-card">
+          <mat-card-content>
+            <header class="card-header">
+              <div class="card-icon address-icon">
+                <mat-icon>location_on</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Provider address</h2>
+                <p>Registered facility location</p>
+              </div>
+            </header>
+  
+            <address>
+              <strong>{{ provider.addressLine }}</strong>
+  
+              <span>
+                {{ provider.city }},
+                {{ provider.state }}
+              </span>
+  
+              <span>{{ provider.postalCode }}</span>
+              <span>{{ provider.country }}</span>
+            </address>
+          </mat-card-content>
+        </mat-card>
+  
+      </div>
+  
+      <section class="departments-section">
+        <header class="section-heading">
+          <div>
+            <p class="section-eyebrow">Clinical Services</p>
+            <h2>Available departments</h2>
+  
+            <p>
+              Explore departments within this Provider.
+            </p>
+          </div>
+  
+          <span class="section-count">
+            {{ providerState.departments().length }}
+            department(s)
+          </span>
+        </header>
+  
+        @if (providerState.departments().length === 0) {
+  
+          <section class="inline-empty-state">
+            <mat-icon>domain_disabled</mat-icon>
+  
+            <div>
+              <strong>No departments available</strong>
+  
+              <p>
+                This Provider has not listed any
+                active departments.
+              </p>
+            </div>
+          </section>
+  
+        } @else {
+  
+          <div class="department-grid">
+            @for (
+              department of providerState.departments();
+              track department.id
+            ) {
+              <article class="department-card">
+                <div class="department-icon">
+                  <mat-icon>domain</mat-icon>
+                </div>
+  
+                <div class="department-copy">
+                  <span class="department-code">
+                    {{ department.departmentCode }}
+                  </span>
+  
+                  <h3>{{ department.departmentName }}</h3>
+  
+                  <p>{{ department.description }}</p>
+  
+                  <div class="department-meta">
+                    @if (department.location) {
+                      <span>
+                        <mat-icon>location_on</mat-icon>
+                        {{ department.location }}
+                      </span>
+                    }
+  
+                    @if (department.contactNumber) {
+                      <span>
+                        <mat-icon>phone</mat-icon>
+                        {{ department.contactNumber }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+  
+        }
+      </section>
+  
+      <section class="doctors-section">
+        <header class="section-heading">
+          <div>
+            <p class="section-eyebrow">
+              Medical Professionals
+            </p>
+  
+            <h2>Available doctors</h2>
+  
+            <p>
+              Search and filter active doctors.
+            </p>
+          </div>
+  
+          <span class="section-count">
+            {{ filteredDoctors().length }} result(s)
+          </span>
+        </header>
+  
+        <section class="doctor-filter-panel">
+          <mat-form-field
+            appearance="outline"
+            class="doctor-search-field"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Search doctors</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+  
+            <input
+              #doctorSearch
+              matInput
+              type="search"
+              placeholder="Name, specialization, or qualification"
+              [value]="searchText()"
+              (input)="updateSearch(doctorSearch.value)"
+            >
+  
+            @if (searchText().trim().length > 0) {
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                aria-label="Clear doctor search"
+                (click)="updateSearch('')"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+  
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Department</mat-label>
+            <mat-icon matPrefix>domain</mat-icon>
+  
+            <mat-select
+              [value]="selectedDepartmentId()"
+              (selectionChange)="updateDepartment($event.value)"
+            >
+              <mat-option value="ALL">
+                All departments
+              </mat-option>
+  
+              @for (
+                department of providerState.departments();
+                track department.id
+              ) {
+                <mat-option [value]="department.id">
+                  {{ department.departmentName }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+  
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Specialization</mat-label>
+            <mat-icon matPrefix>medical_services</mat-icon>
+  
+            <mat-select
+              [value]="selectedSpecialization()"
+              (selectionChange)="
+                updateSpecialization($event.value)
+              "
+            >
+              <mat-option value="ALL">
+                All specializations
+              </mat-option>
+  
+              @for (
+                specialization of specializationOptions();
+                track specialization
+              ) {
+                <mat-option [value]="specialization">
+                  {{ specialization }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+  
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Sort by</mat-label>
+            <mat-icon matPrefix>sort</mat-icon>
+  
+            <mat-select
+              [value]="selectedSort()"
+              (selectionChange)="updateSort($event.value)"
+            >
+              <mat-option value="NAME_ASCENDING">
+                Doctor name
+              </mat-option>
+  
+              <mat-option value="EXPERIENCE_HIGH_TO_LOW">
+                Most experienced
+              </mat-option>
+  
+              <mat-option value="FEE_LOW_TO_HIGH">
+                Fee: Low to high
+              </mat-option>
+  
+              <mat-option value="FEE_HIGH_TO_LOW">
+                Fee: High to low
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+  
+          <button
+            mat-button
+            type="button"
+            class="clear-filter-button"
+            [disabled]="!filtersApplied()"
+            (click)="clearFilters()"
+          >
+            <mat-icon>filter_alt_off</mat-icon>
+            Clear
+          </button>
+        </section>
+  
+        @if (filteredDoctors().length === 0) {
+  
+          <section class="inline-empty-state">
+            <mat-icon>person_search</mat-icon>
+  
+            <div>
+              <strong>No doctors found</strong>
+  
+              @if (filtersApplied()) {
+                <p>
+                  No doctors match the selected filters.
+                </p>
+  
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="clearFilters()"
+                >
+                  Clear doctor filters
+                </button>
+              } @else {
+                <p>
+                  This Provider has not listed
+                  any active doctors.
+                </p>
+              }
+            </div>
+          </section>
+  
+        } @else {
+  
+          <div class="doctor-grid">
+            @for (
+              doctor of filteredDoctors();
+              track doctor.id
+            ) {
+              <mat-card class="doctor-card">
+                <mat-card-content>
+                  <header class="doctor-header">
+                    <div class="doctor-avatar">
+                      {{ getInitials(doctor) }}
+                    </div>
+  
+                    <div class="doctor-heading">
+                      <span>{{ doctor.specialization }}</span>
+                      <h3>{{ doctor.fullName }}</h3>
+                      <p>{{ doctor.qualification }}</p>
+                    </div>
+                  </header>
+  
+                  <section class="doctor-information">
+                    <div>
+                      <mat-icon>domain</mat-icon>
+                      <span>Department</span>
+                      <strong>{{ doctor.departmentName }}</strong>
+                    </div>
+  
+                    <div>
+                      <mat-icon>workspace_premium</mat-icon>
+                      <span>Experience</span>
+  
+                      <strong>
+                        {{
+                          getExperienceLabel(
+                            doctor.yearsOfExperience
+                          )
+                        }}
+                      </strong>
+                    </div>
+  
+                    <div>
+                      <mat-icon>payments</mat-icon>
+                      <span>Consultation fee</span>
+  
+                      <strong>
+                        {{
+                          doctor.consultationFee
+                            | currency:
+                              'INR':
+                              'symbol':
+                              '1.0-2':
+                              'en-IN'
+                        }}
+                      </strong>
+                    </div>
+                  </section>
+  
+                  @if (doctor.biography) {
+                    <p class="doctor-biography">
+                      {{ doctor.biography }}
+                    </p>
+                  }
+  
+                  <footer class="doctor-actions">
+                    <button
+                      mat-flat-button
+                      type="button"
+                      (click)="viewDoctor(doctor)"
+                    >
+                      View doctor
+                      <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                  </footer>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+  
+        }
+      </section>
+  
+    } @else {
+  
+      <section class="state-card">
+        <div class="state-icon">
+          <mat-icon>local_hospital</mat-icon>
+        </div>
+  
+        <strong>Healthcare Provider unavailable</strong>
+  
+        <p>
+          The requested Provider information
+          is not currently available.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="goBack()"
+        >
+          Return to Providers
+        </button>
+      </section>
+  
+    }
+  
+  </section>

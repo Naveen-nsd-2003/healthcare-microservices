@@ -1,0 +1,280 @@
+<mat-card class="registration-card">
+  <mat-card-content>
+
+    <header class="registration-header">
+      <p class="eyebrow">Member Registration</p>
+
+      <h2>Create your healthcare account</h2>
+
+      <p class="subtitle">
+        Register to manage insurance, appointments,
+        medical records, claims, and notifications.
+      </p>
+    </header>
+
+    @if (successMessage()) {
+      <div
+        class="message success-message"
+        role="status"
+      >
+        <mat-icon>check_circle_outline</mat-icon>
+
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div
+        class="message error-message"
+        role="alert"
+      >
+        <mat-icon>error_outline</mat-icon>
+
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form
+      [formGroup]="registrationForm"
+      (ngSubmit)="register()"
+      novalidate
+    >
+      <div class="form-grid">
+
+        <!-- Username -->
+        <mat-form-field
+          appearance="outline"
+          class="full-row"
+        >
+          <mat-label>Username</mat-label>
+
+          <mat-icon matPrefix>account_circle</mat-icon>
+
+          <input
+            matInput
+            type="text"
+            formControlName="username"
+            autocomplete="username"
+            maxlength="50"
+            placeholder="Choose a username"
+          >
+
+          <mat-hint align="end">
+            {{ registrationForm.controls.username.value.length }}/50
+          </mat-hint>
+
+          @if (
+            registrationForm.controls.username.touched
+            && registrationForm.controls.username.hasError('required')
+          ) {
+            <mat-error>
+              Username is required.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.username.touched
+            && registrationForm.controls.username.hasError('minlength')
+          ) {
+            <mat-error>
+              Username must contain at least 4 characters.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.username.touched
+            && registrationForm.controls.username.hasError('maxlength')
+          ) {
+            <mat-error>
+              Username must not exceed 50 characters.
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- First Name -->
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+
+          <mat-icon matPrefix>person_outline</mat-icon>
+
+          <input
+            matInput
+            type="text"
+            formControlName="firstName"
+            autocomplete="given-name"
+            maxlength="50"
+            placeholder="Enter first name"
+          >
+
+          @if (
+            registrationForm.controls.firstName.touched
+            && registrationForm.controls.firstName.hasError('required')
+          ) {
+            <mat-error>
+              First name is required.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.firstName.touched
+            && registrationForm.controls.firstName.hasError('maxlength')
+          ) {
+            <mat-error>
+              First name must not exceed 50 characters.
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Last Name -->
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+
+          <mat-icon matPrefix>badge</mat-icon>
+
+          <input
+            matInput
+            type="text"
+            formControlName="lastName"
+            autocomplete="family-name"
+            maxlength="50"
+            placeholder="Enter last name"
+          >
+
+          @if (
+            registrationForm.controls.lastName.touched
+            && registrationForm.controls.lastName.hasError('required')
+          ) {
+            <mat-error>
+              Last name is required.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.lastName.touched
+            && registrationForm.controls.lastName.hasError('maxlength')
+          ) {
+            <mat-error>
+              Last name must not exceed 50 characters.
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field
+          appearance="outline"
+          class="full-row"
+        >
+          <mat-label>Email address</mat-label>
+
+          <mat-icon matPrefix>mail_outline</mat-icon>
+
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            maxlength="150"
+            placeholder="name@example.com"
+          >
+
+          @if (
+            registrationForm.controls.email.touched
+            && registrationForm.controls.email.hasError('required')
+          ) {
+            <mat-error>
+              Email is required.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.email.touched
+            && registrationForm.controls.email.hasError('email')
+          ) {
+            <mat-error>
+              Enter a valid email address.
+            </mat-error>
+          }
+
+          @if (
+            registrationForm.controls.email.touched
+            && registrationForm.controls.email.hasError('maxlength')
+          ) {
+            <mat-error>
+              Email must not exceed 150 characters.
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Phone Number -->
+        <mat-form-field
+          appearance="outline"
+          class="full-row"
+        >
+          <mat-label>Phone number, optional</mat-label>
+
+          <mat-icon matPrefix>phone</mat-icon>
+
+          <input
+            matInput
+            type="tel"
+            formControlName="phoneNumber"
+            autocomplete="tel"
+            maxlength="20"
+            placeholder="+91 98765 01234"
+          >
+
+          <mat-hint>
+            Enter 10 to 20 digits or supported phone symbols.
+          </mat-hint>
+
+          @if (
+            registrationForm.controls.phoneNumber.touched
+            && registrationForm.controls.phoneNumber.hasError('pattern')
+          ) {
+            <mat-error>
+              Enter a valid phone number.
+            </mat-error>
+          }
+        </mat-form-field>
+
+      </div>
+
+      <button
+  mat-flat-button
+  color="primary"
+  class="register-button"
+  type="submit"
+  [disabled]="registrationForm.invalid || submitting()"
+>
+  @if (submitting()) {
+
+    <mat-spinner diameter="22"></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <span>
+        Create account
+      </span>
+
+      <mat-icon>
+        person_add
+      </mat-icon>
+
+    </ng-container>
+
+  }
+</button>
+    </form>
+
+    <p class="login-link">
+      Already have an account?
+
+      <a routerLink="/login">
+        Sign in
+      </a>
+    </p>
+
+  </mat-card-content>
+</mat-card>

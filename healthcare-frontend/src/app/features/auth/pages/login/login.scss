@@ -1,0 +1,122 @@
+:host {
+  display: block;
+  width: min(100%, 480px);
+}
+
+.login-card {
+  padding: 18px;
+  border: 1px solid #e3eaf1;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow:
+    0 24px 70px rgba(22, 55, 75, 0.12);
+}
+
+.login-header {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #087687;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0;
+  color: #14344a;
+  font-size: 32px;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  color: #64798a;
+  line-height: 1.6;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  border: 1px solid #f2b8b5;
+  border-radius: 14px;
+  color: #8b1a1a;
+  background: #fff1f0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.error-message mat-icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+}
+
+.login-button {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.login-button mat-spinner {
+  --mdc-circular-progress-active-indicator-color: #ffffff;
+}
+
+.help-text {
+  margin: 24px 0 0;
+  color: #708391;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .login-card {
+    padding: 8px;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+}
+.auth-links {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  color: #708391;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-links a {
+  color: #087687;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}

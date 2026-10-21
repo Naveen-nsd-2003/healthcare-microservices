@@ -1,0 +1,584 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .doctors-page {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 24px;
+  }
+  
+  .page-header {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  
+  .page-header > div:first-child {
+    min-width: 0;
+    max-width: 780px;
+  }
+  
+  .eyebrow {
+    margin: 0 0 7px;
+    color: #0f7180;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  
+  h1 {
+    margin: 0;
+    color: #19384d;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 780;
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+  
+  .description {
+    margin: 12px 0 0;
+    color: #6d8290;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  
+  .page-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+  }
+  
+  .page-actions button {
+    min-height: 44px;
+    border-radius: 12px;
+  }
+  
+  .create-button {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .summary-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .summary-card {
+    display: flex;
+    min-width: 0;
+    min-height: 98px;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e0e9ee;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(18, 48, 67, 0.04);
+  }
+  
+  .summary-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .total-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .active-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .inactive-icon {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .department-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .specialization-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .summary-card > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .summary-card span {
+    color: #758894;
+    font-size: 9px;
+    line-height: 1.4;
+  }
+  
+  .summary-card strong {
+    color: #1c3b4f;
+    font-size: 22px;
+    font-weight: 800;
+  }
+  
+  .filter-panel {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    grid-template-columns:
+      minmax(250px, 2fr)
+      repeat(4, minmax(145px, 1fr));
+    align-items: center;
+    gap: 12px;
+    padding: 15px 17px;
+    border: 1px solid #e0e9ee;
+    border-radius: 18px;
+    background: #ffffff;
+  }
+  
+  .filter-panel mat-form-field {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .search-field {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .clear-filter-button {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    justify-self: start;
+    min-height: 42px;
+    color: #4e7180;
+  }
+  
+  .result-count {
+    grid-column: 3 / -1;
+    grid-row: 2;
+    justify-self: end;
+    color: #778b97;
+    font-size: 11px;
+    font-weight: 650;
+  }
+  
+  .doctor-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  
+  .doctor-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #dfe8ed;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow:
+      0 10px 32px rgba(18, 48, 67, 0.055);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease,
+      transform 150ms ease;
+  }
+  
+  .doctor-card:hover {
+    border-color: #b6d6dc;
+    box-shadow:
+      0 18px 42px rgba(18, 48, 67, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .doctor-card mat-card-content {
+    display: grid;
+    min-width: 0;
+    min-height: 100%;
+    box-sizing: border-box;
+    gap: 15px;
+    padding: 21px;
+  }
+  
+  .doctor-header {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      54px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 13px;
+  }
+  
+  .doctor-avatar {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    border-radius: 17px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+    font-size: 14px;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+  }
+  
+  .doctor-heading {
+    min-width: 0;
+  }
+  
+  .specialization {
+    display: block;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  
+  .doctor-heading h2 {
+    margin: 4px 0 0;
+    color: #233f52;
+    font-size: 18px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  
+  .doctor-heading p {
+    margin: 4px 0 0;
+    color: #758995;
+    font-size: 10px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    min-height: 29px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .status-badge mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+  
+  .active-status {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .inactive-status {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .doctor-information {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  
+  .doctor-information > div {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      19px minmax(0, 1fr);
+    gap: 2px 5px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f5f9fa;
+  }
+  
+  .doctor-information mat-icon {
+    grid-row: 1 / 3;
+    width: 17px;
+    height: 17px;
+    color: #4f7a88;
+    font-size: 17px;
+  }
+  
+  .doctor-information span,
+  .registration-panel span {
+    color: #7b8e99;
+    font-size: 8px;
+  }
+  
+  .doctor-information strong {
+    min-width: 0;
+    color: #29475a;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+  
+  .registration-panel {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 13px;
+    border: 1px solid #e5ecef;
+    border-radius: 12px;
+    background: #fbfcfd;
+  }
+  
+  .registration-panel mat-icon {
+    color: #527d89;
+  }
+  
+  .registration-panel > div {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+  
+  .registration-panel strong {
+    color: #29475a;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+  
+  .doctor-biography {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: #687f8c;
+    font-size: 11px;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  
+  .visibility-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  
+  .visibility-notice mat-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    font-size: 18px;
+  }
+  
+  .active-notice {
+    color: #286844;
+    background: #edf8f1;
+  }
+  
+  .inactive-notice {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .doctor-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+  }
+  
+  .doctor-actions button {
+    min-height: 43px;
+    border-radius: 12px;
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .state-card {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 340px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 40px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #537c89;
+    background: #e9f6f7;
+  }
+  
+  .error-state .state-icon {
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 440px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-card button {
+    margin-top: 8px;
+  }
+  
+  .error-state button,
+  .empty-state .create-button {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  @media (max-width: 1280px) {
+    .summary-grid {
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    }
+  
+    .filter-panel {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .clear-filter-button,
+    .result-count {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  
+    .result-count {
+      justify-self: end;
+    }
+  }
+  
+  @media (max-width: 1000px) {
+    .doctor-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .page-header {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .page-actions {
+      align-self: flex-start;
+    }
+  
+    .filter-panel {
+      grid-template-columns: 1fr;
+    }
+  
+    .result-count {
+      justify-self: start;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .summary-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .doctor-card mat-card-content {
+      padding: 17px;
+    }
+  
+    .doctor-header {
+      grid-template-columns:
+        48px minmax(0, 1fr);
+    }
+  
+    .doctor-avatar {
+      width: 48px;
+      height: 48px;
+    }
+  
+    .status-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  
+    .doctor-information {
+      grid-template-columns: 1fr;
+    }
+  
+    .doctor-actions button {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 430px) {
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .page-actions {
+      display: grid;
+      width: 100%;
+      grid-template-columns: 1fr;
+    }
+  
+    .page-actions button {
+      width: 100%;
+    }
+  
+    .state-card {
+      min-height: 300px;
+      padding: 28px 18px;
+    }
+  }

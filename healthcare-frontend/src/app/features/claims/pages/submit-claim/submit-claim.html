@@ -1,0 +1,668 @@
+<section class="submit-claim-page">
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="claimState.submitting()"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to medical record</span>
+    </button>
+  
+    <header class="page-header">
+      <div class="header-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+  
+      <div class="header-copy">
+        <p class="eyebrow">
+          Provider Insurance Claims
+        </p>
+  
+        <h1>
+          Submit insurance claim
+        </h1>
+  
+        <p>
+          Review the verified appointment, Medical Record,
+          and insurance policy before submitting the claim.
+        </p>
+      </div>
+    </header>
+  
+    @if (claimState.contextLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Preparing claim submission
+        </strong>
+  
+        <p>
+          Verifying the completed appointment, Medical Record,
+          and eligible insurance policies.
+        </p>
+      </section>
+    } @else if (
+      claimState.submissionContext();
+      as context
+    ) {
+      <section class="verification-banner">
+        <div class="verification-icon">
+          <mat-icon>verified_user</mat-icon>
+        </div>
+  
+        <div>
+          <strong>
+            Healthcare information verified
+          </strong>
+  
+          <p>
+            The appointment and Medical Record were verified
+            by the Claim Service before submission.
+          </p>
+        </div>
+      </section>
+  
+      <section class="context-grid">
+        <mat-card class="context-card">
+          <mat-card-content>
+            <div class="card-heading">
+              <div class="card-icon appointment-icon">
+                <mat-icon>event_available</mat-icon>
+              </div>
+  
+              <div>
+                <span>Completed appointment</span>
+  
+                <h2>
+                  {{ context.appointment.memberEmail }}
+                </h2>
+              </div>
+            </div>
+  
+            <dl class="context-details">
+              <div>
+                <dt>Provider</dt>
+  
+                <dd>
+                  {{
+                    context.appointment
+                      .providerOrganizationName
+                  }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Doctor</dt>
+  
+                <dd>
+                  {{ context.appointment.doctorName }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Specialization</dt>
+  
+                <dd>
+                  {{
+                    context.appointment
+                      .doctorSpecialization
+                  }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Department</dt>
+  
+                <dd>
+                  {{ context.appointment.departmentName }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Service date</dt>
+  
+                <dd>
+                  {{
+                    context.appointment.appointmentDate
+                      | date: 'MMM d, y'
+                  }}
+                </dd>
+              </div>
+  
+              <div>
+                <dt>Appointment time</dt>
+  
+                <dd>
+                  {{
+                    getTimeRange(
+                      context.appointment.startTime,
+                      context.appointment.endTime
+                    )
+                  }}
+                </dd>
+              </div>
+  
+              <div class="highlight-detail">
+                <dt>Consultation fee</dt>
+  
+                <dd>
+                  {{
+                    context.appointment.consultationFee
+                      | currency: 'INR'
+                  }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="context-card">
+          <mat-card-content>
+            <div class="card-heading">
+              <div class="card-icon medical-record-icon">
+                <mat-icon>medical_information</mat-icon>
+              </div>
+  
+              <div>
+                <span>Verified Medical Record</span>
+  
+                <h2>
+                  Clinical documentation
+                </h2>
+              </div>
+            </div>
+  
+            <div class="record-status">
+              <mat-icon>
+                {{
+                  context.medicalRecord.status === 'AMENDED'
+                    ? 'edit_note'
+                    : 'verified'
+                }}
+              </mat-icon>
+  
+              <span>
+                {{ context.medicalRecord.status }}
+              </span>
+            </div>
+  
+            <section class="clinical-summary">
+              <div>
+                <span>Diagnosis</span>
+  
+                <p>
+                  {{ context.medicalRecord.diagnosis }}
+                </p>
+              </div>
+  
+              <div>
+                <span>Treatment plan</span>
+  
+                <p>
+                  {{ context.medicalRecord.treatmentPlan }}
+                </p>
+              </div>
+            </section>
+          </mat-card-content>
+        </mat-card>
+      </section>
+  
+      @if (
+        context.eligiblePolicies.length === 0
+      ) {
+        <section class="state-card blocked-state">
+          <div class="state-icon">
+            <mat-icon>policy_off</mat-icon>
+          </div>
+  
+          <strong>
+            No eligible insurance policy
+          </strong>
+  
+          <p>
+            No active outpatient policy covers the appointment
+            service date of
+            {{
+              context.appointment.appointmentDate
+                | date: 'MMM d, y'
+            }}.
+            This claim cannot be submitted.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to medical record</span>
+          </button>
+        </section>
+      } @else {
+        @if (claimState.errorMessage()) {
+          <section
+            class="form-error"
+            role="alert"
+          >
+            <mat-icon>error_outline</mat-icon>
+  
+            <span>
+              {{ claimState.errorMessage() }}
+            </span>
+          </section>
+        }
+  
+        <form
+          class="claim-form"
+          [formGroup]="claimForm"
+          (ngSubmit)="submitClaim()"
+          novalidate
+        >
+          <mat-card class="form-card">
+            <mat-card-content>
+              <div class="section-heading">
+                <div class="section-icon">
+                  <mat-icon>policy</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Eligible insurance policy
+                  </h2>
+  
+                  <p>
+                    Select the policy that should be used
+                    for this outpatient consultation claim.
+                  </p>
+                </div>
+              </div>
+  
+              <mat-form-field
+                appearance="outline"
+                class="policy-field"
+              >
+                <mat-label>
+                  Insurance policy
+                </mat-label>
+  
+                <mat-select
+                  formControlName="policyId"
+                  (selectionChange)="
+                    updateSelectedPolicy($event.value)
+                  "
+                >
+                  @for (
+                    policy of context.eligiblePolicies;
+                    track policy.policyId
+                  ) {
+                    <mat-option [value]="policy.policyId">
+                      {{ getPolicyDisplayLabel(policy) }}
+                    </mat-option>
+                  }
+                </mat-select>
+  
+                <mat-icon matPrefix>
+                  health_and_safety
+                </mat-icon>
+  
+                @if (
+                  claimForm.controls.policyId.touched
+                  && claimForm.controls.policyId
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    Select an eligible insurance policy.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              @if (selectedPolicy(); as policy) {
+                <section class="policy-summary">
+                  <header>
+                    <div class="policy-logo">
+                      <mat-icon>shield</mat-icon>
+                    </div>
+  
+                    <div>
+                      <span>
+                        {{ policy.payerOrganizationName }}
+                      </span>
+  
+                      <h3>
+                        {{ policy.planName }}
+                      </h3>
+  
+                      <p>
+                        {{ policy.planCode }}
+                        ·
+                        {{ policy.policyNumber }}
+                      </p>
+                    </div>
+                  </header>
+  
+                  <div class="policy-metrics">
+                    <div>
+                      <span>Coverage amount</span>
+  
+                      <strong>
+                        {{
+                          policy.coverageAmount
+                            | currency: 'INR'
+                        }}
+                      </strong>
+                    </div>
+  
+                    <div>
+                      <span>Annual deductible</span>
+  
+                      <strong>
+                        {{
+                          policy.annualDeductible
+                            | currency: 'INR'
+                        }}
+                      </strong>
+                    </div>
+  
+                    <div>
+                      <span>Copay</span>
+  
+                      <strong>
+                        {{ policy.copayPercentage }}%
+                      </strong>
+                    </div>
+  
+                    <div>
+                      <span>Coinsurance</span>
+  
+                      <strong>
+                        {{ policy.coinsurancePercentage }}%
+                      </strong>
+                    </div>
+                  </div>
+  
+                  <footer>
+                    <mat-icon>date_range</mat-icon>
+  
+                    <span>
+                      Coverage:
+                      {{
+                        policy.coverageStartDate
+                          | date: 'MMM d, y'
+                      }}
+                      to
+                      {{
+                        policy.coverageEndDate
+                          | date: 'MMM d, y'
+                      }}
+                    </span>
+                  </footer>
+                </section>
+              }
+            </mat-card-content>
+          </mat-card>
+  
+          <mat-card class="form-card">
+            <mat-card-content>
+              <div class="section-heading">
+                <div class="section-icon claim-icon">
+                  <mat-icon>request_quote</mat-icon>
+                </div>
+  
+                <div>
+                  <h2>
+                    Claim information
+                  </h2>
+  
+                  <p>
+                    Enter the amount requested and describe
+                    the reason for the insurance claim.
+                  </p>
+                </div>
+              </div>
+  
+              <div class="claim-fields">
+                <mat-form-field
+                  appearance="outline"
+                  class="amount-field"
+                >
+                  <mat-label>
+                    Claimed amount
+                  </mat-label>
+  
+                  <span matTextPrefix>
+                    ₹&nbsp;
+                  </span>
+  
+                  <input
+                    matInput
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    inputmode="decimal"
+                    formControlName="claimedAmount"
+                    placeholder="0.00"
+                    (input)="revalidateClaimedAmount()"
+                  />
+  
+                  @if (
+                    maximumClaimAmount() !== null
+                  ) {
+                    <mat-hint>
+                      Maximum:
+                      {{
+                        maximumClaimAmount()
+                          | currency: 'INR'
+                      }}
+                    </mat-hint>
+                  }
+  
+                  @if (
+                    claimForm.controls
+                      .claimedAmount.touched
+                    && claimForm.controls
+                      .claimedAmount.hasError('required')
+                  ) {
+                    <mat-error>
+                      Claimed amount is required.
+                    </mat-error>
+                  }
+  
+                  @if (
+                    claimForm.controls
+                      .claimedAmount.touched
+                    && claimForm.controls
+                      .claimedAmount.hasError(
+                        'positiveAmount'
+                      )
+                  ) {
+                    <mat-error>
+                      Claimed amount must be greater
+                      than zero.
+                    </mat-error>
+                  }
+  
+                  @if (
+                    claimForm.controls
+                      .claimedAmount.touched
+                    && claimForm.controls
+                      .claimedAmount.hasError(
+                        'moneyPrecision'
+                      )
+                  ) {
+                    <mat-error>
+                      Enter up to 10 integer digits
+                      and 2 decimal places.
+                    </mat-error>
+                  }
+  
+                  @if (
+                    claimForm.controls
+                      .claimedAmount.touched
+                    && claimForm.controls
+                      .claimedAmount.hasError(
+                        'maximumClaimAmount'
+                      )
+                  ) {
+                    <mat-error>
+                      Claimed amount exceeds the
+                      allowed maximum.
+                    </mat-error>
+                  }
+                </mat-form-field>
+  
+                <section class="amount-guidance">
+                  <mat-icon>info</mat-icon>
+  
+                  <div>
+                    <strong>
+                      Claim amount limit
+                    </strong>
+  
+                    <p>
+                      The amount cannot exceed the verified
+                      consultation fee or the selected policy's
+                      coverage amount.
+                    </p>
+                  </div>
+                </section>
+  
+                <mat-form-field appearance="outline">
+                  <mat-label>
+                    Claim description
+                  </mat-label>
+  
+                  <textarea
+                    matInput
+                    rows="7"
+                    maxlength="1500"
+                    formControlName="claimDescription"
+                    placeholder="Describe the consultation and the reason for submitting this insurance claim"
+                  ></textarea>
+  
+                  <mat-hint align="end">
+                    {{
+                      claimForm.controls
+                        .claimDescription.value.length
+                    }}/1500
+                  </mat-hint>
+  
+                  @if (
+                    claimForm.controls
+                      .claimDescription.touched
+                    && claimForm.controls
+                      .claimDescription.hasError('required')
+                  ) {
+                    <mat-error>
+                      Claim description is required.
+                    </mat-error>
+                  }
+  
+                  @if (
+                    claimForm.controls
+                      .claimDescription.touched
+                    && claimForm.controls
+                      .claimDescription.hasError('maxlength')
+                  ) {
+                    <mat-error>
+                      Claim description must not exceed
+                      1500 characters.
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+  
+          <section class="submission-notice">
+            <mat-icon>fact_check</mat-icon>
+  
+            <div>
+              <strong>
+                Final verification happens during submission
+              </strong>
+  
+              <p>
+                The Claim Service will verify the appointment,
+                Medical Record, selected policy, service date,
+                and claimed amount again before creating
+                the claim.
+              </p>
+            </div>
+          </section>
+  
+          <section class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="claimState.submitting()"
+              (click)="goBack()"
+            >
+              Cancel
+            </button>
+  
+            @if (claimState.submitting()) {
+              <button
+                mat-flat-button
+                type="submit"
+                class="submit-button"
+                disabled
+              >
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Submitting claim...</span>
+              </button>
+            } @else {
+              <button
+                mat-flat-button
+                type="submit"
+                class="submit-button"
+              >
+                <mat-icon>send</mat-icon>
+                <span>Submit insurance claim</span>
+              </button>
+            }
+          </section>
+        </form>
+      }
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to prepare the claim
+        </strong>
+  
+        <p>
+          {{
+            claimState.errorMessage()
+            || 'Claim submission information is unavailable.'
+          }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to medical record</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="loadSubmissionContext()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+    }
+  </section>

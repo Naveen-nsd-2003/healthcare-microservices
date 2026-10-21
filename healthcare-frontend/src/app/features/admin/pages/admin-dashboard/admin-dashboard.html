@@ -1,0 +1,739 @@
+<section class="admin-dashboard-page">
+    <header class="dashboard-header">
+      <div class="header-copy">
+        <p class="eyebrow">
+          Healthcare Administration
+        </p>
+  
+        <h1>
+          Admin dashboard
+        </h1>
+  
+        <p class="description">
+          Monitor authentication accounts, review account
+          health, and provision Provider and Payer access
+          for the healthcare platform.
+        </p>
+      </div>
+  
+      <div class="header-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="adminState.dashboardLoading()"
+          (click)="loadDashboard()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="createProvider()"
+        >
+          <mat-icon>add_business</mat-icon>
+          <span>Create Provider</span>
+        </button>
+      </div>
+    </header>
+  
+    @if (
+      adminState.dashboardLoading()
+      && !adminState.dashboard()
+    ) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading Admin dashboard
+        </strong>
+  
+        <p>
+          Please wait while the account statistics and recent
+          provisioning activity are retrieved.
+        </p>
+      </section>
+    } @else if (
+      adminState.errorMessage()
+      && !adminState.dashboard()
+    ) {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load Admin dashboard
+        </strong>
+  
+        <p>
+          {{ adminState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="loadDashboard()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    } @else if (
+      adminState.dashboard();
+      as dashboard
+    ) {
+      @if (adminState.errorMessage()) {
+        <section
+          class="dashboard-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ adminState.errorMessage() }}
+          </span>
+  
+          <button
+            mat-button
+            type="button"
+            (click)="loadDashboard()"
+          >
+            Retry
+          </button>
+        </section>
+      }
+  
+      <section class="overview-grid">
+        <article class="overview-card total-users-card">
+          <div class="overview-icon">
+            <mat-icon>groups</mat-icon>
+          </div>
+  
+          <div>
+            <span>Total users</span>
+  
+            <strong>
+              {{ dashboard.totalUsers }}
+            </strong>
+  
+            <small>
+              All authentication accounts
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card member-card">
+          <div class="overview-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+  
+          <div>
+            <span>Members</span>
+  
+            <strong>
+              {{ dashboard.totalMembers }}
+            </strong>
+  
+            <small>
+              Registered Members
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card provider-card">
+          <div class="overview-icon">
+            <mat-icon>local_hospital</mat-icon>
+          </div>
+  
+          <div>
+            <span>Providers</span>
+  
+            <strong>
+              {{ dashboard.totalProviders }}
+            </strong>
+  
+            <small>
+              Provider accounts
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card payer-card">
+          <div class="overview-icon">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+  
+          <div>
+            <span>Payers</span>
+  
+            <strong>
+              {{ dashboard.totalPayers }}
+            </strong>
+  
+            <small>
+              Payer accounts
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card admin-card">
+          <div class="overview-icon">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </div>
+  
+          <div>
+            <span>Administrators</span>
+  
+            <strong>
+              {{ dashboard.totalAdmins }}
+            </strong>
+  
+            <small>
+              Administrator accounts
+            </small>
+          </div>
+        </article>
+  
+        <article class="overview-card institution-card">
+          <div class="overview-icon">
+            <mat-icon>corporate_fare</mat-icon>
+          </div>
+  
+          <div>
+            <span>Institutional accounts</span>
+  
+            <strong>
+              {{ institutionalAccountCount() }}
+            </strong>
+  
+            <small>
+              Providers and Payers
+            </small>
+          </div>
+        </article>
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Account Health
+            </p>
+  
+            <h2>
+              Authentication status overview
+            </h2>
+  
+            <p>
+              Monitor active access, pending onboarding,
+              restricted accounts, and login security.
+            </p>
+          </div>
+  
+          <div class="health-score">
+            <span>Active account rate</span>
+  
+            <strong>
+              {{ accountHealthPercentage() }}%
+            </strong>
+          </div>
+        </header>
+  
+        <div class="health-grid">
+          <article class="health-card active-health-card">
+            <div class="health-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+  
+            <div>
+              <span>Active users</span>
+  
+              <strong>
+                {{ dashboard.activeUsers }}
+              </strong>
+            </div>
+          </article>
+  
+          <article class="health-card inactive-health-card">
+            <div class="health-icon">
+              <mat-icon>pause_circle</mat-icon>
+            </div>
+  
+            <div>
+              <span>Inactive users</span>
+  
+              <strong>
+                {{ dashboard.inactiveUsers }}
+              </strong>
+            </div>
+          </article>
+  
+          <article class="health-card blocked-health-card">
+            <div class="health-icon">
+              <mat-icon>block</mat-icon>
+            </div>
+  
+            <div>
+              <span>Blocked users</span>
+  
+              <strong>
+                {{ dashboard.blockedUsers }}
+              </strong>
+            </div>
+          </article>
+  
+          <article class="health-card suspended-health-card">
+            <div class="health-icon">
+              <mat-icon>person_off</mat-icon>
+            </div>
+  
+            <div>
+              <span>Suspended users</span>
+  
+              <strong>
+                {{ dashboard.suspendedUsers }}
+              </strong>
+            </div>
+          </article>
+  
+          <article class="health-card locked-health-card">
+            <div class="health-icon">
+              <mat-icon>lock</mat-icon>
+            </div>
+  
+            <div>
+              <span>Locked accounts</span>
+  
+              <strong>
+                {{ dashboard.lockedAccounts }}
+              </strong>
+            </div>
+          </article>
+  
+          <article class="health-card onboarding-health-card">
+            <div class="health-icon">
+              <mat-icon>password</mat-icon>
+            </div>
+  
+            <div>
+              <span>First login pending</span>
+  
+              <strong>
+                {{ dashboard.firstLoginPendingUsers }}
+              </strong>
+            </div>
+          </article>
+        </div>
+  
+        @if (requiresAttentionCount() > 0) {
+          <section class="attention-banner">
+            <mat-icon>warning_amber</mat-icon>
+  
+            <div>
+              <strong>
+                Account attention required
+              </strong>
+  
+              <p>
+                {{ requiresAttentionCount() }}
+                account condition(s) currently require
+                administrative review.
+              </p>
+            </div>
+          </section>
+        } @else {
+          <section class="healthy-banner">
+            <mat-icon>verified_user</mat-icon>
+  
+            <div>
+              <strong>
+                Account environment is healthy
+              </strong>
+  
+              <p>
+                No inactive, blocked, suspended, or locked
+                account conditions require attention.
+              </p>
+            </div>
+          </section>
+        }
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Quick Actions
+            </p>
+  
+            <h2>
+              Institutional account provisioning
+            </h2>
+  
+            <p>
+              Create Provider and Payer authentication accounts
+              or review notifications.
+            </p>
+          </div>
+        </header>
+  
+        <div class="quick-action-grid">
+          <button
+            type="button"
+            class="quick-action-card provider-action"
+            (click)="createProvider()"
+          >
+            <div class="quick-action-icon">
+              <mat-icon>add_business</mat-icon>
+            </div>
+  
+            <div class="quick-action-copy">
+              <strong>Create Provider</strong>
+  
+              <span>
+                Provision a healthcare Provider account with
+                a temporary password.
+              </span>
+            </div>
+  
+            <mat-icon class="action-arrow">
+              arrow_forward
+            </mat-icon>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card payer-action"
+            (click)="createPayer()"
+          >
+            <div class="quick-action-icon">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+  
+            <div class="quick-action-copy">
+              <strong>Create Payer</strong>
+  
+              <span>
+                Provision an insurance Payer account with
+                first-login password setup.
+              </span>
+            </div>
+  
+            <mat-icon class="action-arrow">
+              arrow_forward
+            </mat-icon>
+          </button>
+  
+          <button
+            type="button"
+            class="quick-action-card notification-action"
+            (click)="viewNotifications()"
+          >
+            <div class="quick-action-icon">
+              <mat-icon>notifications</mat-icon>
+            </div>
+  
+            <div class="quick-action-copy">
+              <strong>Notifications</strong>
+  
+              <span>
+                Review platform notifications and recent
+                administrative activity.
+              </span>
+            </div>
+  
+            <mat-icon class="action-arrow">
+              arrow_forward
+            </mat-icon>
+          </button>
+
+          <button
+  type="button"
+  class="quick-action-card manage-provider-action"
+  (click)="viewProviders()"
+>
+  <div class="quick-action-icon">
+    <mat-icon>
+      local_hospital
+    </mat-icon>
+  </div>
+
+  <div class="quick-action-copy">
+    <strong>
+      Manage Providers
+    </strong>
+
+    <span>
+      Review provider applications,
+      approvals, suspensions,
+      and organization status.
+    </span>
+  </div>
+
+  <mat-icon class="action-arrow">
+    arrow_forward
+  </mat-icon>
+</button>
+
+<button
+  type="button"
+  class="quick-action-card manage-payer-action"
+  (click)="viewPayers()"
+>
+  <div class="quick-action-icon">
+    <mat-icon>
+      account_balance
+    </mat-icon>
+  </div>
+
+  <div class="quick-action-copy">
+    <strong>
+      Manage Payers
+    </strong>
+
+    <span>
+      Review payer applications,
+      approvals, suspensions,
+      and organization status.
+    </span>
+  </div>
+
+  <mat-icon class="action-arrow">
+    arrow_forward
+  </mat-icon>
+</button>
+        </div>
+      </section>
+  
+      <section class="dashboard-section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">
+              Recent Accounts
+            </p>
+  
+            <h2>
+              Recently created users
+            </h2>
+  
+            <p>
+              Review recently created authentication accounts.
+            </p>
+          </div>
+  
+          <div class="generated-time">
+            <mat-icon>schedule</mat-icon>
+  
+            <span>
+              Generated
+              {{
+                dashboard.generatedAt
+                  | date: 'MMM d, y, h:mm a'
+              }}
+            </span>
+          </div>
+        </header>
+  
+        @if (
+          dashboard.recentlyCreatedAccounts.length === 0
+        ) {
+          <section class="recent-empty-state">
+            <div class="empty-icon">
+              <mat-icon>person_search</mat-icon>
+            </div>
+  
+            <strong>
+              No recent accounts
+            </strong>
+  
+            <p>
+              Newly created accounts will appear here.
+            </p>
+          </section>
+        } @else {
+          <div class="recent-account-list">
+            @for (
+              account of dashboard.recentlyCreatedAccounts;
+              track account.id
+            ) {
+              <article class="account-card">
+                <div
+                  class="account-avatar"
+                  [class.admin-avatar]="
+                    account.role === 'ADMIN'
+                  "
+                  [class.member-avatar]="
+                    account.role === 'MEMBER'
+                  "
+                  [class.provider-avatar]="
+                    account.role === 'PROVIDER'
+                  "
+                  [class.payer-avatar]="
+                    account.role === 'PAYER'
+                  "
+                >
+                  {{ getInitials(account) }}
+                </div>
+  
+                <div class="account-primary">
+                  <div class="account-name-row">
+                    <strong>
+                      {{ account.fullName }}
+                    </strong>
+  
+                    <span
+                      class="role-badge"
+                      [class.admin-role]="
+                        account.role === 'ADMIN'
+                      "
+                      [class.member-role]="
+                        account.role === 'MEMBER'
+                      "
+                      [class.provider-role]="
+                        account.role === 'PROVIDER'
+                      "
+                      [class.payer-role]="
+                        account.role === 'PAYER'
+                      "
+                    >
+                      <mat-icon>
+                        {{ getRoleIcon(account.role) }}
+                      </mat-icon>
+  
+                      <span>
+                        {{ getRoleLabel(account.role) }}
+                      </span>
+                    </span>
+                  </div>
+  
+                  <span class="account-email">
+                    {{ account.email }}
+                  </span>
+  
+                  <span class="account-username">
+                    {{ account.username }}
+                  </span>
+                </div>
+  
+                <div class="account-contact">
+                  <span class="account-label">
+                    Contact
+                  </span>
+  
+                  <strong>
+                    {{ getPhoneNumber(account.phoneNumber) }}
+                  </strong>
+                </div>
+  
+                <div class="account-status-column">
+                  <span
+                    class="account-status"
+                    [class.active-status]="
+                      account.status === 'ACTIVE'
+                    "
+                    [class.inactive-status]="
+                      account.status === 'INACTIVE'
+                    "
+                    [class.blocked-status]="
+                      account.status === 'BLOCKED'
+                    "
+                    [class.suspended-status]="
+                      account.status === 'SUSPENDED'
+                    "
+                  >
+                    {{ getStatusLabel(account.status) }}
+                  </span>
+  
+                  <span
+                    class="access-status"
+                    [class.locked-access]="
+                      account.accountLocked
+                    "
+                    [class.pending-access]="
+                      account.firstLogin
+                      && !account.accountLocked
+                    "
+                  >
+                    <mat-icon>
+                      {{ getAccountAccessIcon(account) }}
+                    </mat-icon>
+  
+                    <span>
+                      {{ getAccountAccessLabel(account) }}
+                    </span>
+                  </span>
+                </div>
+  
+                <div class="account-created">
+                  <span class="account-label">
+                    Created
+                  </span>
+  
+                  <strong>
+                    {{
+                      account.createdAt
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+  
+                  <small>
+                    {{
+                      account.createdAt
+                        | date: 'h:mm a'
+                    }}
+                  </small>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+  
+      <section class="security-note">
+        <div class="security-icon">
+          <mat-icon>security</mat-icon>
+        </div>
+  
+        <div>
+          <strong>
+            Secure institutional onboarding
+          </strong>
+  
+          <p>
+            Provider and Payer accounts receive system-generated
+            temporary passwords. Each user must replace the
+            temporary password during the first authenticated
+            login before accessing institutional workflows.
+          </p>
+        </div>
+      </section>
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Dashboard information is unavailable
+        </strong>
+  
+        <p>
+          The Admin dashboard response could not be loaded.
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="loadDashboard()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    }
+  </section>

@@ -1,0 +1,384 @@
+<header class="toolbar">
+  <div class="toolbar-left">
+    <button
+      mat-icon-button
+      type="button"
+      class="menu-button"
+      aria-label="Toggle sidebar"
+      (click)="toggleMenu()"
+    >
+      <mat-icon>
+        menu
+      </mat-icon>
+    </button>
+
+    <div class="page-context">
+      <strong>
+        Healthcare Portal
+      </strong>
+
+      <span>
+        {{ authService.currentRole() }} workspace
+      </span>
+    </div>
+  </div>
+
+  <div class="toolbar-actions">
+    <button
+      #notificationMenuTrigger="matMenuTrigger"
+      mat-icon-button
+      type="button"
+      class="notification-button"
+      aria-label="Open notifications"
+      [matMenuTriggerFor]="notificationMenu"
+      [matBadge]="notificationState.unreadCount()"
+      [matBadgeHidden]="
+        notificationState.unreadCount() === 0
+      "
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      (menuOpened)="openNotificationMenu()"
+    >
+      <mat-icon>
+        {{
+          notificationState.hasUnreadNotifications()
+            ? 'notifications_active'
+            : 'notifications_none'
+        }}
+      </mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      type="button"
+      class="profile-button"
+      aria-label="Open account menu"
+      [matMenuTriggerFor]="profileMenu"
+    >
+      <span class="profile-avatar">
+        <mat-icon>
+          person
+        </mat-icon>
+      </span>
+    </button>
+  </div>
+</header>
+
+<mat-menu
+  #notificationMenu="matMenu"
+  xPosition="before"
+  yPosition="below"
+  class="notification-menu-panel"
+>
+  <div
+    class="notification-panel"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="notification-header">
+      <div>
+        <h3>
+          Notifications
+        </h3>
+
+        <p>
+          @if (
+            notificationState.unreadCount() > 0
+          ) {
+            {{
+              notificationState.unreadCount()
+            }}
+            unread
+          } @else {
+            You are all caught up
+          }
+        </p>
+      </div>
+
+      <button
+        mat-icon-button
+        type="button"
+        class="refresh-button"
+        aria-label="Refresh notifications"
+        [disabled]="
+          notificationState.dropdownLoading()
+          || notificationState.hasReadActionInProgress()
+        "
+        (click)="refreshNotifications($event)"
+      >
+        @if (
+          notificationState.dropdownLoading()
+        ) {
+          <mat-spinner
+            diameter="20"
+          >
+          </mat-spinner>
+        } @else {
+          <mat-icon>
+            refresh
+          </mat-icon>
+        }
+      </button>
+    </header>
+
+    <mat-divider>
+    </mat-divider>
+
+    <section class="notification-content">
+      @if (
+        notificationState.dropdownLoading()
+      ) {
+        <div class="notification-loading">
+          <mat-spinner
+            diameter="34"
+          >
+          </mat-spinner>
+
+          <span>
+            Loading notifications...
+          </span>
+        </div>
+      } @else if (
+        notificationState.errorMessage()
+      ) {
+        <div class="notification-error">
+          <mat-icon>
+            error_outline
+          </mat-icon>
+
+          <p>
+            {{
+              notificationState.errorMessage()
+            }}
+          </p>
+
+          <button
+            mat-button
+            type="button"
+            [disabled]="
+              notificationState.dropdownLoading()
+            "
+            (click)="refreshNotifications($event)"
+          >
+            Try again
+          </button>
+        </div>
+      } @else if (
+        notificationState
+          .recentUnreadNotifications()
+          .length === 0
+      ) {
+        <div class="notification-empty">
+          <div class="empty-icon">
+            <mat-icon>
+              notifications_none
+            </mat-icon>
+          </div>
+
+          <strong>
+            No unread notifications
+          </strong>
+
+          <p>
+            New healthcare updates will appear here.
+          </p>
+        </div>
+      } @else {
+        <div class="notification-list">
+          @for (
+            notification
+            of notificationState
+              .recentUnreadNotifications();
+            track notification.id
+          ) {
+            <article
+              class="notification-item"
+              [class.notification-item--processing]="
+                notificationState.isMarkingAsRead(
+                  notification.id
+                )
+              "
+              (click)="
+                openNotification(
+                  notification,
+                  $event
+                )
+              "
+            >
+              <div
+                [class]="
+                  'notification-icon '
+                  + getNotificationClass(
+                    notification
+                  )
+                "
+              >
+                <mat-icon>
+                  {{
+                    getNotificationIcon(
+                      notification
+                    )
+                  }}
+                </mat-icon>
+              </div>
+
+              <div class="notification-copy">
+                <div class="notification-meta">
+                  <span class="notification-category">
+                    {{
+                      getNotificationCategory(
+                        notification
+                      )
+                    }}
+                  </span>
+
+                  <span class="unread-indicator">
+                  </span>
+                </div>
+
+                <strong>
+                  {{ notification.title }}
+                </strong>
+
+                <p>
+                  {{ notification.message }}
+                </p>
+
+                <time
+                  [attr.datetime]="
+                    notification.occurredAt
+                  "
+                >
+                  {{
+                    notification.occurredAt
+                      | date:
+                        'MMM d, y, h:mm a'
+                  }}
+                </time>
+              </div>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="mark-read-button"
+                aria-label="Mark notification as read"
+                [disabled]="
+                  notificationState.isMarkingAsRead(
+                    notification.id
+                  )
+                  || notificationState.markingAllAsRead()
+                "
+                (click)="
+                  markNotificationAsRead(
+                    notification,
+                    $event
+                  )
+                "
+              >
+                @if (
+                  notificationState.isMarkingAsRead(
+                    notification.id
+                  )
+                ) {
+                  <mat-spinner
+                    diameter="18"
+                  >
+                  </mat-spinner>
+                } @else {
+                  <mat-icon>
+                    done
+                  </mat-icon>
+                }
+              </button>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <mat-divider>
+    </mat-divider>
+
+    <footer class="notification-footer">
+      <button
+        mat-button
+        type="button"
+        class="mark-all-button"
+        [disabled]="
+          notificationState.unreadCount() === 0
+          || notificationState.hasReadActionInProgress()
+        "
+        (click)="markAllAsRead($event)"
+      >
+        @if (
+          notificationState.markingAllAsRead()
+        ) {
+          <mat-spinner
+            diameter="18"
+          >
+          </mat-spinner>
+
+          <span>
+            Marking as read
+          </span>
+        } @else {
+          <mat-icon>
+            done_all
+          </mat-icon>
+
+          <span>
+            Mark all as read
+          </span>
+        }
+      </button>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="view-all-button"
+        (click)="viewAllNotifications($event)"
+      >
+        View all
+      </button>
+    </footer>
+  </div>
+</mat-menu>
+
+<mat-menu
+  #profileMenu="matMenu"
+  xPosition="before"
+>
+  <div
+    class="menu-account-summary"
+    (click)="$event.stopPropagation()"
+  >
+    <span class="menu-avatar">
+      <mat-icon>
+        person
+      </mat-icon>
+    </span>
+
+    <div class="menu-account-details">
+      <strong>
+        {{ authService.currentEmail() }}
+      </strong>
+
+      <span>
+        {{ authService.currentRole() }}
+      </span>
+    </div>
+  </div>
+
+  <button
+    mat-menu-item
+    type="button"
+    (click)="requestLogout()"
+  >
+    <mat-icon>
+      logout
+    </mat-icon>
+
+    <span>
+      Log out
+    </span>
+  </button>
+</mat-menu>

@@ -1,0 +1,351 @@
+<section class="departments-page">
+
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Provider Administration</p>
+  
+        <h1>Departments</h1>
+  
+        <p class="description">
+          Create and manage the clinical departments
+          associated with your healthcare organization.
+        </p>
+      </div>
+  
+      <div class="page-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="departmentState.loading()"
+          (click)="loadDepartments()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="create-button"
+          (click)="createDepartment()"
+        >
+          <mat-icon>add</mat-icon>
+          <span>Create department</span>
+        </button>
+      </div>
+    </header>
+  
+    <section class="summary-grid">
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--total">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <div>
+          <span>Total departments</span>
+          <strong>{{ departmentState.totalCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--active">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+  
+        <div>
+          <span>Active departments</span>
+          <strong>{{ departmentState.activeCount() }}</strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--inactive">
+          <mat-icon>block</mat-icon>
+        </div>
+  
+        <div>
+          <span>Inactive departments</span>
+          <strong>{{ departmentState.inactiveCount() }}</strong>
+        </div>
+      </article>
+    </section>
+  
+    <section class="filter-panel">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Search departments</mat-label>
+  
+        <mat-icon matPrefix>search</mat-icon>
+  
+        <input
+          #departmentSearch
+          matInput
+          type="search"
+          placeholder="Name, code, description, or location"
+          [value]="searchText()"
+          (input)="updateSearch(departmentSearch.value)"
+        >
+  
+        @if (searchText().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Clear department search"
+            (click)="updateSearch('')"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Department status</mat-label>
+  
+        <mat-icon matPrefix>filter_alt</mat-icon>
+  
+        <mat-select
+          [value]="selectedStatus()"
+          (selectionChange)="updateStatus($event.value)"
+        >
+          <mat-option value="ALL">
+            All statuses
+          </mat-option>
+  
+          <mat-option value="ACTIVE">
+            Active
+          </mat-option>
+  
+          <mat-option value="INACTIVE">
+            Inactive
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Sort by</mat-label>
+  
+        <mat-icon matPrefix>sort</mat-icon>
+  
+        <mat-select
+          [value]="selectedSort()"
+          (selectionChange)="updateSort($event.value)"
+        >
+          <mat-option value="NAME_ASCENDING">
+            Name: A to Z
+          </mat-option>
+  
+          <mat-option value="NAME_DESCENDING">
+            Name: Z to A
+          </mat-option>
+  
+          <mat-option value="NEWEST">
+            Newest departments
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <button
+        mat-button
+        type="button"
+        class="clear-filter-button"
+        [disabled]="!filtersApplied()"
+        (click)="clearFilters()"
+      >
+        <mat-icon>filter_alt_off</mat-icon>
+        <span>Clear filters</span>
+      </button>
+  
+      <span class="result-count">
+        {{ filteredDepartments().length }} result(s)
+      </span>
+    </section>
+  
+    @if (departmentState.loading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading departments</strong>
+  
+        <p>
+          Please wait while your organization departments
+          are retrieved.
+        </p>
+      </section>
+    } @else if (departmentState.errorMessage()) {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load departments</strong>
+  
+        <p>{{ departmentState.errorMessage() }}</p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadDepartments()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    } @else if (filteredDepartments().length === 0) {
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <strong>No departments found</strong>
+  
+        @if (filtersApplied()) {
+          <p>
+            No departments match the selected search
+            and filter options.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="clearFilters()"
+          >
+            <mat-icon>filter_alt_off</mat-icon>
+            <span>Clear filters</span>
+          </button>
+        } @else {
+          <p>
+            Create the first clinical department for
+            your healthcare organization.
+          </p>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="create-button"
+            (click)="createDepartment()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Create department</span>
+          </button>
+        }
+      </section>
+    } @else {
+      <section class="department-grid">
+        @for (
+          department of filteredDepartments();
+          track department.id
+        ) {
+          <mat-card class="department-card">
+            <mat-card-content>
+  
+              <header class="department-header">
+                <div class="department-icon">
+                  <mat-icon>account_tree</mat-icon>
+                </div>
+  
+                <div class="department-heading">
+                  <span class="department-code">
+                    {{ department.departmentCode }}
+                  </span>
+  
+                  <h2>{{ department.departmentName }}</h2>
+  
+                  <p>
+                    {{ department.providerOrganizationName }}
+                  </p>
+                </div>
+  
+                @if (department.status === 'ACTIVE') {
+                  <span class="status-badge status-badge--active">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>ACTIVE</span>
+                  </span>
+                } @else {
+                  <span class="status-badge status-badge--inactive">
+                    <mat-icon>block</mat-icon>
+                    <span>INACTIVE</span>
+                  </span>
+                }
+              </header>
+  
+              <p class="department-description">
+                {{ department.description }}
+              </p>
+  
+              <section class="department-information">
+                <div>
+                  <mat-icon>location_on</mat-icon>
+  
+                  <span>Location</span>
+  
+                  @if (department.location) {
+                    <strong>{{ department.location }}</strong>
+                  } @else {
+                    <strong class="not-provided">
+                      Not provided
+                    </strong>
+                  }
+                </div>
+  
+                <div>
+                  <mat-icon>phone</mat-icon>
+  
+                  <span>Contact number</span>
+  
+                  @if (department.contactNumber) {
+                    <strong>
+                      {{ department.contactNumber }}
+                    </strong>
+                  } @else {
+                    <strong class="not-provided">
+                      Not provided
+                    </strong>
+                  }
+                </div>
+              </section>
+  
+              @if (department.status === 'ACTIVE') {
+                <section class="visibility-notice active-notice">
+                  <mat-icon>visibility</mat-icon>
+  
+                  <span>
+                    Visible to Members and available
+                    for doctor assignment
+                  </span>
+                </section>
+              } @else {
+                <section class="visibility-notice inactive-notice">
+                  <mat-icon>visibility_off</mat-icon>
+  
+                  <span>Hidden from Member discovery</span>
+                </section>
+              }
+  
+              <footer class="department-actions">
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="viewDepartment(department)"
+                >
+                  <span>Manage department</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </footer>
+  
+            </mat-card-content>
+          </mat-card>
+        }
+      </section>
+    }
+  
+  </section>

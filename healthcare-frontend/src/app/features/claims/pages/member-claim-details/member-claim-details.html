@@ -1,0 +1,773 @@
+<section class="member-claim-details-page">
+    <header class="page-toolbar">
+      <button
+        mat-button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to my claims</span>
+      </button>
+  
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="claimState.detailsLoading()"
+        (click)="loadClaim()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+    </header>
+  
+    @if (claimState.detailsLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading claim details
+        </strong>
+  
+        <p>
+          Please wait while your insurance claim information
+          is retrieved.
+        </p>
+      </section>
+    } @else if (
+      claimState.selectedClaim();
+      as claim
+    ) {
+      <article class="claim-document">
+        <header class="claim-header">
+          <div class="claim-brand">
+            <div class="claim-brand-icon">
+              <mat-icon>receipt_long</mat-icon>
+            </div>
+  
+            <div class="claim-brand-copy">
+              <p class="eyebrow">
+                Member Insurance Claim
+              </p>
+  
+              <h1>
+                {{ claim.claimNumber }}
+              </h1>
+  
+              <p>
+                Submitted by
+                {{ claim.providerOrganizationName }}
+              </p>
+            </div>
+          </div>
+  
+          <div class="claim-header-status">
+            <span
+              class="status-badge"
+              [class.submitted-status]="
+                claim.status === 'SUBMITTED'
+              "
+              [class.review-status]="
+                claim.status === 'UNDER_REVIEW'
+              "
+              [class.approved-status]="
+                claim.status === 'APPROVED'
+              "
+              [class.rejected-status]="
+                claim.status === 'REJECTED'
+              "
+              [class.cancelled-status]="
+                claim.status === 'CANCELLED'
+              "
+            >
+              <mat-icon>
+                {{ getStatusIcon(claim.status) }}
+              </mat-icon>
+  
+              <span>
+                {{ getStatusLabel(claim.status) }}
+              </span>
+            </span>
+  
+            <span class="claim-id-label">
+              Claim ID
+            </span>
+  
+            <strong class="technical-value">
+              {{ claim.id }}
+            </strong>
+          </div>
+        </header>
+  
+        <section
+          class="status-banner"
+          [class.submitted-banner]="
+            claim.status === 'SUBMITTED'
+          "
+          [class.review-banner]="
+            claim.status === 'UNDER_REVIEW'
+          "
+          [class.approved-banner]="
+            claim.status === 'APPROVED'
+          "
+          [class.rejected-banner]="
+            claim.status === 'REJECTED'
+          "
+          [class.cancelled-banner]="
+            claim.status === 'CANCELLED'
+          "
+        >
+          <div class="status-banner-icon">
+            <mat-icon>
+              {{ getStatusIcon(claim.status) }}
+            </mat-icon>
+          </div>
+  
+          <div>
+            <strong>
+              {{ getStatusTitle(claim.status) }}
+            </strong>
+  
+            <p>
+              {{ getStatusDescription(claim.status) }}
+            </p>
+          </div>
+        </section>
+  
+        <section class="claim-timeline">
+          <article class="timeline-stage completed-stage">
+            <div class="timeline-marker">
+              <mat-icon>send</mat-icon>
+            </div>
+  
+            <div>
+              <strong>Submitted</strong>
+  
+              <span>
+                {{
+                  claim.submittedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </span>
+            </div>
+          </article>
+  
+          <div class="timeline-connector"></div>
+  
+          <article
+            class="timeline-stage"
+            [class.current-stage]="
+              claim.status === 'SUBMITTED'
+            "
+            [class.completed-stage]="
+              claim.status === 'UNDER_REVIEW'
+              || claim.status === 'APPROVED'
+              || claim.status === 'REJECTED'
+            "
+            [class.inactive-stage]="
+              claim.status === 'CANCELLED'
+            "
+          >
+            <div class="timeline-marker">
+              <mat-icon>manage_search</mat-icon>
+            </div>
+  
+            <div>
+              <strong>Under review</strong>
+  
+              @if (claim.reviewedAt) {
+                <span>
+                  {{
+                    claim.reviewedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </span>
+              } @else {
+                <span>Not started</span>
+              }
+            </div>
+          </article>
+  
+          <div class="timeline-connector"></div>
+  
+          <article
+            class="timeline-stage"
+            [class.approved-stage]="
+              claim.status === 'APPROVED'
+            "
+            [class.rejected-stage]="
+              claim.status === 'REJECTED'
+            "
+            [class.cancelled-stage]="
+              claim.status === 'CANCELLED'
+            "
+            [class.inactive-stage]="
+              claim.status === 'SUBMITTED'
+              || claim.status === 'UNDER_REVIEW'
+            "
+          >
+            <div class="timeline-marker">
+              <mat-icon>
+                {{ getStatusIcon(claim.status) }}
+              </mat-icon>
+            </div>
+  
+            <div>
+              <strong>
+                {{ getResolutionLabel(claim.status) }}
+              </strong>
+  
+              @if (claim.resolvedAt) {
+                <span>
+                  {{
+                    claim.resolvedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </span>
+              } @else {
+                <span>Decision pending</span>
+              }
+            </div>
+          </article>
+        </section>
+  
+        <section class="claim-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="viewAppointment()"
+          >
+            <mat-icon>event_note</mat-icon>
+            <span>Appointment</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="medical-record-button"
+            (click)="viewMedicalRecord()"
+          >
+            <mat-icon>medical_information</mat-icon>
+            <span>Medical record</span>
+          </button>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              01
+            </span>
+  
+            <div>
+              <p>Healthcare service</p>
+  
+              <h2>
+                Provider and appointment information
+              </h2>
+            </div>
+          </div>
+  
+          <div class="details-grid">
+            <div>
+              <span>Healthcare Provider</span>
+  
+              <strong>
+                {{ claim.providerOrganizationName }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Department</span>
+  
+              <strong>
+                {{ claim.departmentName }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Doctor</span>
+  
+              <strong>
+                {{ claim.doctorName }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Specialization</span>
+  
+              <strong>
+                {{ claim.doctorSpecialization }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Service date</span>
+  
+              <strong>
+                {{
+                  claim.serviceDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Consultation fee</span>
+  
+              <strong>
+                {{
+                  claim.consultationFee
+                    | currency: 'INR'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Appointment ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.appointmentId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Medical Record ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.medicalRecordId }}
+              </strong>
+            </div>
+          </div>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              02
+            </span>
+  
+            <div>
+              <p>Clinical information</p>
+  
+              <h2>
+                Medical Record snapshot
+              </h2>
+            </div>
+          </div>
+  
+          <div class="clinical-grid">
+            <article>
+              <header>
+                <mat-icon>fact_check</mat-icon>
+                <span>Diagnosis</span>
+              </header>
+  
+              <p>
+                {{ claim.diagnosisSnapshot }}
+              </p>
+            </article>
+  
+            <article>
+              <header>
+                <mat-icon>health_and_safety</mat-icon>
+                <span>Treatment plan</span>
+              </header>
+  
+              <p>
+                {{ claim.treatmentPlanSnapshot }}
+              </p>
+            </article>
+          </div>
+  
+          <article class="claim-description">
+            <header>
+              <mat-icon>description</mat-icon>
+              <span>Claim description</span>
+            </header>
+  
+            <p>
+              {{ claim.claimDescription }}
+            </p>
+          </article>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              03
+            </span>
+  
+            <div>
+              <p>Insurance coverage</p>
+  
+              <h2>
+                Policy and Payer information
+              </h2>
+            </div>
+          </div>
+  
+          <div class="policy-summary">
+            <div class="policy-icon">
+              <mat-icon>shield</mat-icon>
+            </div>
+  
+            <div class="policy-copy">
+              <span>
+                {{ claim.payerOrganizationName }}
+              </span>
+  
+              <h3>
+                {{ claim.planName }}
+              </h3>
+  
+              <p>
+                {{ claim.planCode }}
+                ·
+                {{ claim.policyNumber }}
+              </p>
+            </div>
+          </div>
+  
+          <div class="details-grid">
+            <div>
+              <span>Coverage amount</span>
+  
+              <strong>
+                {{
+                  claim.coverageAmount
+                    | currency: 'INR'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Annual deductible</span>
+  
+              <strong>
+                {{
+                  claim.annualDeductible
+                    | currency: 'INR'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Copay</span>
+  
+              <strong>
+                {{ claim.copayPercentage }}%
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coinsurance</span>
+  
+              <strong>
+                {{ claim.coinsurancePercentage }}%
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coverage starts</span>
+  
+              <strong>
+                {{
+                  claim.policyCoverageStartDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Coverage ends</span>
+  
+              <strong>
+                {{
+                  claim.policyCoverageEndDate
+                    | date: 'MMM d, y'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Policy ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.policyId }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Payer ID</span>
+  
+              <strong class="technical-value">
+                {{ claim.payerId }}
+              </strong>
+            </div>
+          </div>
+        </section>
+  
+        <section class="details-section">
+          <div class="section-heading">
+            <span class="section-number">
+              04
+            </span>
+  
+            <div>
+              <p>Claim financials</p>
+  
+              <h2>
+                Requested and approved amounts
+              </h2>
+            </div>
+          </div>
+  
+          <div class="financial-grid">
+            <article>
+              <span>Consultation fee</span>
+  
+              <strong>
+                {{
+                  claim.consultationFee
+                    | currency: 'INR'
+                }}
+              </strong>
+            </article>
+  
+            <article class="claimed-amount">
+              <span>Claimed amount</span>
+  
+              <strong>
+                {{
+                  claim.claimedAmount
+                    | currency: 'INR'
+                }}
+              </strong>
+            </article>
+  
+            <article
+              [class.approved-amount]="
+                claim.approvedAmount !== null
+              "
+            >
+              <span>Approved amount</span>
+  
+              @if (
+                claim.approvedAmount !== null
+                && claim.approvedAmount !== undefined
+              ) {
+                <strong>
+                  {{
+                    claim.approvedAmount
+                      | currency: 'INR'
+                  }}
+                </strong>
+              } @else {
+                <strong class="pending-value">
+                  Not resolved
+                </strong>
+              }
+            </article>
+          </div>
+        </section>
+  
+        @if (
+          claim.reviewRemarks
+          || claim.rejectionReason
+          || claim.cancellationReason
+        ) {
+          <section class="details-section">
+            <div class="section-heading">
+              <span class="section-number">
+                05
+              </span>
+  
+              <div>
+                <p>Claim outcome</p>
+  
+                <h2>
+                  Review and resolution information
+                </h2>
+              </div>
+            </div>
+  
+            <div class="resolution-grid">
+              @if (claim.reviewRemarks) {
+                <article class="resolution-card">
+                  <header>
+                    <mat-icon>rate_review</mat-icon>
+                    <span>Review remarks</span>
+                  </header>
+  
+                  <p>
+                    {{ claim.reviewRemarks }}
+                  </p>
+                </article>
+              }
+  
+              @if (claim.rejectionReason) {
+                <article
+                  class="resolution-card rejection-card"
+                >
+                  <header>
+                    <mat-icon>cancel</mat-icon>
+                    <span>Rejection reason</span>
+                  </header>
+  
+                  <p>
+                    {{ claim.rejectionReason }}
+                  </p>
+                </article>
+              }
+  
+              @if (claim.cancellationReason) {
+                <article
+                  class="resolution-card cancellation-card"
+                >
+                  <header>
+                    <mat-icon>block</mat-icon>
+                    <span>Cancellation reason</span>
+                  </header>
+  
+                  <p>
+                    {{ claim.cancellationReason }}
+                  </p>
+                </article>
+              }
+            </div>
+          </section>
+        }
+  
+        <footer class="claim-audit">
+          <div class="audit-heading">
+            <mat-icon>history</mat-icon>
+  
+            <div>
+              <strong>
+                Claim history
+              </strong>
+  
+              <span>
+                System-maintained claim timestamps
+              </span>
+            </div>
+          </div>
+  
+          <div class="audit-grid">
+            <div>
+              <span>Submitted</span>
+  
+              <strong>
+                {{
+                  claim.submittedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Reviewed</span>
+  
+              @if (claim.reviewedAt) {
+                <strong>
+                  {{
+                    claim.reviewedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>Not reviewed</strong>
+              }
+            </div>
+  
+            <div>
+              <span>Resolved</span>
+  
+              @if (claim.resolvedAt) {
+                <strong>
+                  {{
+                    claim.resolvedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>Not resolved</strong>
+              }
+            </div>
+  
+            <div>
+              <span>Cancelled</span>
+  
+              @if (claim.cancelledAt) {
+                <strong>
+                  {{
+                    claim.cancelledAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </strong>
+              } @else {
+                <strong>Not cancelled</strong>
+              }
+            </div>
+  
+            <div>
+              <span>Last updated</span>
+  
+              <strong>
+                {{
+                  claim.updatedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </strong>
+            </div>
+  
+            <div>
+              <span>Current status</span>
+  
+              <strong>
+                {{ getStatusLabel(claim.status) }}
+              </strong>
+            </div>
+          </div>
+        </footer>
+      </article>
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load claim
+        </strong>
+  
+        <p>
+          {{
+            claimState.errorMessage()
+            || 'The claim information is unavailable.'
+          }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to claims</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="loadClaim()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+    }
+  </section>

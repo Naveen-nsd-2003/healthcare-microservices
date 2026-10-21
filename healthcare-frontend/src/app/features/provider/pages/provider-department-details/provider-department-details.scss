@@ -1,0 +1,532 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .department-details-page {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .department-hero {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      72px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 19px;
+    padding: 24px;
+    border: 1px solid #dbe8ed;
+    border-radius: 22px;
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff,
+        #edfafa
+      );
+    box-shadow:
+      0 12px 34px rgba(18, 48, 67, 0.07);
+  }
+  
+  .hero-icon {
+    display: grid;
+    width: 72px;
+    height: 72px;
+    place-items: center;
+    border-radius: 22px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+  }
+  
+  .hero-icon mat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 34px;
+  }
+  
+  .hero-copy {
+    min-width: 0;
+  }
+  
+  .department-code {
+    display: block;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+  
+  .hero-copy h1 {
+    margin: 5px 0 0;
+    color: #19384d;
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  
+  .hero-copy p {
+    margin: 6px 0 0;
+    color: #6d8290;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    min-height: 31px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .status-badge mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+  
+  .status-badge--active {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .status-badge--inactive {
+    color: #657782;
+    background: #edf1f3;
+  }
+  
+  .status-notice {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 15px;
+  }
+  
+  .status-notice > mat-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    font-size: 24px;
+  }
+  
+  .status-notice strong {
+    font-size: 13px;
+  }
+  
+  .status-notice p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .active-notice {
+    border: 1px solid #bce1c9;
+    color: #296744;
+    background: #eff9f2;
+  }
+  
+  .inactive-notice {
+    border: 1px solid #d8e1e5;
+    color: #607580;
+    background: #f5f8f9;
+  }
+  
+  .action-error {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 17px;
+    border: 1px solid #f2b8b5;
+    border-radius: 14px;
+    color: #8b1a1a;
+    background: #fff1f0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .details-layout {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: 18px;
+  }
+  
+  .main-details,
+  .department-sidebar {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+  }
+  
+  .detail-card,
+  .management-card {
+    min-width: 0;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.045);
+  }
+  
+  .detail-card mat-card-content,
+  .management-card mat-card-content {
+    padding: 22px;
+  }
+  
+  .card-header {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #edf1f4;
+  }
+  
+  .card-icon {
+    display: grid;
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    place-items: center;
+    border-radius: 15px;
+  }
+  
+  .information-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .description-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .contact-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .history-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .card-header h2,
+  .management-card h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 16px;
+    font-weight: 750;
+  }
+  
+  .card-header p {
+    margin: 4px 0 0;
+    color: #778b97;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  
+  .detail-card dl {
+    display: grid;
+    margin: 6px 0 0;
+  }
+  
+  .detail-card dl > div {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      165px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f3f5;
+  }
+  
+  .detail-card dl > div:last-child {
+    border-bottom: 0;
+  }
+  
+  .detail-card dt {
+    color: #7b8e99;
+    font-size: 11px;
+  }
+  
+  .detail-card dd {
+    min-width: 0;
+    margin: 0;
+    color: #29475a;
+    font-size: 12px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  
+  .description-text {
+    margin: 18px 0 0;
+    color: #5f7785;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  
+  .not-provided {
+    color: #8a99a1;
+    font-weight: 500;
+  }
+  
+  .identifier {
+    font-family: monospace;
+    font-size: 10px !important;
+  }
+  
+  .management-card {
+    border-color: #b7dadd;
+    background:
+      linear-gradient(
+        145deg,
+        #ffffff,
+        #eefafa
+      );
+  }
+  
+  .management-card mat-card-content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  
+  .management-icon {
+    display: grid;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 14px;
+    place-items: center;
+    border-radius: 19px;
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .management-icon mat-icon {
+    width: 29px;
+    height: 29px;
+    font-size: 29px;
+  }
+  
+  .management-card p {
+    margin: 9px 0 17px;
+    color: #66808d;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .management-card button {
+    width: 100%;
+    min-height: 43px;
+    margin-top: 10px;
+    border-radius: 11px;
+  }
+  
+  .edit-button {
+    color: #0f7180;
+  }
+  
+  .activate-button {
+    color: #ffffff;
+    background: #287848;
+  }
+  
+  .deactivate-button {
+    border-color: #9d4d47 !important;
+    color: #942f29 !important;
+  }
+  
+  .activate-button mat-spinner,
+  .deactivate-button mat-spinner {
+    --mdc-circular-progress-active-indicator-color:
+      currentColor;
+  }
+  
+  .code-notice {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #d8e4e9;
+    border-radius: 15px;
+    color: #526c79;
+    background: #f7fafb;
+  }
+  
+  .code-notice > mat-icon {
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    font-size: 23px;
+  }
+  
+  .code-notice strong {
+    color: #29475a;
+    font-size: 13px;
+  }
+  
+  .code-notice p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .state-card {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 360px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 40px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .unavailable-icon {
+    color: #537c89;
+    background: #e9f6f7;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 450px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  
+  .state-actions button {
+    min-height: 42px;
+    border-radius: 11px;
+  }
+  
+  .state-actions button[mat-flat-button] {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  @media (max-width: 1000px) {
+    .details-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .department-sidebar {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 720px) {
+    .department-hero {
+      grid-template-columns:
+        58px minmax(0, 1fr);
+      padding: 18px;
+    }
+  
+    .hero-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+    }
+  
+    .hero-icon mat-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+    }
+  
+    .status-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  
+    .department-sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .detail-card mat-card-content,
+    .management-card mat-card-content {
+      padding: 18px;
+    }
+  
+    .card-header {
+      align-items: flex-start;
+    }
+  
+    .detail-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 5px;
+    }
+  
+    .state-actions {
+      width: 100%;
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .state-actions button {
+      width: 100%;
+    }
+  
+    .state-card {
+      min-height: 300px;
+      padding: 28px 18px;
+    }
+  }

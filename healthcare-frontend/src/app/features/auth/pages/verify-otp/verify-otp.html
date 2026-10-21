@@ -1,0 +1,193 @@
+<mat-card class="otp-card">
+  <mat-card-content>
+
+    <header class="otp-header">
+      <div class="otp-icon">
+        <mat-icon>verified_user</mat-icon>
+      </div>
+
+      <p class="eyebrow">
+        Account Verification
+      </p>
+
+      <h2>
+        Verify your email
+      </h2>
+
+      <p class="subtitle">
+        Enter the six-digit OTP sent to your registered
+        email address. The OTP is valid for 15 minutes.
+      </p>
+    </header>
+
+    @if (registrationSuccess()) {
+      <div
+        class="message information-message"
+        role="status"
+      >
+        <mat-icon>mark_email_read</mat-icon>
+
+        <span>
+          Registration completed successfully.
+          Check the development email output for
+          the temporary password and OTP.
+        </span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div
+        class="message success-message"
+        role="status"
+      >
+        <mat-icon>check_circle_outline</mat-icon>
+
+        <span>
+          {{ successMessage() }}
+        </span>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div
+        class="message error-message"
+        role="alert"
+      >
+        <mat-icon>error_outline</mat-icon>
+
+        <span>
+          {{ errorMessage() }}
+        </span>
+      </div>
+    }
+
+    <form
+      [formGroup]="otpForm"
+      (ngSubmit)="verifyOtp()"
+      novalidate
+    >
+      <mat-form-field
+        appearance="outline"
+        class="full-width"
+      >
+        <mat-label>
+          Registered email
+        </mat-label>
+
+        <mat-icon matPrefix>
+          mail_outline
+        </mat-icon>
+
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="name@example.com"
+        >
+
+        @if (
+          otpForm.controls.email.touched
+          && otpForm.controls.email.hasError('required')
+        ) {
+          <mat-error>
+            Email is required.
+          </mat-error>
+        }
+
+        @if (
+          otpForm.controls.email.touched
+          && otpForm.controls.email.hasError('email')
+        ) {
+          <mat-error>
+            Enter a valid email address.
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="full-width otp-field"
+      >
+        <mat-label>
+          Six-digit OTP
+        </mat-label>
+
+        <mat-icon matPrefix>
+          password
+        </mat-icon>
+
+        <input
+          matInput
+          type="text"
+          formControlName="otp"
+          autocomplete="one-time-code"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="000000"
+        >
+
+        <mat-hint align="end">
+          {{ otpForm.controls.otp.value.length }}/6
+        </mat-hint>
+
+        @if (
+          otpForm.controls.otp.touched
+          && otpForm.controls.otp.hasError('required')
+        ) {
+          <mat-error>
+            OTP is required.
+          </mat-error>
+        }
+
+        @if (
+          otpForm.controls.otp.touched
+          && otpForm.controls.otp.hasError('pattern')
+        ) {
+          <mat-error>
+            OTP must contain exactly six digits.
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <button
+      mat-flat-button
+      color="primary"
+      class="verify-button"
+      type="submit"
+      [disabled]="otpForm.invalid || submitting()"
+    >
+      @if (submitting()) {
+    
+        <mat-spinner diameter="22"></mat-spinner>
+    
+      } @else {
+    
+        <ng-container>
+    
+          <span>
+            Verify OTP
+          </span>
+    
+          <mat-icon>
+            task_alt
+          </mat-icon>
+    
+        </ng-container>
+    
+      }
+    </button>
+    </form>
+
+    <div class="otp-footer">
+      <p>
+        Already verified your account?
+
+        <a routerLink="/login">
+          Sign in
+        </a>
+      </p>
+    </div>
+
+  </mat-card-content>
+</mat-card>

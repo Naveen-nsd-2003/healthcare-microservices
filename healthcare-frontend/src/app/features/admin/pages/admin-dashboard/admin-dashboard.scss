@@ -1,0 +1,922 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .admin-dashboard-page {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    gap: 22px;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  
+  .header-copy {
+    min-width: 0;
+  }
+  
+  .eyebrow,
+  .section-eyebrow {
+    margin: 0 0 7px;
+    color: #0f7180;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    color: #19384d;
+    font-size: clamp(29px, 3vw, 41px);
+    line-height: 1.2;
+  }
+  
+  .description {
+    max-width: 760px;
+    margin: 10px 0 0;
+    color: #6d8290;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  
+  .header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .header-actions button {
+    min-height: 43px;
+    border-radius: 11px;
+  }
+  
+  .create-provider-button,
+  .primary-button {
+    color: #ffffff;
+    background: #126b78;
+  }
+  
+  .dashboard-error {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    border: 1px solid #edbcb9;
+    border-radius: 12px;
+    color: #922c27;
+    background: #fff3f2;
+    font-size: 11px;
+  }
+  
+  .dashboard-error mat-icon {
+    flex: 0 0 auto;
+  }
+  
+  .dashboard-error span {
+    flex: 1;
+  }
+  
+  .overview-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+    gap: 12px;
+  }
+  
+  .overview-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #dce7eb;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 23px rgba(18, 48, 67, 0.04);
+  }
+  
+  .overview-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .overview-icon mat-icon {
+    width: 23px;
+    height: 23px;
+    font-size: 23px;
+  }
+  
+  .overview-content {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .overview-content span {
+    color: #71868f;
+    font-size: 9px;
+    font-weight: 750;
+  }
+  
+  .overview-content strong {
+    color: #274756;
+    font-size: 22px;
+    line-height: 1;
+  }
+  
+  .overview-content small {
+    color: #8a9aa1;
+    font-size: 8px;
+    line-height: 1.4;
+  }
+  
+  .total-users-card .overview-icon {
+    color: #176779;
+    background: #e7f5f6;
+  }
+  
+  .member-card .overview-icon {
+    color: #426e9a;
+    background: #eaf2fa;
+  }
+  
+  .provider-card .overview-icon {
+    color: #247047;
+    background: #e9f7ef;
+  }
+  
+  .payer-card .overview-icon {
+    color: #785d18;
+    background: #fff5d8;
+  }
+  
+  .admin-card .overview-icon {
+    color: #74509b;
+    background: #f2ebf8;
+  }
+  
+  .institution-card .overview-icon {
+    color: #a05022;
+    background: #fff0e5;
+  }
+  
+  .account-health-section,
+  .quick-actions-section,
+  .recent-accounts-section {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    padding: 21px;
+    border: 1px solid #dde8ec;
+    border-radius: 19px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 25px rgba(18, 48, 67, 0.035);
+  }
+  
+  .section-header {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .section-header > div:first-child {
+    min-width: 0;
+  }
+  
+  .section-header h2 {
+    margin: 0;
+    color: #284756;
+    font-size: 19px;
+  }
+  
+  .section-header p:last-child {
+    max-width: 690px;
+    margin: 6px 0 0;
+    color: #788c95;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .compact-header {
+    justify-content: flex-start;
+  }
+  
+  .health-score {
+    display: grid;
+    min-width: 130px;
+    justify-items: end;
+    gap: 4px;
+    padding: 12px 15px;
+    border-radius: 13px;
+    color: #28724c;
+    background: #eaf8ef;
+  }
+  
+  .health-score span {
+    font-size: 8px;
+    font-weight: 750;
+    text-transform: uppercase;
+  }
+  
+  .health-score strong {
+    font-size: 22px;
+  }
+  
+  .health-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+    gap: 11px;
+  }
+  
+  .health-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 13px;
+    border: 1px solid #e0e8eb;
+    border-radius: 13px;
+    background: #fafcfc;
+  }
+  
+  .health-icon {
+    display: grid;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    place-items: center;
+    border-radius: 12px;
+  }
+  
+  .health-icon mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+  
+  .health-card > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .health-card span {
+    color: #778b94;
+    font-size: 8px;
+  }
+  
+  .health-card strong {
+    color: #2f4e5b;
+    font-size: 17px;
+  }
+  
+  .active-health-card .health-icon {
+    color: #247047;
+    background: #e5f5eb;
+  }
+  
+  .inactive-health-card .health-icon {
+    color: #687a82;
+    background: #edf1f2;
+  }
+  
+  .blocked-health-card .health-icon {
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .suspended-health-card .health-icon {
+    color: #926515;
+    background: #fff3d1;
+  }
+  
+  .locked-health-card .health-icon {
+    color: #7a4b95;
+    background: #f2eafa;
+  }
+  
+  .onboarding-health-card .health-icon {
+    color: #216b81;
+    background: #e8f4f8;
+  }
+  
+  .attention-banner,
+  .healthy-banner {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+  
+  .attention-banner {
+    border: 1px solid #eccd8d;
+    color: #775717;
+    background: #fff9e8;
+  }
+  
+  .healthy-banner {
+    border: 1px solid #b9d9c6;
+    color: #286044;
+    background: #f0faf4;
+  }
+  
+  .attention-banner > mat-icon,
+  .healthy-banner > mat-icon {
+    flex: 0 0 auto;
+  }
+  
+  .attention-banner div,
+  .healthy-banner div {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .attention-banner strong,
+  .healthy-banner strong {
+    font-size: 11px;
+  }
+  
+  .attention-banner p,
+  .healthy-banner p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.55;
+  }
+  
+  .quick-action-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .quick-action-card {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #dce7eb;
+    border-radius: 15px;
+    color: inherit;
+    background: #ffffff;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  
+  .quick-action-card:hover {
+    transform: translateY(-2px);
+    border-color: #a8cbd0;
+    box-shadow:
+      0 10px 24px rgba(18, 48, 67, 0.07);
+  }
+  
+  .quick-action-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .provider-action .quick-action-icon {
+    color: #247047;
+    background: #e7f5ec;
+  }
+  
+  .payer-action .quick-action-icon {
+    color: #785d18;
+    background: #fff4d5;
+  }
+  
+  .notification-action .quick-action-icon {
+    color: #426e9a;
+    background: #eaf2fa;
+  }
+  
+  .quick-action-copy {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .quick-action-copy strong {
+    color: #2c4a59;
+    font-size: 12px;
+  }
+  
+  .quick-action-copy span {
+    color: #778a93;
+    font-size: 9px;
+    line-height: 1.55;
+  }
+  
+  .action-arrow {
+    color: #79919b;
+  }
+  
+  .generated-time {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    color: #748a94;
+    font-size: 9px;
+  }
+  
+  .generated-time mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+  
+  .recent-account-list {
+    display: grid;
+    min-width: 0;
+    gap: 10px;
+  }
+  
+  .account-card {
+    display: grid;
+    min-width: 0;
+    grid-template-columns:
+      46px minmax(210px, 1.5fr)
+      minmax(130px, 0.7fr)
+      minmax(165px, 0.8fr)
+      minmax(105px, 0.5fr);
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border: 1px solid #e0e8eb;
+    border-radius: 13px;
+    background: #fbfdfd;
+  }
+  
+  .account-avatar {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 14px;
+    color: #ffffff;
+    background: #607d87;
+    font-size: 12px;
+    font-weight: 850;
+  }
+  
+  .admin-avatar {
+    background: #79539c;
+  }
+  
+  .member-avatar {
+    background: #4777a5;
+  }
+  
+  .provider-avatar {
+    background: #31835a;
+  }
+  
+  .payer-avatar {
+    background: #a4781c;
+  }
+  
+  .account-primary {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+  
+  .account-name-row {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .account-name-row > strong {
+    color: #2d4c59;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+  
+  .role-badge {
+    display: inline-flex;
+    min-height: 23px;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 7px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  .role-badge mat-icon {
+    width: 13px;
+    height: 13px;
+    font-size: 13px;
+  }
+  
+  .admin-role {
+    color: #724c95;
+    background: #f2eafa;
+  }
+  
+  .member-role {
+    color: #3d6d99;
+    background: #eaf2fa;
+  }
+  
+  .provider-role {
+    color: #247047;
+    background: #e7f5ec;
+  }
+  
+  .payer-role {
+    color: #795b17;
+    background: #fff4d5;
+  }
+  
+  .account-email {
+    color: #657f89;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+  }
+  
+  .account-username {
+    color: #8a999f;
+    font-family:
+      'Courier New',
+      monospace;
+    font-size: 8px;
+    overflow-wrap: anywhere;
+  }
+  
+  .account-contact,
+  .account-created,
+  .account-status-column {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .account-label {
+    color: #83949b;
+    font-size: 7px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  .account-contact strong,
+  .account-created strong {
+    color: #3d5965;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+  }
+  
+  .account-created small {
+    color: #8a999f;
+    font-size: 8px;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 24px;
+    align-items: center;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 7px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+  
+  .active-status {
+    color: #247047;
+    background: #e6f5eb;
+  }
+  
+  .inactive-status {
+    color: #65757c;
+    background: #edf1f2;
+  }
+  
+  .blocked-status {
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .suspended-status {
+    color: #835e17;
+    background: #fff3d1;
+  }
+  
+  .access-status {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 4px;
+    color: #557178;
+    font-size: 8px;
+  }
+  
+  .access-status mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+  
+  .locked-access {
+    color: #a22b25;
+  }
+  
+  .pending-access {
+    color: #8a6314;
+  }
+  
+  .recent-empty-state {
+    display: grid;
+    min-height: 210px;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .recent-empty-state > div {
+    display: grid;
+    width: 55px;
+    height: 55px;
+    place-items: center;
+    border-radius: 17px;
+    color: #627e88;
+    background: #edf4f5;
+  }
+  
+  .recent-empty-state strong {
+    color: #355360;
+    font-size: 13px;
+  }
+  
+  .recent-empty-state p {
+    margin: 0;
+    color: #819199;
+    font-size: 10px;
+  }
+  
+  .security-note {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #c7dce8;
+    border-radius: 15px;
+    color: #456579;
+    background: #f1f7fb;
+  }
+  
+  .security-icon {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    place-items: center;
+    border-radius: 13px;
+    color: #ffffff;
+    background: #477b98;
+  }
+  
+  .security-note > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+  
+  .security-note strong {
+    color: #36566a;
+    font-size: 11px;
+  }
+  
+  .security-note p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.65;
+  }
+  
+  .state-card {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 360px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 11px;
+    padding: 36px;
+    border: 1px solid #dce6e9;
+    border-radius: 18px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #a52d28;
+    background: #fff0ef;
+  }
+  
+  .state-icon mat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+  }
+  
+  .state-card strong {
+    color: #284754;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 520px;
+    margin: 0;
+    color: #768b94;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-card button {
+    min-height: 42px;
+    margin-top: 8px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 1350px) {
+    .overview-grid,
+    .health-grid {
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 1000px) {
+    .quick-action-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .account-card {
+      grid-template-columns:
+        46px minmax(0, 1fr)
+        minmax(150px, 0.7fr);
+    }
+  
+    .account-contact {
+      display: none;
+    }
+  
+    .account-created {
+      grid-column: 3;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .dashboard-header,
+    .section-header {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .header-actions {
+      width: 100%;
+    }
+  
+    .header-actions button {
+      flex: 1;
+    }
+  
+    .health-score {
+      width: fit-content;
+      justify-items: start;
+    }
+  
+    .overview-grid,
+    .health-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .account-card {
+      grid-template-columns:
+        46px minmax(0, 1fr);
+      align-items: start;
+    }
+  
+    .account-status-column,
+    .account-created {
+      grid-column: 2;
+    }
+  
+    .generated-time {
+      align-self: flex-start;
+    }
+  }
+  
+  @media (max-width: 520px) {
+    .admin-dashboard-page {
+      gap: 18px;
+    }
+  
+    .header-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .overview-grid,
+    .health-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .account-health-section,
+    .quick-actions-section,
+    .recent-accounts-section {
+      padding: 16px;
+    }
+  
+    .quick-action-card {
+      grid-template-columns:
+        43px minmax(0, 1fr);
+    }
+  
+    .quick-action-icon {
+      width: 43px;
+      height: 43px;
+    }
+  
+    .action-arrow {
+      display: none;
+    }
+  
+    .account-card {
+      grid-template-columns: 1fr;
+    }
+  
+    .account-avatar,
+    .account-primary,
+    .account-status-column,
+    .account-created {
+      grid-column: 1;
+    }
+  
+    .state-card {
+      min-height: 320px;
+      padding: 28px 18px;
+    }
+
+    .manage-provider-action .quick-action-icon {
+      color: #0f7180;
+      background: #e7f6f7;
+    }
+    
+    .manage-payer-action .quick-action-icon {
+      color: #7a5a17;
+      background: #fff4d5;
+    }
+  }

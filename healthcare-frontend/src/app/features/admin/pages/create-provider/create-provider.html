@@ -1,0 +1,658 @@
+<section class="create-provider-page">
+    <header class="page-toolbar">
+      <button
+        mat-button
+        type="button"
+        class="back-button"
+        [disabled]="adminState.providerCreating()"
+        (click)="goBack()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to Admin dashboard</span>
+      </button>
+    </header>
+  
+    <header class="page-header">
+      <div class="header-icon">
+        <mat-icon>add_business</mat-icon>
+      </div>
+  
+      <div class="header-copy">
+        <p class="eyebrow">
+          Institutional Account Provisioning
+        </p>
+  
+        <h1>
+          Create Provider account
+        </h1>
+  
+        <p>
+          Provision an administrator login for a healthcare
+          Provider organization. The Auth Service generates
+          and emails a temporary password to the supplied
+          email address.
+        </p>
+      </div>
+    </header>
+  
+    @if (accountCreated()) {
+      <section class="success-card">
+        <div class="success-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+  
+        <p class="success-eyebrow">
+          Provider Account Created
+        </p>
+  
+        <h2>
+          {{ createdAccountName() }}
+        </h2>
+  
+        <p class="success-message">
+          The Provider account was created successfully.
+          A system-generated temporary password has been
+          sent to the registered email address.
+        </p>
+  
+        <div class="created-email">
+          <mat-icon>mail</mat-icon>
+  
+          <strong>
+            {{ createdAccountEmail() }}
+          </strong>
+        </div>
+  
+        <section class="success-workflow">
+          <article>
+            <span class="workflow-number">
+              01
+            </span>
+  
+            <div>
+              <strong>
+                Temporary password
+              </strong>
+  
+              <p>
+                The Auth Service generated and emailed the
+                temporary password securely.
+              </p>
+            </div>
+          </article>
+  
+          <article>
+            <span class="workflow-number">
+              02
+            </span>
+  
+            <div>
+              <strong>
+                First login
+              </strong>
+  
+              <p>
+                The Provider signs in using the registered
+                email and temporary password.
+              </p>
+            </div>
+          </article>
+  
+          <article>
+            <span class="workflow-number">
+              03
+            </span>
+  
+            <div>
+              <strong>
+                Password change
+              </strong>
+  
+              <p>
+                The Provider must replace the temporary
+                password before accessing Provider features.
+              </p>
+            </div>
+          </article>
+  
+          <article>
+            <span class="workflow-number">
+              04
+            </span>
+  
+            <div>
+              <strong>
+                Organization setup
+              </strong>
+  
+              <p>
+                The Provider completes the healthcare
+                organization profile after changing the
+                temporary password.
+              </p>
+            </div>
+          </article>
+        </section>
+  
+        <div class="success-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goToDashboard()"
+          >
+            <mat-icon>dashboard</mat-icon>
+            <span>Admin dashboard</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="createAnotherProvider()"
+          >
+            <mat-icon>person_add</mat-icon>
+            <span>Create another Provider</span>
+          </button>
+        </div>
+      </section>
+    } @else {
+      <section class="provisioning-layout">
+        <form
+          class="provider-form"
+          [formGroup]="providerForm"
+          (ngSubmit)="createProvider()"
+          novalidate
+        >
+          @if (adminState.errorMessage()) {
+            <section
+              class="form-error"
+              role="alert"
+            >
+              <mat-icon>error_outline</mat-icon>
+  
+              <span>
+                {{ adminState.errorMessage() }}
+              </span>
+            </section>
+          }
+  
+          <section class="form-card">
+            <header class="form-section-header">
+              <div class="section-icon identity-icon">
+                <mat-icon>badge</mat-icon>
+              </div>
+  
+              <div>
+                <p>
+                  Account Identity
+                </p>
+  
+                <h2>
+                  Provider administrator
+                </h2>
+  
+                <span>
+                  Enter the identity details for the person
+                  responsible for the Provider account.
+                </span>
+              </div>
+            </header>
+  
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Username
+                </mat-label>
+  
+                <mat-icon matPrefix>
+                  alternate_email
+                </mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  maxlength="50"
+                  autocomplete="off"
+                  formControlName="username"
+                  placeholder="novacareadmin"
+                />
+  
+                <mat-hint>
+                  4 to 50 characters
+                </mat-hint>
+  
+                @if (
+                  providerForm.controls.username.touched
+                  && providerForm.controls.username.hasError(
+                    'required'
+                  )
+                ) {
+                  <mat-error>
+                    Username is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.username.touched
+                  && providerForm.controls.username.hasError(
+                    'whitespace'
+                  )
+                ) {
+                  <mat-error>
+                    Username cannot contain only spaces.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.username.touched
+                  && providerForm.controls.username.hasError(
+                    'minlength'
+                  )
+                ) {
+                  <mat-error>
+                    Username must contain at least
+                    4 characters.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.username.touched
+                  && providerForm.controls.username.hasError(
+                    'maxlength'
+                  )
+                ) {
+                  <mat-error>
+                    Username cannot exceed 50 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  First name
+                </mat-label>
+  
+                <mat-icon matPrefix>
+                  person
+                </mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  maxlength="50"
+                  autocomplete="given-name"
+                  formControlName="firstName"
+                  placeholder="Aarav"
+                />
+  
+                @if (
+                  providerForm.controls.firstName.touched
+                  && providerForm.controls.firstName.hasError(
+                    'required'
+                  )
+                ) {
+                  <mat-error>
+                    First name is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.firstName.touched
+                  && providerForm.controls.firstName.hasError(
+                    'whitespace'
+                  )
+                ) {
+                  <mat-error>
+                    First name cannot contain only spaces.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.firstName.touched
+                  && providerForm.controls.firstName.hasError(
+                    'maxlength'
+                  )
+                ) {
+                  <mat-error>
+                    First name cannot exceed 50 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Last name
+                </mat-label>
+  
+                <mat-icon matPrefix>
+                  person_outline
+                </mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  maxlength="50"
+                  autocomplete="family-name"
+                  formControlName="lastName"
+                  placeholder="Malhotra"
+                />
+  
+                @if (
+                  providerForm.controls.lastName.touched
+                  && providerForm.controls.lastName.hasError(
+                    'required'
+                  )
+                ) {
+                  <mat-error>
+                    Last name is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.lastName.touched
+                  && providerForm.controls.lastName.hasError(
+                    'whitespace'
+                  )
+                ) {
+                  <mat-error>
+                    Last name cannot contain only spaces.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.lastName.touched
+                  && providerForm.controls.lastName.hasError(
+                    'maxlength'
+                  )
+                ) {
+                  <mat-error>
+                    Last name cannot exceed 50 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </section>
+  
+          <section class="form-card">
+            <header class="form-section-header">
+              <div class="section-icon contact-icon">
+                <mat-icon>contact_mail</mat-icon>
+              </div>
+  
+              <div>
+                <p>
+                  Contact Information
+                </p>
+  
+                <h2>
+                  Authentication and communication
+                </h2>
+  
+                <span>
+                  The email address becomes the login identity
+                  and receives the temporary password.
+                </span>
+              </div>
+            </header>
+  
+            <div class="form-grid contact-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Email address
+                </mat-label>
+  
+                <mat-icon matPrefix>
+                  mail
+                </mat-icon>
+  
+                <input
+                  matInput
+                  type="email"
+                  maxlength="150"
+                  autocomplete="email"
+                  formControlName="email"
+                  placeholder="aarav.malhotra@novacare.example.com"
+                />
+  
+                <mat-hint>
+                  Temporary credentials are sent here
+                </mat-hint>
+  
+                @if (
+                  providerForm.controls.email.touched
+                  && providerForm.controls.email.hasError(
+                    'required'
+                  )
+                ) {
+                  <mat-error>
+                    Email address is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.email.touched
+                  && providerForm.controls.email.hasError(
+                    'email'
+                  )
+                ) {
+                  <mat-error>
+                    Enter a valid email address.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.email.touched
+                  && providerForm.controls.email.hasError(
+                    'whitespace'
+                  )
+                ) {
+                  <mat-error>
+                    Email address cannot contain only spaces.
+                  </mat-error>
+                }
+  
+                @if (
+                  providerForm.controls.email.touched
+                  && providerForm.controls.email.hasError(
+                    'maxlength'
+                  )
+                ) {
+                  <mat-error>
+                    Email address cannot exceed
+                    150 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Phone number
+                </mat-label>
+  
+                <mat-icon matPrefix>
+                  phone
+                </mat-icon>
+  
+                <input
+                  matInput
+                  type="tel"
+                  maxlength="20"
+                  autocomplete="tel"
+                  formControlName="phoneNumber"
+                  placeholder="9876504101"
+                />
+  
+                <mat-hint>
+                  Optional, 10 to 20 supported characters
+                </mat-hint>
+  
+                @if (
+                  providerForm.controls.phoneNumber.touched
+                  && providerForm.controls.phoneNumber.hasError(
+                    'pattern'
+                  )
+                ) {
+                  <mat-error>
+                    Enter a valid phone number using digits,
+                    spaces, plus, parentheses, or hyphens.
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </section>
+  
+          <section class="provisioning-notice">
+            <div class="notice-icon">
+              <mat-icon>security</mat-icon>
+            </div>
+  
+            <div>
+              <strong>
+                Secure account provisioning
+              </strong>
+  
+              <p>
+                The Administrator does not choose or view the
+                Provider password. The Auth Service generates
+                a temporary password, encrypts it for storage,
+                and sends it to the registered email address.
+              </p>
+            </div>
+          </section>
+  
+          <section class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="adminState.providerCreating()"
+              (click)="goBack()"
+            >
+              <mat-icon>close</mat-icon>
+              <span>Cancel</span>
+            </button>
+  
+            <button
+              mat-flat-button
+              type="submit"
+              class="submit-button"
+              [disabled]="adminState.providerCreating()"
+            >
+              <mat-icon>person_add</mat-icon>
+  
+              <span>
+                {{
+                  adminState.providerCreating()
+                    ? 'Creating Provider...'
+                    : 'Create Provider account'
+                }}
+              </span>
+            </button>
+          </section>
+  
+          @if (adminState.providerCreating()) {
+            <section
+              class="submission-progress"
+              aria-live="polite"
+            >
+              <mat-spinner diameter="22"></mat-spinner>
+  
+              <span>
+                Creating the Provider account and sending
+                the temporary password email...
+              </span>
+            </section>
+          }
+        </form>
+  
+        <aside class="workflow-card">
+          <header>
+            <div class="workflow-header-icon">
+              <mat-icon>account_tree</mat-icon>
+            </div>
+  
+            <div>
+              <p>
+                Provider Onboarding
+              </p>
+  
+              <h2>
+                What happens next?
+              </h2>
+            </div>
+          </header>
+  
+          <div class="workflow-list">
+            <article>
+              <span>1</span>
+  
+              <div>
+                <strong>
+                  Account creation
+                </strong>
+  
+                <p>
+                  The account is created with the Provider
+                  role and ACTIVE account status.
+                </p>
+              </div>
+            </article>
+  
+            <article>
+              <span>2</span>
+  
+              <div>
+                <strong>
+                  Temporary password email
+                </strong>
+  
+                <p>
+                  The Provider receives a system-generated
+                  temporary password by email.
+                </p>
+              </div>
+            </article>
+  
+            <article>
+              <span>3</span>
+  
+              <div>
+                <strong>
+                  Mandatory password change
+                </strong>
+  
+                <p>
+                  The first authenticated login redirects the
+                  Provider to change the temporary password.
+                </p>
+              </div>
+            </article>
+  
+            <article>
+              <span>4</span>
+  
+              <div>
+                <strong>
+                  Organization configuration
+                </strong>
+  
+                <p>
+                  The Provider creates the organization,
+                  departments, doctors, and availability.
+                </p>
+              </div>
+            </article>
+          </div>
+  
+          <section class="workflow-note">
+            <mat-icon>info</mat-icon>
+  
+            <p>
+              Provider accounts do not require OTP
+              verification because they are provisioned by
+              an authenticated Administrator.
+            </p>
+          </section>
+        </aside>
+      </section>
+    }
+  </section>

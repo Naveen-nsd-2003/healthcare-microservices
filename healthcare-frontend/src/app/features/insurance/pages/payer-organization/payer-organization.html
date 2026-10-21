@@ -1,0 +1,1201 @@
+<section class="organization-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        Payer Administration
+      </p>
+
+      <h1>
+        My organization
+      </h1>
+
+      <p class="page-description">
+        @if (creating()) {
+          Submit your Payer organization information for
+          Administrator review and approval.
+        } @else {
+          Review your registered Payer organization information
+          and maintain its contact and address details.
+        }
+      </p>
+    </div>
+
+    @if (
+      organizationState.hasOrganization()
+      && canEditOrganization()
+      && !editing()
+      && !organizationState.loading()
+      && !organizationState.saving()
+    ) {
+      <button
+        mat-flat-button
+        type="button"
+        class="edit-button"
+        (click)="startEditing()"
+      >
+        <mat-icon>
+          {{
+            organizationState.organizationIsRejected()
+              ? 'edit_note'
+              : 'edit'
+          }}
+        </mat-icon>
+
+        <span>
+          {{
+            organizationState.organizationIsRejected()
+              ? 'Correct application'
+              : 'Edit organization'
+          }}
+        </span>
+      </button>
+    }
+  </header>
+
+  @if (organizationState.loading()) {
+    <section class="state-card">
+      <mat-spinner diameter="44">
+      </mat-spinner>
+
+      <strong>
+        Loading Payer organization
+      </strong>
+
+      <p>
+        Please wait while your Payer organization
+        information is retrieved.
+      </p>
+    </section>
+  } @else if (
+    organizationState.errorMessage()
+    && !organizationState.hasOrganization()
+    && !organizationState.organizationNotCreated()
+  ) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load your organization
+      </strong>
+
+      <p>
+        {{ organizationState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="organizationState.loading()"
+        (click)="loadOrganization()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+
+        <span>
+          Try again
+        </span>
+      </button>
+    </section>
+  } @else if (showForm()) {
+    <form
+      class="organization-form"
+      [formGroup]="organizationForm"
+      (ngSubmit)="submitOrganization()"
+      novalidate
+    >
+      @if (creating()) {
+        <section class="onboarding-notice">
+          <mat-icon>
+            add_business
+          </mat-icon>
+
+          <div>
+            <strong>
+              Submit your Payer organization
+            </strong>
+
+            <p>
+              Complete the organization profile below.
+              Your administrator email will be assigned
+              automatically from your authenticated Payer
+              account. An Administrator must approve the
+              application before Payer operations become
+              available.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (correctingRejectedApplication()) {
+        <section class="rejection-notice">
+          <mat-icon>
+            assignment_late
+          </mat-icon>
+
+          <div>
+            <strong>
+              Correct the rejected application
+            </strong>
+
+            @if (
+              organizationState.organization()?.rejectionReason;
+              as rejectionReason
+            ) {
+              <p>
+                <b>Rejection reason:</b>
+                {{ rejectionReason }}
+              </p>
+            }
+
+            @if (
+              organizationState.organization()?.reviewRemarks;
+              as reviewRemarks
+            ) {
+              <p>
+                <b>Review remarks:</b>
+                {{ reviewRemarks }}
+              </p>
+            }
+
+            <p>
+              Saving your corrections will automatically
+              resubmit the organization for Administrator
+              approval.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (organizationState.errorMessage()) {
+        <section
+          class="form-error"
+          role="alert"
+        >
+          <mat-icon>
+            error_outline
+          </mat-icon>
+
+          <span>
+            {{ organizationState.errorMessage() }}
+          </span>
+        </section>
+      }
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon">
+              <mat-icon>
+                business
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                {{ formTitle() }}
+              </h2>
+
+              <p>
+                {{ formDescription() }}
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Organization name
+              </mat-label>
+
+              <mat-icon matPrefix>
+                corporate_fare
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="organizationName"
+                maxlength="150"
+                autocomplete="organization"
+              >
+
+              <mat-hint align="end">
+                {{
+                  organizationForm.controls
+                    .organizationName.value.length
+                }}/150
+              </mat-hint>
+
+              @if (
+                organizationForm.controls
+                  .organizationName.touched
+                && organizationForm.controls
+                  .organizationName.hasError('required')
+              ) {
+                <mat-error>
+                  Organization name is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls
+                  .organizationName.touched
+                && organizationForm.controls
+                  .organizationName.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Organization name must not exceed
+                  150 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Registration number
+              </mat-label>
+
+              <mat-icon matPrefix>
+                badge
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="registrationNumber"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="SCHI-TG-2026-001"
+              >
+
+              @if (!creating()) {
+                <mat-hint>
+                  Registration number cannot be changed.
+                </mat-hint>
+              }
+
+              @if (
+                organizationForm.controls
+                  .registrationNumber.touched
+                && organizationForm.controls
+                  .registrationNumber.hasError('required')
+              ) {
+                <mat-error>
+                  Registration number is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls
+                  .registrationNumber.touched
+                && organizationForm.controls
+                  .registrationNumber.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Registration number must not exceed
+                  100 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Contact number
+              </mat-label>
+
+              <mat-icon matPrefix>
+                phone
+              </mat-icon>
+
+              <input
+                matInput
+                type="tel"
+                formControlName="contactNumber"
+                maxlength="20"
+                autocomplete="tel"
+                placeholder="+91 98765 43210"
+              >
+
+              @if (
+                organizationForm.controls
+                  .contactNumber.touched
+                && organizationForm.controls
+                  .contactNumber.hasError('required')
+              ) {
+                <mat-error>
+                  Contact number is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls
+                  .contactNumber.touched
+                && organizationForm.controls
+                  .contactNumber.hasError('pattern')
+              ) {
+                <mat-error>
+                  Enter a valid contact number containing
+                  10 to 20 supported characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Website
+              </mat-label>
+
+              <mat-icon matPrefix>
+                language
+              </mat-icon>
+
+              <input
+                matInput
+                type="url"
+                formControlName="website"
+                maxlength="255"
+                autocomplete="url"
+                placeholder="https://example.com"
+              >
+
+              <mat-hint>
+                Optional
+              </mat-hint>
+
+              @if (
+                organizationForm.controls.website.touched
+                && organizationForm.controls.website
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Website must not exceed 255 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="form-section">
+        <mat-card-content>
+          <header class="section-header">
+            <div class="section-icon address-icon">
+              <mat-icon>
+                location_on
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Registered address
+              </h2>
+
+              <p>
+                @if (creating()) {
+                  Enter the registered address of your
+                  Payer organization.
+                } @else {
+                  Maintain the current registered address
+                  of your Payer organization.
+                }
+              </p>
+            </div>
+          </header>
+
+          <div class="form-grid">
+            <mat-form-field
+              appearance="outline"
+              class="full-row"
+            >
+              <mat-label>
+                Address
+              </mat-label>
+
+              <mat-icon matPrefix>
+                home
+              </mat-icon>
+
+              <textarea
+                matInput
+                formControlName="addressLine"
+                rows="3"
+                maxlength="255"
+                autocomplete="street-address"
+              ></textarea>
+
+              <mat-hint align="end">
+                {{
+                  organizationForm.controls
+                    .addressLine.value.length
+                }}/255
+              </mat-hint>
+
+              @if (
+                organizationForm.controls
+                  .addressLine.touched
+                && organizationForm.controls
+                  .addressLine.hasError('required')
+              ) {
+                <mat-error>
+                  Address is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls
+                  .addressLine.touched
+                && organizationForm.controls
+                  .addressLine.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Address must not exceed 255 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                City
+              </mat-label>
+
+              <mat-icon matPrefix>
+                location_city
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="city"
+                maxlength="100"
+                autocomplete="address-level2"
+              >
+
+              @if (
+                organizationForm.controls.city.touched
+                && organizationForm.controls.city
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  City is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls.city.touched
+                && organizationForm.controls.city
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  City must not exceed 100 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                State
+              </mat-label>
+
+              <mat-icon matPrefix>
+                map
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="state"
+                maxlength="100"
+                autocomplete="address-level1"
+              >
+
+              @if (
+                organizationForm.controls.state.touched
+                && organizationForm.controls.state
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  State is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls.state.touched
+                && organizationForm.controls.state
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  State must not exceed 100 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Postal code
+              </mat-label>
+
+              <mat-icon matPrefix>
+                markunread_mailbox
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="postalCode"
+                maxlength="20"
+                autocomplete="postal-code"
+              >
+
+              @if (
+                organizationForm.controls
+                  .postalCode.touched
+                && organizationForm.controls
+                  .postalCode.hasError('required')
+              ) {
+                <mat-error>
+                  Postal code is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls
+                  .postalCode.touched
+                && organizationForm.controls
+                  .postalCode.hasError('pattern')
+              ) {
+                <mat-error>
+                  Enter a valid postal code.
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>
+                Country
+              </mat-label>
+
+              <mat-icon matPrefix>
+                public
+              </mat-icon>
+
+              <input
+                matInput
+                type="text"
+                formControlName="country"
+                maxlength="100"
+                autocomplete="country-name"
+              >
+
+              @if (
+                organizationForm.controls.country.touched
+                && organizationForm.controls.country
+                  .hasError('required')
+              ) {
+                <mat-error>
+                  Country is required.
+                </mat-error>
+              }
+
+              @if (
+                organizationForm.controls.country.touched
+                && organizationForm.controls.country
+                  .hasError('maxlength')
+              ) {
+                <mat-error>
+                  Country must not exceed 100 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      @if (creating()) {
+        <section class="read-only-notice">
+          <mat-icon>
+            verified_user
+          </mat-icon>
+
+          <div>
+            <strong>
+              Administrator approval required
+            </strong>
+
+            <p>
+              Your administrator email comes from your
+              authenticated Payer account. The submitted
+              organization will remain in Pending approval
+              status until an Administrator approves it.
+            </p>
+          </div>
+        </section>
+      } @else {
+        <section class="read-only-notice">
+          <mat-icon>
+            lock
+          </mat-icon>
+
+          <div>
+            <strong>
+              Protected organization information
+            </strong>
+
+            <p>
+              Registration number, administrator email,
+              and organization status cannot be changed
+              from this form.
+            </p>
+          </div>
+        </section>
+      }
+
+      <footer class="form-actions">
+        <button
+  mat-stroked-button
+  type="button"
+  [disabled]="organizationState.saving()"
+  (click)="cancelEditing()"
+>
+
+  @if (creating()) {
+
+    <ng-container>
+
+      <mat-icon>
+        restart_alt
+      </mat-icon>
+
+      <span>
+        Reset form
+      </span>
+
+    </ng-container>
+
+  } @else {
+
+    <span>
+      Cancel
+    </span>
+
+  }
+
+</button>
+
+        <button
+          mat-flat-button
+          type="submit"
+          class="save-button"
+          [disabled]="organizationState.saving()"
+        >
+          @if (organizationState.saving()) {
+            <mat-spinner diameter="22">
+            </mat-spinner>
+
+            <span>
+              {{ submittingLabel() }}
+            </span>
+          } @else {
+
+            <ng-container>
+          
+              <mat-icon>
+                {{
+                  creating()
+                    ? 'send'
+                    : correctingRejectedApplication()
+                      ? 'restart_alt'
+                      : 'save'
+                }}
+              </mat-icon>
+          
+              <span>
+                {{ submitButtonLabel() }}
+              </span>
+          
+            </ng-container>
+          
+          }
+        </button>
+      </footer>
+    </form>
+  } @else if (
+    organizationState.organization();
+    as organization
+  ) {
+    <section class="organization-overview">
+      @if (organization.status === 'PENDING_APPROVAL') {
+        <section class="approval-status approval-status--pending">
+          <mat-icon>
+            hourglass_top
+          </mat-icon>
+
+          <div>
+            <strong>
+              Organization application is awaiting approval
+            </strong>
+
+            <p>
+              Your organization was submitted for Administrator
+              review. Payer operations remain unavailable until
+              the application is approved.
+            </p>
+
+            @if (organization.submittedAt) {
+              <span>
+                Submitted:
+                {{
+                  organization.submittedAt
+                    | date: 'MMM d, y, h:mm a'
+                }}
+              </span>
+            }
+          </div>
+        </section>
+      }
+
+      @if (organization.status === 'REJECTED') {
+        <section class="approval-status approval-status--rejected">
+          <mat-icon>
+            assignment_late
+          </mat-icon>
+
+          <div>
+            <strong>
+              Organization application was rejected
+            </strong>
+
+            @if (organization.rejectionReason) {
+              <p>
+                <b>Reason:</b>
+                {{ organization.rejectionReason }}
+              </p>
+            }
+
+            @if (organization.reviewRemarks) {
+              <p>
+                <b>Review remarks:</b>
+                {{ organization.reviewRemarks }}
+              </p>
+            }
+
+            <p>
+              Correct the organization information and
+              resubmit it for Administrator approval.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (organization.status === 'SUSPENDED') {
+        <section class="approval-status approval-status--suspended">
+          <mat-icon>
+            pause_circle
+          </mat-icon>
+
+          <div>
+            <strong>
+              Payer organization is suspended
+            </strong>
+
+            <p>
+              Payer business operations are temporarily
+              unavailable. Contact the platform Administrator
+              for further information.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (organization.status === 'INACTIVE') {
+        <section class="approval-status approval-status--inactive">
+          <mat-icon>
+            block
+          </mat-icon>
+
+          <div>
+            <strong>
+              Payer organization is inactive
+            </strong>
+
+            <p>
+              This organization is currently inactive and
+              cannot perform Payer business operations.
+            </p>
+          </div>
+        </section>
+      }
+
+      <mat-card class="identity-card">
+        <mat-card-content>
+          <div class="organization-avatar">
+            <mat-icon>
+              account_balance
+            </mat-icon>
+          </div>
+
+          <div class="identity-copy">
+            <div class="identity-heading">
+              <div>
+                <p>
+                  Payer organization
+                </p>
+
+                <h2>
+                  {{ organization.organizationName }}
+                </h2>
+
+                <span class="registration-number">
+                  Registration:
+                  {{ organization.registrationNumber }}
+                </span>
+              </div>
+
+              <span
+                [class]="
+                  'status-badge '
+                  + getStatusClass(organization.status)
+                "
+              >
+                {{ getStatusLabel(organization.status) }}
+              </span>
+            </div>
+
+            <div class="identity-details">
+              <span>
+                <mat-icon>
+                  mail_outline
+                </mat-icon>
+
+                {{ organization.adminEmail }}
+              </span>
+
+              <span>
+                <mat-icon>
+                  phone
+                </mat-icon>
+
+                {{ organization.contactNumber }}
+              </span>
+
+              @if (
+                getWebsiteUrl(organization.website);
+                as websiteUrl
+              ) {
+                <a
+                  [href]="websiteUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <mat-icon>
+                    language
+                  </mat-icon>
+
+                  Visit website
+                </a>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="details-grid">
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon">
+                <mat-icon>
+                  business
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Organization details
+                </h3>
+
+                <p>
+                  Registration and administration data
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Organization name
+                </dt>
+
+                <dd>
+                  {{ organization.organizationName }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Registration number
+                </dt>
+
+                <dd>
+                  {{ organization.registrationNumber }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Administrator email
+                </dt>
+
+                <dd>
+                  {{ organization.adminEmail }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Contact number
+                </dt>
+
+                <dd>
+                  {{ organization.contactNumber }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Website
+                </dt>
+
+                <dd>
+                  @if (
+                    getWebsiteUrl(organization.website);
+                    as websiteUrl
+                  ) {
+                    <a
+                      [href]="websiteUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ organization.website }}
+                    </a>
+                  } @else {
+                    <span>
+                      Not provided
+                    </span>
+                  }
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Status
+                </dt>
+
+                <dd>
+                  {{ getStatusLabel(organization.status) }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon address-detail-icon">
+                <mat-icon>
+                  location_on
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Registered address
+                </h3>
+
+                <p>
+                  Current organization location
+                </p>
+              </div>
+            </header>
+
+            <address>
+              <strong>
+                {{ organization.addressLine }}
+              </strong>
+
+              <span>
+                {{ organization.city }},
+                {{ organization.state }}
+              </span>
+
+              <span>
+                {{ organization.postalCode }}
+              </span>
+
+              <span>
+                {{ organization.country }}
+              </span>
+            </address>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card history-card">
+          <mat-card-content>
+            <header>
+              <div class="detail-icon history-icon">
+                <mat-icon>
+                  history
+                </mat-icon>
+              </div>
+
+              <div>
+                <h3>
+                  Application history
+                </h3>
+
+                <p>
+                  Submission, review, and record timestamps
+                </p>
+              </div>
+            </header>
+
+            <dl>
+              <div>
+                <dt>
+                  Organization ID
+                </dt>
+
+                <dd class="identifier">
+                  {{ organization.id }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Submitted
+                </dt>
+
+                <dd>
+                  @if (organization.submittedAt) {
+                    {{
+                      organization.submittedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  } @else {
+                    Not available
+                  }
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Reviewed
+                </dt>
+
+                <dd>
+                  @if (organization.reviewedAt) {
+                    {{
+                      organization.reviewedAt
+                        | date: 'MMM d, y, h:mm a'
+                    }}
+                  } @else {
+                    Not reviewed
+                  }
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Reviewed by
+                </dt>
+
+                <dd>
+                  {{ organization.reviewedByEmail || 'Not reviewed' }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Review remarks
+                </dt>
+
+                <dd>
+                  {{ organization.reviewRemarks || 'Not provided' }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Created
+                </dt>
+
+                <dd>
+                  {{
+                    organization.createdAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>
+                  Last updated
+                </dt>
+
+                <dd>
+                  {{
+                    organization.updatedAt
+                      | date: 'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+  } @else {
+    <section class="state-card">
+      <div class="state-icon">
+        <mat-icon>
+          business_off
+        </mat-icon>
+      </div>
+
+      <strong>
+        Payer organization unavailable
+      </strong>
+
+      <p>
+        No Payer organization information is currently
+        available for this account.
+      </p>
+
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="organizationState.loading()"
+        (click)="loadOrganization()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+
+        <span>
+          Reload organization
+        </span>
+      </button>
+    </section>
+  }
+</section>

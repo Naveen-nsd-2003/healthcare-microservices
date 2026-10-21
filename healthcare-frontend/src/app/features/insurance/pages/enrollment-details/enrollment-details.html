@@ -1,0 +1,480 @@
+<section class="details-page">
+  <button
+    mat-button
+    type="button"
+    class="back-button"
+    (click)="goBack()"
+  >
+    <mat-icon>
+
+      arrow_back
+    </mat-icon>
+
+    Back to my enrollments
+  </button>
+
+  @if (enrollmentState.detailsLoading()) {
+    <section class="state-card">
+      <mat-spinner
+        diameter="44"
+      ></mat-spinner>
+
+      <strong>
+        Loading enrollment details
+      </strong>
+
+      <p>
+        Please wait while the enrollment
+        information is retrieved.
+      </p>
+    </section>
+  } @else if (
+    enrollmentState.errorMessage()
+    && !enrollmentState.selectedEnrollment()
+  ) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load enrollment
+      </strong>
+
+      <p>
+        {{ enrollmentState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        (click)="goBack()"
+      >
+        Return to enrollments
+      </button>
+    </section>
+  } @else if (
+    enrollmentState.selectedEnrollment();
+    as enrollment
+  ) {
+    <header class="enrollment-hero">
+      <div class="hero-icon">
+        <mat-icon>
+          assignment_turned_in
+        </mat-icon>
+      </div>
+
+      <div class="hero-copy">
+        <span>
+          {{ enrollment.planCode }}
+        </span>
+
+        <h1>
+          {{ enrollment.planName }}
+        </h1>
+
+        <p>
+          {{ enrollment.payerOrganizationName }}
+        </p>
+      </div>
+
+      <span
+        class="status-badge"
+        [class]="
+          'status-badge '
+          + getStatusClass(enrollment.status)
+        "
+      >
+        <mat-icon>
+          {{ getStatusIcon(enrollment.status) }}
+        </mat-icon>
+
+        {{ enrollment.status }}
+      </span>
+    </header>
+
+    @if (enrollmentState.errorMessage()) {
+      <section class="action-error">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+
+        <span>
+          {{ enrollmentState.errorMessage() }}
+        </span>
+      </section>
+    }
+
+    <section class="financial-grid">
+      <article>
+        <span>
+          Coverage amount
+        </span>
+
+        <strong>
+          {{
+            enrollment.coverageAmount
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-0':
+                'en-IN'
+          }}
+        </strong>
+      </article>
+
+      <article>
+        <span>
+          Monthly premium
+        </span>
+
+        <strong>
+          {{
+            enrollment.monthlyPremium
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-2':
+                'en-IN'
+          }}
+        </strong>
+      </article>
+
+      <article>
+        <span>
+          Requested coverage date
+        </span>
+
+        <strong>
+          {{
+            enrollment
+              .requestedCoverageStartDate
+              | date: 'MMM d, y'
+          }}
+        </strong>
+      </article>
+    </section>
+
+    <div class="details-grid">
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <header>
+            <div class="card-icon">
+              <mat-icon>
+                health_and_safety
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Plan information
+              </h2>
+
+              <p>
+                Insurance plan and payer details
+              </p>
+            </div>
+          </header>
+
+          <dl>
+            <div>
+              <dt>
+                Plan name
+              </dt>
+
+              <dd>
+                {{ enrollment.planName }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Plan code
+              </dt>
+
+              <dd>
+                {{ enrollment.planCode }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Payer organization
+              </dt>
+
+              <dd>
+                {{ enrollment.payerOrganizationName }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Coverage amount
+              </dt>
+
+              <dd>
+                {{
+                  enrollment.coverageAmount
+                    | currency:
+                      'INR':
+                      'symbol':
+                      '1.0-0':
+                      'en-IN'
+                }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Monthly premium
+              </dt>
+
+              <dd>
+                {{
+                  enrollment.monthlyPremium
+                    | currency:
+                      'INR':
+                      'symbol':
+                      '1.0-2':
+                      'en-IN'
+                }}
+              </dd>
+            </div>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <header>
+            <div class="card-icon nominee-icon">
+              <mat-icon>
+                contact_emergency
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Nominee information
+              </h2>
+
+              <p>
+                Person nominated for this enrollment
+              </p>
+            </div>
+          </header>
+
+          <dl>
+            <div>
+              <dt>
+                Nominee name
+              </dt>
+
+              <dd>
+                {{ enrollment.nomineeName }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Relationship
+              </dt>
+
+              <dd>
+                {{
+                  getRelationshipLabel(
+                    enrollment.nomineeRelationship
+                  )
+                }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Contact number
+              </dt>
+
+              <dd>
+                {{ enrollment.nomineeContactNumber }}
+              </dd>
+            </div>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <header>
+            <div class="card-icon">
+              <mat-icon>
+                history
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Enrollment timeline
+              </h2>
+
+              <p>
+                Submission and review information
+              </p>
+            </div>
+          </header>
+
+          <dl>
+            <div>
+              <dt>
+                Submitted on
+              </dt>
+
+              <dd>
+                {{
+                  enrollment.createdAt
+                    | date:
+                      'MMM d, y, h:mm a'
+                }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Last updated
+              </dt>
+
+              <dd>
+                {{
+                  enrollment.updatedAt
+                    | date:
+                      'MMM d, y, h:mm a'
+                }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Reviewed on
+              </dt>
+
+              <dd>
+                @if (enrollment.reviewedAt) {
+                  {{
+                    enrollment.reviewedAt
+                      | date:
+                        'MMM d, y, h:mm a'
+                  }}
+                } @else {
+                  Not reviewed yet
+                }
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Enrollment ID
+              </dt>
+
+              <dd class="identifier">
+                {{ enrollment.id }}
+              </dd>
+            </div>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card review-card">
+        <mat-card-content>
+          <header>
+            <div class="card-icon review-icon">
+              <mat-icon>
+                rate_review
+              </mat-icon>
+            </div>
+
+            <div>
+              <h2>
+                Review decision
+              </h2>
+
+              <p>
+                Payer review status and remarks
+              </p>
+            </div>
+          </header>
+
+          @if (enrollment.reviewRemarks) {
+            <div class="review-content">
+              <strong>
+                Review remarks
+              </strong>
+
+              <p>
+                {{ enrollment.reviewRemarks }}
+              </p>
+            </div>
+          } @else {
+            <div class="review-empty">
+              <mat-icon>
+                pending_actions
+              </mat-icon>
+
+              <p>
+                The payer organization has not
+                reviewed this enrollment yet.
+              </p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    @if (enrollment.status === 'PENDING') {
+      <section class="cancel-panel">
+        <div>
+          <h2>
+            Cancel this enrollment
+          </h2>
+
+          <p>
+            A pending enrollment can be cancelled
+            before the payer completes its review.
+          </p>
+        </div>
+
+        <button
+  mat-stroked-button
+  type="button"
+  class="cancel-button"
+  [disabled]="
+    enrollmentState.cancelling()
+  "
+  (click)="cancelEnrollment()"
+>
+  @if (enrollmentState.cancelling()) {
+
+    <mat-spinner
+      diameter="20"
+    ></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        cancel
+      </mat-icon>
+
+      <span>
+        Cancel enrollment
+      </span>
+
+    </ng-container>
+
+  }
+</button>
+      </section>
+    }
+  }
+</section>

@@ -1,0 +1,447 @@
+:host {
+  display: block;
+}
+
+.review-page {
+  display: grid;
+  gap: 22px;
+}
+
+.back-button {
+  justify-self: start;
+  color: #496f7d;
+}
+
+.review-hero {
+  display: grid;
+  grid-template-columns:
+    72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 19px;
+  padding: 25px;
+  border: 1px solid #dbe8ed;
+  border-radius: 23px;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #edfafa
+    );
+  box-shadow:
+    0 13px 36px rgba(18, 48, 67, 0.07);
+}
+
+.hero-icon {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 22px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0f7180,
+      #34aaa7
+    );
+}
+
+.hero-icon mat-icon {
+  width: 34px;
+  height: 34px;
+  font-size: 34px;
+}
+
+.hero-copy > span {
+  color: #0f7180;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.hero-copy h1 {
+  margin: 5px 0 0;
+  color: #19384d;
+  font-size: clamp(25px, 3vw, 36px);
+  line-height: 1.2;
+}
+
+.hero-copy p {
+  margin: 6px 0 0;
+  color: #6d8290;
+  font-size: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  min-height: 31px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.status-badge mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.status-badge--pending {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.status-badge--approved {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.status-badge--rejected {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.status-badge--cancelled {
+  color: #657782;
+  background: #edf1f3;
+}
+
+.action-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 15px 17px;
+  border: 1px solid #f2b8b5;
+  border-radius: 14px;
+  color: #8b1a1a;
+  background: #fff1f0;
+  font-size: 13px;
+}
+
+.financial-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.financial-grid article {
+  display: grid;
+  gap: 6px;
+  padding: 19px;
+  border: 1px solid #e0e9ee;
+  border-radius: 17px;
+  background: #ffffff;
+}
+
+.financial-grid span {
+  color: #748894;
+  font-size: 10px;
+}
+
+.financial-grid strong {
+  color: #1d4053;
+  font-size: 21px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.detail-card {
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.045);
+}
+
+.detail-card mat-card-content {
+  padding: 22px;
+}
+
+.detail-card header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.card-icon {
+  display: grid;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
+  place-items: center;
+  border-radius: 15px;
+  color: #176779;
+  background: #e9f6f7;
+}
+
+.plan-icon {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.nominee-icon {
+  color: #5c4a8b;
+  background: #f1edfb;
+}
+
+.timeline-icon {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.detail-card h2,
+.review-actions-panel h2 {
+  margin: 0;
+  color: #233f52;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.detail-card header p {
+  margin: 4px 0 0;
+  color: #778b97;
+  font-size: 11px;
+}
+
+.detail-card dl {
+  display: grid;
+  margin: 6px 0 0;
+}
+
+.detail-card dl div {
+  display: grid;
+  grid-template-columns:
+    145px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f3f5;
+}
+
+.detail-card dl div:last-child {
+  border-bottom: 0;
+}
+
+.detail-card dt {
+  color: #7b8e99;
+  font-size: 11px;
+}
+
+.detail-card dd {
+  min-width: 0;
+  margin: 0;
+  color: #29475a;
+  font-size: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.identifier {
+  font-family: monospace;
+  font-size: 10px !important;
+}
+
+.review-decision {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid #eed99f;
+  border-radius: 16px;
+  color: #604d1b;
+  background: #fff8e7;
+}
+
+.decision-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border-radius: 13px;
+  color: #805f0b;
+  background: #ffedb7;
+}
+
+.review-decision span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.review-decision p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.review-actions-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 21px;
+  border: 1px solid #b7dadd;
+  border-radius: 19px;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #eefafa
+    );
+}
+
+.review-actions-panel p {
+  max-width: 650px;
+  margin: 6px 0 0;
+  color: #6c818e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.review-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.review-actions button {
+  min-width: 125px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.reject-button {
+  border-color: #d85a52 !important;
+  color: #a22b25 !important;
+}
+
+.approve-button {
+  color: #ffffff;
+  background: #287848;
+}
+
+.approve-button mat-spinner {
+  --mdc-circular-progress-active-indicator-color:
+    #ffffff;
+}
+
+.state-card {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 40px;
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-card strong {
+  color: #28475a;
+  font-size: 16px;
+}
+
+.state-card p {
+  max-width: 430px;
+  margin: 0;
+  color: #788b98;
+  font-size: 13px;
+}
+
+.state-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 20px;
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.error-state button {
+  color: #ffffff;
+  background: #0f7180;
+}
+
+@media (max-width: 900px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-actions-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .review-actions {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 720px) {
+  .review-hero {
+    grid-template-columns:
+      58px minmax(0, 1fr);
+  }
+
+  .hero-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .status-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .financial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-actions {
+    width: 100%;
+  }
+
+  .review-actions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .review-hero {
+    padding: 18px;
+  }
+
+  .detail-card mat-card-content {
+    padding: 18px;
+  }
+
+  .detail-card dl div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .review-actions {
+    flex-direction: column-reverse;
+  }
+
+  .review-actions button {
+    width: 100%;
+  }
+}

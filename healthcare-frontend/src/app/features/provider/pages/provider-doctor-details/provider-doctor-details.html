@@ -1,0 +1,271 @@
+<section class="doctor-details-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to doctors</span>
+    </button>
+  
+    @if (doctorState.detailsLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading doctor information</strong>
+  
+        <p>
+          Please wait while the doctor information
+          is retrieved.
+        </p>
+      </section>
+    } @else if (doctorState.selectedDoctor()) {
+      <header class="doctor-hero">
+        <div class="doctor-avatar">
+          {{
+            getInitials(
+              doctorState.selectedDoctor()!
+            )
+          }}
+        </div>
+  
+        <div class="hero-copy">
+          <span class="specialization">
+            {{
+              doctorState.selectedDoctor()!
+                .specialization
+            }}
+          </span>
+  
+          <h1>
+            {{
+              doctorState.selectedDoctor()!
+                .fullName
+            }}
+          </h1>
+  
+          <p>
+            {{
+              doctorState.selectedDoctor()!
+                .qualification
+            }}
+          </p>
+        </div>
+      </header>
+  
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <header class="card-header">
+            <div class="card-icon profile-icon">
+              <mat-icon>person</mat-icon>
+            </div>
+  
+            <div>
+              <h2>Doctor information</h2>
+              <p>Professional and registration details</p>
+            </div>
+          </header>
+  
+          <dl>
+            <div>
+              <dt>Medical registration</dt>
+  
+              <dd>
+                {{
+                  doctorState.selectedDoctor()!
+                    .medicalRegistrationNumber
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Specialization</dt>
+  
+              <dd>
+                {{
+                  doctorState.selectedDoctor()!
+                    .specialization
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Qualification</dt>
+  
+              <dd>
+                {{
+                  doctorState.selectedDoctor()!
+                    .qualification
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Department</dt>
+  
+              <dd>
+                {{
+                  doctorState.selectedDoctor()!
+                    .departmentName
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Experience</dt>
+  
+              <dd>
+                {{
+                  getExperienceLabel(
+                    doctorState.selectedDoctor()!
+                      .yearsOfExperience
+                  )
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Consultation fee</dt>
+  
+              <dd>
+                ₹{{
+                  doctorState.selectedDoctor()!
+                    .consultationFee
+                }}
+              </dd>
+            </div>
+  
+            <div>
+              <dt>Status</dt>
+  
+              <dd>
+                {{
+                  doctorState.selectedDoctor()!
+                    .status
+                }}
+              </dd>
+            </div>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <header class="card-header">
+            <div class="card-icon biography-icon">
+              <mat-icon>description</mat-icon>
+            </div>
+  
+            <div>
+              <h2>Professional biography</h2>
+              <p>Member-visible professional summary</p>
+            </div>
+          </header>
+  
+          @if (
+            doctorState.selectedDoctor()!
+              .biography
+          ) {
+            <p class="biography">
+              {{
+                doctorState.selectedDoctor()!
+                  .biography
+              }}
+            </p>
+          } @else {
+            <p class="biography">
+              No professional biography has been provided.
+            </p>
+          }
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="management-card">
+        <mat-card-content>
+          <div class="management-icon">
+            <mat-icon>settings</mat-icon>
+          </div>
+  
+          <h2>Manage doctor</h2>
+  
+          <p>
+            Edit professional information, manage weekly
+            availability, or update the doctor status.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            class="edit-button"
+            [disabled]="doctorState.statusUpdating()"
+            (click)="editDoctor()"
+          >
+            <mat-icon>edit</mat-icon>
+            <span>Edit doctor</span>
+          </button>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            class="availability-button"
+            [disabled]="doctorState.statusUpdating()"
+            (click)="manageAvailability()"
+          >
+            <mat-icon>schedule</mat-icon>
+            <span>Manage availability</span>
+          </button>
+  
+          @if (
+            doctorState.selectedDoctor()!
+              .status === 'ACTIVE'
+          ) {
+            <button
+              mat-stroked-button
+              type="button"
+              class="deactivate-button"
+              [disabled]="doctorState.statusUpdating()"
+              (click)="deactivateDoctor()"
+            >
+              <mat-icon>block</mat-icon>
+              <span>Make inactive</span>
+            </button>
+          } @else {
+            <button
+              mat-flat-button
+              type="button"
+              class="activate-button"
+              [disabled]="doctorState.statusUpdating()"
+              (click)="activateDoctor()"
+            >
+              <mat-icon>check_circle</mat-icon>
+              <span>Activate doctor</span>
+            </button>
+          }
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load doctor</strong>
+  
+        <p>
+          {{ doctorState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadDoctor()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    }
+  
+  </section>

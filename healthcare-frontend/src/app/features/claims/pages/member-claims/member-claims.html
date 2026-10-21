@@ -1,0 +1,641 @@
+<section class="member-claims-page">
+    <header class="page-header">
+      <div class="header-copy">
+        <p class="eyebrow">
+          Insurance Claim Tracking
+        </p>
+  
+        <h1>
+          My claims
+        </h1>
+  
+        <p class="description">
+          Track insurance claims submitted for your completed
+          appointments and review their latest status and
+          approved amounts.
+        </p>
+      </div>
+  
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="claimState.listLoading()"
+        (click)="loadClaims()"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+    </header>
+  
+    <section class="summary-grid">
+      <article class="summary-card total-summary">
+        <div class="summary-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Total claims
+          </span>
+  
+          <strong>
+            {{ totalClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card active-summary">
+        <div class="summary-icon">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Active claims
+          </span>
+  
+          <strong>
+            {{ activeClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card submitted-summary">
+        <div class="summary-icon">
+          <mat-icon>send</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Submitted
+          </span>
+  
+          <strong>
+            {{ submittedClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card review-summary">
+        <div class="summary-icon">
+          <mat-icon>manage_search</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Under review
+          </span>
+  
+          <strong>
+            {{ underReviewClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card approved-summary">
+        <div class="summary-icon">
+          <mat-icon>verified</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Approved
+          </span>
+  
+          <strong>
+            {{ approvedClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card rejected-summary">
+        <div class="summary-icon">
+          <mat-icon>cancel</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Rejected
+          </span>
+  
+          <strong>
+            {{ rejectedClaimCount() }}
+          </strong>
+        </div>
+      </article>
+    </section>
+  
+    <section class="secondary-summary">
+      <article>
+        <div class="secondary-icon cancelled-icon">
+          <mat-icon>block</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Cancelled claims
+          </span>
+  
+          <strong>
+            {{ cancelledClaimCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article>
+        <div class="secondary-icon claimed-icon">
+          <mat-icon>request_quote</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Total claimed amount
+          </span>
+  
+          <strong>
+            {{
+              totalClaimedAmount()
+                | currency: 'INR'
+            }}
+          </strong>
+        </div>
+      </article>
+  
+      <article>
+        <div class="secondary-icon approved-icon">
+          <mat-icon>price_check</mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Total approved amount
+          </span>
+  
+          <strong>
+            {{
+              totalApprovedAmount()
+                | currency: 'INR'
+            }}
+          </strong>
+        </div>
+      </article>
+    </section>
+  
+    <section class="filter-panel">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Search claims
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          search
+        </mat-icon>
+  
+        <input
+          #claimSearch
+          matInput
+          type="search"
+          placeholder="Claim, provider, doctor, Payer, or policy"
+          [value]="searchText()"
+          (input)="updateSearch(claimSearch.value)"
+        />
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Status
+        </mat-label>
+  
+        <mat-select
+          [value]="selectedStatus()"
+          (selectionChange)="
+            updateStatus($event.value)
+          "
+        >
+          <mat-option value="ALL">
+            All statuses
+          </mat-option>
+  
+          <mat-option value="SUBMITTED">
+            Submitted
+          </mat-option>
+  
+          <mat-option value="UNDER_REVIEW">
+            Under review
+          </mat-option>
+  
+          <mat-option value="APPROVED">
+            Approved
+          </mat-option>
+  
+          <mat-option value="REJECTED">
+            Rejected
+          </mat-option>
+  
+          <mat-option value="CANCELLED">
+            Cancelled
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Sort by
+        </mat-label>
+  
+        <mat-select
+          [value]="selectedSort()"
+          (selectionChange)="
+            updateSort($event.value)
+          "
+        >
+          <mat-option value="SUBMITTED_DESCENDING">
+            Recently submitted
+          </mat-option>
+  
+          <mat-option value="SUBMITTED_ASCENDING">
+            Earliest submitted
+          </mat-option>
+  
+          <mat-option value="SERVICE_DATE_DESCENDING">
+            Latest service date
+          </mat-option>
+  
+          <mat-option value="CLAIMED_AMOUNT_DESCENDING">
+            Highest claimed amount
+          </mat-option>
+  
+          <mat-option value="PROVIDER_ASCENDING">
+            Provider organization
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <div class="filter-actions">
+        <button
+          mat-button
+          type="button"
+          [disabled]="!filtersApplied()"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+  
+        <span class="result-count">
+          {{ filteredClaims().length }}
+          claim(s)
+        </span>
+      </div>
+    </section>
+  
+    @if (claimState.listLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading your claims
+        </strong>
+  
+        <p>
+          Please wait while your insurance claim history
+          is retrieved.
+        </p>
+      </section>
+    } @else if (claimState.errorMessage()) {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load claims
+        </strong>
+  
+        <p>
+          {{ claimState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          (click)="loadClaims()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+    } @else if (totalClaimCount() === 0) {
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+  
+        <strong>
+          No insurance claims yet
+        </strong>
+  
+        <p>
+          Claims submitted by your healthcare Provider after
+          a completed appointment will appear here.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="viewMedicalRecords()"
+        >
+          <mat-icon>medical_information</mat-icon>
+          <span>View medical records</span>
+        </button>
+      </section>
+    } @else if (filteredClaims().length === 0) {
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>search_off</mat-icon>
+        </div>
+  
+        <strong>
+          No matching claims
+        </strong>
+  
+        <p>
+          No claims match the current search and filter
+          selections.
+        </p>
+  
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearFilters()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          <span>Clear filters</span>
+        </button>
+      </section>
+    } @else {
+      <section class="claim-list">
+        @for (
+          claim of filteredClaims();
+          track claim.id
+        ) {
+          <mat-card
+            class="claim-card"
+            [class.submitted-claim]="
+              claim.status === 'SUBMITTED'
+            "
+            [class.review-claim]="
+              claim.status === 'UNDER_REVIEW'
+            "
+            [class.approved-claim]="
+              claim.status === 'APPROVED'
+            "
+            [class.rejected-claim]="
+              claim.status === 'REJECTED'
+            "
+            [class.cancelled-claim]="
+              claim.status === 'CANCELLED'
+            "
+          >
+            <mat-card-content>
+              <header class="claim-card-header">
+                <div class="claim-identity">
+                  <div
+                    class="claim-status-icon"
+                    [class.submitted-icon]="
+                      claim.status === 'SUBMITTED'
+                    "
+                    [class.review-icon]="
+                      claim.status === 'UNDER_REVIEW'
+                    "
+                    [class.approved-icon]="
+                      claim.status === 'APPROVED'
+                    "
+                    [class.rejected-icon]="
+                      claim.status === 'REJECTED'
+                    "
+                    [class.cancelled-icon]="
+                      claim.status === 'CANCELLED'
+                    "
+                  >
+                    <mat-icon>
+                      {{ getStatusIcon(claim.status) }}
+                    </mat-icon>
+                  </div>
+  
+                  <div>
+                    <span class="claim-label">
+                      Claim number
+                    </span>
+  
+                    <h2>
+                      {{ claim.claimNumber }}
+                    </h2>
+  
+                    <p>
+                      Submitted
+                      {{
+                        claim.submittedAt
+                          | date: 'MMM d, y, h:mm a'
+                      }}
+                    </p>
+                  </div>
+                </div>
+  
+                <div
+                  class="status-badge"
+                  [class.submitted-status]="
+                    claim.status === 'SUBMITTED'
+                  "
+                  [class.review-status]="
+                    claim.status === 'UNDER_REVIEW'
+                  "
+                  [class.approved-status]="
+                    claim.status === 'APPROVED'
+                  "
+                  [class.rejected-status]="
+                    claim.status === 'REJECTED'
+                  "
+                  [class.cancelled-status]="
+                    claim.status === 'CANCELLED'
+                  "
+                >
+                  <mat-icon>
+                    {{ getStatusIcon(claim.status) }}
+                  </mat-icon>
+  
+                  <span>
+                    {{ getStatusLabel(claim.status) }}
+                  </span>
+                </div>
+              </header>
+  
+              <section class="status-description">
+                <mat-icon>info</mat-icon>
+  
+                <span>
+                  {{ getStatusDescription(claim.status) }}
+                </span>
+              </section>
+  
+              <section class="claim-main-grid">
+                <div>
+                  <span class="detail-label">
+                    Healthcare Provider
+                  </span>
+  
+                  <strong>
+                    {{ claim.providerOrganizationName }}
+                  </strong>
+  
+                  <small>
+                    {{ claim.departmentName }}
+                  </small>
+                </div>
+  
+                <div>
+                  <span class="detail-label">
+                    Doctor
+                  </span>
+  
+                  <strong>
+                    {{ claim.doctorName }}
+                  </strong>
+  
+                  <small>
+                    {{ claim.doctorSpecialization }}
+                  </small>
+                </div>
+  
+                <div>
+                  <span class="detail-label">
+                    Insurance policy
+                  </span>
+  
+                  <strong>
+                    {{ claim.planName }}
+                  </strong>
+  
+                  <small>
+                    {{ claim.payerOrganizationName }}
+                  </small>
+  
+                  <small>
+                    {{ claim.policyNumber }}
+                  </small>
+                </div>
+  
+                <div>
+                  <span class="detail-label">
+                    Service date
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.serviceDate
+                        | date: 'MMM d, y'
+                    }}
+                  </strong>
+  
+                  <small>
+                    Consultation fee:
+                    {{
+                      claim.consultationFee
+                        | currency: 'INR'
+                    }}
+                  </small>
+                </div>
+              </section>
+  
+              <section class="clinical-preview">
+                <span class="detail-label">
+                  Diagnosis
+                </span>
+  
+                <p>
+                  {{
+                    getDiagnosisPreview(
+                      claim.diagnosisSnapshot
+                    )
+                  }}
+                </p>
+              </section>
+  
+              <section class="claim-financials">
+                <div>
+                  <span>
+                    Claimed amount
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.claimedAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <span>
+                    Approved amount
+                  </span>
+  
+                  <strong>
+                    {{ getApprovedAmountLabel(claim) }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <span>
+                    Policy coverage
+                  </span>
+  
+                  <strong>
+                    {{
+                      claim.coverageAmount
+                        | currency: 'INR'
+                    }}
+                  </strong>
+                </div>
+              </section>
+  
+              <footer class="claim-card-actions">
+                <button
+                  mat-button
+                  type="button"
+                  (click)="viewMedicalRecord(claim)"
+                >
+                  <mat-icon>medical_information</mat-icon>
+                  <span>Medical record</span>
+                </button>
+  
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="view-claim-button"
+                  (click)="viewClaim(claim)"
+                >
+                  <span>View claim</span>
+  
+                  <mat-icon iconPositionEnd>
+                    arrow_forward
+                  </mat-icon>
+                </button>
+              </footer>
+            </mat-card-content>
+          </mat-card>
+        }
+      </section>
+    }
+  </section>

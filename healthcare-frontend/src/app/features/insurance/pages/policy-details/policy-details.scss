@@ -1,0 +1,566 @@
+:host {
+  display: block;
+}
+
+.policy-details-page {
+  display: grid;
+  gap: 22px;
+}
+
+.back-button {
+  justify-self: start;
+  color: #496f7d;
+}
+
+.policy-hero {
+  display: grid;
+  grid-template-columns:
+    72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 19px;
+  padding: 25px;
+  border: 1px solid #dbe8ed;
+  border-radius: 23px;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #edfafa
+    );
+  box-shadow:
+    0 13px 36px rgba(18, 48, 67, 0.07);
+}
+
+.hero-icon {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 22px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0f7180,
+      #34aaa7
+    );
+}
+
+.hero-icon mat-icon {
+  width: 34px;
+  height: 34px;
+  font-size: 34px;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.hero-copy > span {
+  display: block;
+  overflow: hidden;
+  color: #0f7180;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-copy h1 {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #19384d;
+  font-size: clamp(25px, 3vw, 36px);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-copy p {
+  margin: 6px 0 0;
+  color: #6d8290;
+  font-size: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  min-height: 31px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-badge mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.status-badge--active {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.status-badge--suspended {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.status-badge--expired {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.status-badge--cancelled {
+  color: #657782;
+  background: #edf1f3;
+}
+
+.financial-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.financial-grid article {
+  display: grid;
+  gap: 6px;
+  padding: 19px;
+  border: 1px solid #e0e9ee;
+  border-radius: 17px;
+  background: #ffffff;
+}
+
+.financial-grid .primary-financial-card {
+  border-color: #b5dfe2;
+  background: #effafa;
+}
+
+.financial-grid span {
+  color: #748894;
+  font-size: 10px;
+}
+
+.financial-grid strong {
+  color: #1d4053;
+  font-size: 22px;
+}
+
+.financial-grid small {
+  color: #91a0a9;
+  font-size: 10px;
+}
+
+.coverage-period-panel {
+  display: grid;
+  grid-template-columns:
+    minmax(200px, 1fr)
+    100px
+    minmax(200px, 1fr)
+    auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e0e9ee;
+  border-radius: 19px;
+  background: #ffffff;
+}
+
+.coverage-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border-radius: 14px;
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.end-date-icon {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.coverage-date > div:last-child {
+  display: grid;
+  gap: 4px;
+}
+
+.coverage-date span,
+.remaining-days span {
+  color: #798c97;
+  font-size: 10px;
+}
+
+.coverage-date strong {
+  color: #29475a;
+  font-size: 13px;
+}
+
+.date-line {
+  display: flex;
+  align-items: center;
+}
+
+.date-line span {
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      #65b8b3,
+      #d9e8e9
+    );
+}
+
+.remaining-days {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 10px 14px;
+  border-radius: 13px;
+  color: #176779;
+  background: #e9f6f7;
+  text-align: center;
+}
+
+.remaining-days strong {
+  font-size: 20px;
+}
+
+.details-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) 350px;
+  align-items: start;
+  gap: 18px;
+}
+
+.main-details,
+.policy-sidebar {
+  display: grid;
+  gap: 18px;
+}
+
+.detail-card,
+.enrollment-reference-card {
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.045);
+}
+
+.detail-card mat-card-content,
+.enrollment-reference-card mat-card-content {
+  padding: 22px;
+}
+
+.detail-card header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.card-icon {
+  display: grid;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
+  place-items: center;
+  border-radius: 15px;
+  color: #176779;
+  background: #e9f6f7;
+}
+
+.cost-icon {
+  color: #805400;
+  background: #fff4d7;
+}
+
+.information-icon {
+  color: #5c4a8b;
+  background: #f1edfb;
+}
+
+.history-icon {
+  color: #1e6a3d;
+  background: #eaf8ef;
+}
+
+.detail-card h2,
+.enrollment-reference-card h2 {
+  margin: 0;
+  color: #233f52;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.detail-card header p {
+  margin: 4px 0 0;
+  color: #778b97;
+  font-size: 11px;
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 18px;
+}
+
+.coverage-grid article {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px;
+  border-radius: 14px;
+  color: #236441;
+  background: #edf8f1;
+}
+
+.coverage-grid article > mat-icon {
+  color: #268553;
+}
+
+.coverage-grid article > div {
+  display: grid;
+  gap: 3px;
+}
+
+.coverage-grid strong {
+  font-size: 12px;
+}
+
+.coverage-grid span {
+  font-size: 10px;
+}
+
+.coverage-grid .coverage-disabled {
+  color: #788a95;
+  background: #f1f4f5;
+}
+
+.coverage-grid .coverage-disabled > mat-icon {
+  color: #9aa8af;
+}
+
+.detail-card dl {
+  display: grid;
+  margin: 6px 0 0;
+}
+
+.detail-card dl > div {
+  display: grid;
+  grid-template-columns:
+    145px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f3f5;
+}
+
+.detail-card dl > div:last-child {
+  border-bottom: 0;
+}
+
+.detail-card dt {
+  color: #7b8e99;
+  font-size: 11px;
+}
+
+.detail-card dd {
+  min-width: 0;
+  margin: 0;
+  color: #29475a;
+  font-size: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.identifier {
+  font-family: monospace;
+  font-size: 10px !important;
+}
+
+.enrollment-reference-card {
+  border-color: #b7dadd;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #eefafa
+    );
+}
+
+.enrollment-reference-card mat-card-content {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.enrollment-reference-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 14px;
+  place-items: center;
+  border-radius: 18px;
+  color: #ffffff;
+  background: #0f7180;
+}
+
+.enrollment-reference-card p {
+  margin: 9px 0 17px;
+  color: #66808d;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.enrollment-reference-card button {
+  width: 100%;
+  min-height: 43px;
+  border-radius: 11px;
+  color: #0f7180;
+}
+
+.state-card {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 40px;
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 20px;
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.state-card strong {
+  color: #28475a;
+  font-size: 16px;
+}
+
+.state-card p {
+  max-width: 430px;
+  margin: 0;
+  color: #788b98;
+  font-size: 13px;
+}
+
+.error-state button {
+  color: #ffffff;
+  background: #0f7180;
+}
+
+@media (max-width: 1050px) {
+  .details-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .policy-sidebar {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .enrollment-reference-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 850px) {
+  .coverage-period-panel {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .date-line {
+    display: none;
+  }
+
+  .remaining-days {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .policy-hero {
+    grid-template-columns:
+      58px minmax(0, 1fr);
+  }
+
+  .hero-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .status-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .financial-grid,
+  .policy-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .enrollment-reference-card {
+    grid-column: auto;
+  }
+
+  .coverage-period-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .coverage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .policy-hero {
+    padding: 18px;
+  }
+
+  .hero-copy h1 {
+    white-space: normal;
+  }
+
+  .detail-card mat-card-content,
+  .enrollment-reference-card mat-card-content {
+    padding: 18px;
+  }
+
+  .detail-card dl > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+}

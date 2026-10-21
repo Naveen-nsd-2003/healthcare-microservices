@@ -1,0 +1,77 @@
+<aside
+  class="sidebar"
+  [class.sidebar--collapsed]="collapsed"
+>
+  <div class="sidebar-brand">
+  <div class="brand-logo-wrapper">
+    <img
+      class="brand-logo"
+      src="/images/healthcare-logo.png"
+      alt="Healthcare Portal Logo"
+    />  
+  </div>
+
+  @if (!collapsed) {
+    <div class="brand-copy">
+      <strong>
+        Healthcare
+      </strong>
+
+      <span>
+        Management Portal
+      </span>
+    </div>
+  }
+</div>
+
+  <nav
+    class="navigation"
+    aria-label="Main navigation"
+  >
+    @for (
+      item of navigationItems();
+      track item.route
+    ) {
+      <a
+        class="navigation-item"
+        [routerLink]="item.route"
+        routerLinkActive="navigation-item--active"
+        [routerLinkActiveOptions]="{
+          exact: item.exact ?? false
+        }"
+        [attr.title]="collapsed ? item.label : null"
+        (click)="selectNavigation()"
+      >
+        <mat-icon>
+          {{ item.icon }}
+        </mat-icon>
+
+        @if (!collapsed) {
+          <span>
+            {{ item.label }}
+          </span>
+        }
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="security-badge">
+      <mat-icon>
+        verified_user
+      </mat-icon>
+
+      @if (!collapsed) {
+        <div>
+          <strong>
+            Secure Portal
+          </strong>
+
+          <span>
+            Protected by role access
+          </span>
+        </div>
+      }
+    </div>
+  </div>
+</aside>

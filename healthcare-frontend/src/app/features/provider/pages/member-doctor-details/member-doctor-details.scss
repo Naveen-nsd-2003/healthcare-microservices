@@ -1,0 +1,699 @@
+:host {
+    display: block;
+  }
+  
+  .doctor-details-page {
+    display: grid;
+    gap: 22px;
+  }
+  
+  .back-button {
+    justify-self: start;
+    color: #496f7d;
+  }
+  
+  .doctor-hero {
+    display: grid;
+    grid-template-columns:
+      82px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+    padding: 26px;
+    border: 1px solid #dbe8ed;
+    border-radius: 23px;
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff,
+        #edfafa
+      );
+    box-shadow:
+      0 13px 36px rgba(18, 48, 67, 0.07);
+  }
+  
+  .doctor-avatar {
+    display: grid;
+    width: 82px;
+    height: 82px;
+    place-items: center;
+    border-radius: 26px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        135deg,
+        #0f7180,
+        #34aaa7
+      );
+    font-size: 21px;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+  }
+  
+  .doctor-hero-copy {
+    min-width: 0;
+  }
+  
+  .specialization-label {
+    display: block;
+    color: #0f7180;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+  
+  .doctor-hero-copy h1 {
+    margin: 5px 0 0;
+    overflow: hidden;
+    color: #19384d;
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .qualification {
+    margin: 6px 0 0;
+    color: #667e8b;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px 18px;
+    margin-top: 12px;
+  }
+  
+  .hero-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #718691;
+    font-size: 10px;
+  }
+  
+  .hero-meta mat-icon {
+    width: 16px;
+    height: 16px;
+    color: #527d89;
+    font-size: 16px;
+  }
+  
+  .active-badge {
+    display: inline-flex;
+    min-height: 31px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: #1e6a3d;
+    background: #eaf8ef;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  .active-badge mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+  
+  .summary-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .summary-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #e0e9ee;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(18, 48, 67, 0.04);
+  }
+  
+  .summary-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 14px;
+  }
+  
+  .experience-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .fee-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .department-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .schedule-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .summary-card > div:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  
+  .summary-card span {
+    color: #7a8d98;
+    font-size: 9px;
+  }
+  
+  .summary-card strong {
+    overflow: hidden;
+    color: #29475a;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .details-layout {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: 18px;
+  }
+  
+  .main-details,
+  .doctor-sidebar {
+    display: grid;
+    gap: 18px;
+  }
+  
+  .detail-card,
+  .appointment-card {
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 9px 28px rgba(18, 48, 67, 0.045);
+  }
+  
+  .detail-card mat-card-content,
+  .appointment-card mat-card-content {
+    padding: 22px;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #edf1f4;
+  }
+  
+  .card-icon {
+    display: grid;
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    place-items: center;
+    border-radius: 15px;
+  }
+  
+  .profile-icon {
+    color: #176779;
+    background: #e9f6f7;
+  }
+  
+  .biography-icon {
+    color: #5c4a8b;
+    background: #f1edfb;
+  }
+  
+  .schedule-card-icon {
+    color: #1e6a3d;
+    background: #eaf8ef;
+  }
+  
+  .provider-icon {
+    color: #a04d26;
+    background: #fff0e8;
+  }
+  
+  .reference-icon {
+    color: #805400;
+    background: #fff4d7;
+  }
+  
+  .card-header h2,
+  .appointment-card h2 {
+    margin: 0;
+    color: #233f52;
+    font-size: 16px;
+    font-weight: 750;
+  }
+  
+  .card-header p {
+    margin: 4px 0 0;
+    color: #778b97;
+    font-size: 11px;
+  }
+  
+  .detail-card dl {
+    display: grid;
+    margin: 6px 0 0;
+  }
+  
+  .detail-card dl > div {
+    display: grid;
+    grid-template-columns:
+      165px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f3f5;
+  }
+  
+  .detail-card dl > div:last-child {
+    border-bottom: 0;
+  }
+  
+  .detail-card dt {
+    color: #7b8e99;
+    font-size: 11px;
+  }
+  
+  .detail-card dd {
+    min-width: 0;
+    margin: 0;
+    color: #29475a;
+    font-size: 12px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  
+  .identifier {
+    font-family: monospace;
+    font-size: 10px !important;
+  }
+  
+  .biography {
+    margin: 18px 0 0;
+    color: #5f7785;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+  
+  .biography-empty {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 13px;
+    color: #687f8c;
+    background: #f4f8fa;
+    font-size: 11px;
+  }
+  
+  .biography-empty mat-icon {
+    color: #527d89;
+  }
+  
+  .schedule-list {
+    display: grid;
+    gap: 14px;
+    padding-top: 18px;
+  }
+  
+  .schedule-day {
+    overflow: hidden;
+    border: 1px solid #e0e9ee;
+    border-radius: 15px;
+  }
+  
+  .schedule-day-header {
+    display: flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 15px;
+    background: #f5f9fa;
+  }
+  
+  .schedule-day-header > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  
+  .schedule-day-header mat-icon {
+    width: 18px;
+    height: 18px;
+    color: #527d89;
+    font-size: 18px;
+  }
+  
+  .schedule-day-header strong {
+    color: #29475a;
+    font-size: 12px;
+  }
+  
+  .schedule-day-header > span {
+    color: #748894;
+    font-size: 9px;
+    font-weight: 700;
+  }
+  
+  .schedule-slots {
+    display: grid;
+    gap: 9px;
+    padding: 12px;
+  }
+  
+  .schedule-slot {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: #fbfcfd;
+  }
+  
+  .schedule-time {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  
+  .schedule-time mat-icon {
+    width: 18px;
+    height: 18px;
+    color: #268553;
+    font-size: 18px;
+  }
+  
+  .schedule-time strong {
+    color: #29475a;
+    font-size: 12px;
+  }
+  
+  .schedule-duration {
+    display: grid;
+    justify-items: end;
+    gap: 3px;
+  }
+  
+  .schedule-duration span {
+    color: #7b8e99;
+    font-size: 8px;
+  }
+  
+  .schedule-duration strong {
+    color: #4f6875;
+    font-size: 10px;
+  }
+  
+  .schedule-empty {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 25px;
+    border: 1px dashed #cfdde3;
+    border-radius: 15px;
+    color: #647b88;
+    background: #f9fbfc;
+  }
+  
+  .schedule-empty > mat-icon {
+    width: 28px;
+    height: 28px;
+    color: #527d89;
+    font-size: 28px;
+  }
+  
+  .schedule-empty strong {
+    color: #29475a;
+    font-size: 13px;
+  }
+  
+  .schedule-empty p {
+    margin: 5px 0 0;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .provider-button {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 14px;
+    border-radius: 11px;
+    color: #0f7180;
+  }
+  
+  .appointment-card {
+    border-color: #b7dadd;
+    background:
+      linear-gradient(
+        145deg,
+        #ffffff,
+        #eefafa
+      );
+  }
+  
+  .appointment-card mat-card-content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  
+  .appointment-icon {
+    display: grid;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 14px;
+    place-items: center;
+    border-radius: 19px;
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .appointment-icon mat-icon {
+    width: 29px;
+    height: 29px;
+    font-size: 29px;
+  }
+  
+  .appointment-card p {
+    margin: 9px 0 17px;
+    color: #66808d;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  
+  .appointment-button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 11px;
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  .appointment-button:disabled {
+    color: #7a8b94;
+    background: #e6edef;
+  }
+  
+  .schedule-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #d8e4e9;
+    border-radius: 15px;
+    color: #526c79;
+    background: #f7fafb;
+  }
+  
+  .schedule-notice > mat-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    color: #527d89;
+    font-size: 22px;
+  }
+  
+  .schedule-notice strong {
+    color: #29475a;
+    font-size: 13px;
+  }
+  
+  .schedule-notice p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  
+  .state-card {
+    display: grid;
+    min-height: 360px;
+    box-sizing: border-box;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 40px;
+    border: 1px solid #e0e9ee;
+    border-radius: 20px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .state-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 20px;
+    color: #a22b25;
+    background: #fdecea;
+  }
+  
+  .unavailable-icon {
+    color: #537c89;
+    background: #e9f6f7;
+  }
+  
+  .state-card strong {
+    color: #28475a;
+    font-size: 16px;
+  }
+  
+  .state-card p {
+    max-width: 450px;
+    margin: 0;
+    color: #788b98;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .state-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  
+  .state-actions button[mat-flat-button] {
+    color: #ffffff;
+    background: #0f7180;
+  }
+  
+  @media (max-width: 1100px) {
+    .summary-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .details-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .doctor-sidebar {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .appointment-card {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .doctor-hero {
+      grid-template-columns:
+        64px minmax(0, 1fr);
+    }
+  
+    .doctor-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      font-size: 17px;
+    }
+  
+    .active-badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  
+    .doctor-hero-copy h1 {
+      white-space: normal;
+    }
+  
+    .doctor-sidebar {
+      grid-template-columns: 1fr;
+    }
+  
+    .appointment-card {
+      grid-column: auto;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .doctor-hero {
+      padding: 18px;
+    }
+  
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .detail-card mat-card-content,
+    .appointment-card mat-card-content {
+      padding: 18px;
+    }
+  
+    .card-header {
+      align-items: flex-start;
+    }
+  
+    .detail-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 5px;
+    }
+  
+    .schedule-slot {
+      grid-template-columns: 1fr;
+    }
+  
+    .schedule-duration {
+      justify-items: start;
+    }
+  
+    .state-actions {
+      width: 100%;
+      flex-direction: column;
+    }
+  
+    .state-actions button {
+      width: 100%;
+    }
+  }

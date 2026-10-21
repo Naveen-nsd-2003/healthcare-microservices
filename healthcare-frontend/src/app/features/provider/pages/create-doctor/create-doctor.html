@@ -1,0 +1,637 @@
+<section class="create-doctor-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="doctorState.creating()"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to doctors</span>
+    </button>
+  
+    <header class="page-header">
+  
+      <div>
+        <p class="eyebrow">
+          Provider Administration
+        </p>
+  
+        <h1>Create doctor</h1>
+  
+        <p class="description">
+          Add a doctor to your healthcare organization and
+          assign the doctor to an active clinical department.
+        </p>
+      </div>
+  
+      <span class="status-label">
+        <mat-icon>check_circle</mat-icon>
+        <span>Created as active</span>
+      </span>
+  
+    </header>
+  
+    @if (doctorState.errorMessage()) {
+  
+      <section
+        class="form-error"
+        role="alert"
+      >
+        <mat-icon>error_outline</mat-icon>
+  
+        <span>
+          {{ doctorState.errorMessage() }}
+        </span>
+      </section>
+  
+    }
+  
+    @if (departmentState.loading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading departments</strong>
+  
+        <p>
+          Please wait while active departments are
+          retrieved for doctor assignment.
+        </p>
+      </section>
+  
+    } @else if (departmentState.errorMessage()) {
+  
+      <section class="state-card error-state">
+  
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>Unable to load departments</strong>
+  
+        <p>
+          {{ departmentState.errorMessage() }}
+        </p>
+  
+        <div class="state-actions">
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to doctors</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            (click)="reloadDepartments()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+  
+        </div>
+  
+      </section>
+  
+    } @else if (activeDepartments().length === 0) {
+  
+      <section class="state-card empty-state">
+  
+        <div class="state-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+  
+        <strong>No active departments available</strong>
+  
+        <p>
+          Create or activate a department before adding
+          doctors to your healthcare organization.
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          class="manage-departments-button"
+          (click)="goToDepartments()"
+        >
+          <mat-icon>account_tree</mat-icon>
+          <span>Manage departments</span>
+        </button>
+  
+      </section>
+  
+    } @else {
+  
+      <form
+        class="doctor-form"
+        [formGroup]="doctorForm"
+        (ngSubmit)="createDoctor()"
+        novalidate
+      >
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <header class="section-header">
+  
+              <div class="section-icon">
+                <mat-icon>person</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Personal information</h2>
+  
+                <p>
+                  Enter the doctor name and permanent
+                  medical registration number.
+                </p>
+              </div>
+  
+            </header>
+  
+            <div class="form-grid">
+  
+              <mat-form-field appearance="outline">
+                <mat-label>First name</mat-label>
+  
+                <mat-icon matPrefix>person</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="firstName"
+                  maxlength="100"
+                  autocomplete="given-name"
+                  placeholder="Arun"
+                >
+  
+                <mat-hint align="end">
+                  {{ doctorForm.controls.firstName.value.length }}/100
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.firstName.touched
+                  && doctorForm.controls.firstName.hasError('required')
+                ) {
+                  <mat-error>
+                    First name is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.firstName.touched
+                  && doctorForm.controls.firstName.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    First name must not exceed 100 characters.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.firstName.touched
+                  && doctorForm.controls.firstName.hasError('pattern')
+                ) {
+                  <mat-error>
+                    First name contains invalid characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Last name</mat-label>
+  
+                <mat-icon matPrefix>person</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="lastName"
+                  maxlength="100"
+                  autocomplete="family-name"
+                  placeholder="Kumar"
+                >
+  
+                <mat-hint align="end">
+                  {{ doctorForm.controls.lastName.value.length }}/100
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.lastName.touched
+                  && doctorForm.controls.lastName.hasError('required')
+                ) {
+                  <mat-error>
+                    Last name is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.lastName.touched
+                  && doctorForm.controls.lastName.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Last name must not exceed 100 characters.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.lastName.touched
+                  && doctorForm.controls.lastName.hasError('pattern')
+                ) {
+                  <mat-error>
+                    Last name contains invalid characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Medical registration number</mat-label>
+  
+                <mat-icon matPrefix>badge</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="medicalRegistrationNumber"
+                  maxlength="100"
+                  autocomplete="off"
+                  class="uppercase-input"
+                  placeholder="TNMC-123456"
+                >
+  
+                <mat-hint>
+                  This becomes permanent after doctor creation
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.medicalRegistrationNumber.touched
+                  && doctorForm.controls.medicalRegistrationNumber
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    Medical registration number is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.medicalRegistrationNumber.touched
+                  && doctorForm.controls.medicalRegistrationNumber
+                    .hasError('minlength')
+                ) {
+                  <mat-error>
+                    Medical registration number must contain
+                    at least 3 characters.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.medicalRegistrationNumber.touched
+                  && doctorForm.controls.medicalRegistrationNumber
+                    .hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Medical registration number must not
+                    exceed 100 characters.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.medicalRegistrationNumber.touched
+                  && doctorForm.controls.medicalRegistrationNumber
+                    .hasError('pattern')
+                ) {
+                  <mat-error>
+                    Medical registration number contains
+                    invalid characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <header class="section-header">
+  
+              <div class="section-icon professional-icon">
+                <mat-icon>medical_services</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Professional information</h2>
+  
+                <p>
+                  Enter the doctor qualification,
+                  specialization, and experience.
+                </p>
+              </div>
+  
+            </header>
+  
+            <div class="form-grid">
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Qualification</mat-label>
+  
+                <mat-icon matPrefix>school</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="qualification"
+                  maxlength="200"
+                  autocomplete="off"
+                  placeholder="MBBS, MD"
+                >
+  
+                <mat-hint align="end">
+                  {{ doctorForm.controls.qualification.value.length }}/200
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.qualification.touched
+                  && doctorForm.controls.qualification.hasError('required')
+                ) {
+                  <mat-error>
+                    Qualification is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.qualification.touched
+                  && doctorForm.controls.qualification.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Qualification must not exceed 200 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Specialization</mat-label>
+  
+                <mat-icon matPrefix>health_and_safety</mat-icon>
+  
+                <input
+                  matInput
+                  type="text"
+                  formControlName="specialization"
+                  maxlength="150"
+                  autocomplete="off"
+                  placeholder="Cardiology"
+                >
+  
+                <mat-hint align="end">
+                  {{ doctorForm.controls.specialization.value.length }}/150
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.specialization.touched
+                  && doctorForm.controls.specialization.hasError('required')
+                ) {
+                  <mat-error>
+                    Specialization is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.specialization.touched
+                  && doctorForm.controls.specialization.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Specialization must not exceed 150 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Years of experience</mat-label>
+  
+                <mat-icon matPrefix>workspace_premium</mat-icon>
+  
+                <input
+                  matInput
+                  type="number"
+                  formControlName="yearsOfExperience"
+                  min="0"
+                  max="70"
+                  step="1"
+                >
+  
+                <span matTextSuffix>years</span>
+  
+                @if (
+                  doctorForm.controls.yearsOfExperience.touched
+                  && doctorForm.controls.yearsOfExperience
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    Years of experience is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.yearsOfExperience.touched
+                  && doctorForm.controls.yearsOfExperience.hasError('min')
+                ) {
+                  <mat-error>
+                    Years of experience cannot be negative.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.yearsOfExperience.touched
+                  && doctorForm.controls.yearsOfExperience.hasError('max')
+                ) {
+                  <mat-error>
+                    Years of experience cannot exceed 70.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Consultation fee</mat-label>
+  
+                <span matTextPrefix>₹&nbsp;</span>
+  
+                <input
+                  matInput
+                  type="number"
+                  formControlName="consultationFee"
+                  min="0"
+                  step="0.01"
+                >
+  
+                @if (
+                  doctorForm.controls.consultationFee.touched
+                  && doctorForm.controls.consultationFee.hasError('required')
+                ) {
+                  <mat-error>
+                    Consultation fee is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  doctorForm.controls.consultationFee.touched
+                  && doctorForm.controls.consultationFee.hasError('min')
+                ) {
+                  <mat-error>
+                    Consultation fee cannot be negative.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Department</mat-label>
+  
+                <mat-icon matPrefix>account_tree</mat-icon>
+  
+                <mat-select formControlName="departmentId">
+                  <mat-option value="">
+                    Select an active department
+                  </mat-option>
+  
+                  @for (
+                    department of activeDepartments();
+                    track department.id
+                  ) {
+                    <mat-option [value]="department.id">
+                      {{ department.departmentName }}
+                      ({{ department.departmentCode }})
+                    </mat-option>
+                  }
+                </mat-select>
+  
+                <mat-hint>
+                  Only active departments are available
+                </mat-hint>
+  
+                @if (
+                  doctorForm.controls.departmentId.touched
+                  && doctorForm.controls.departmentId.hasError('required')
+                ) {
+                  <mat-error>
+                    Department is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <header class="section-header">
+  
+              <div class="section-icon biography-icon">
+                <mat-icon>description</mat-icon>
+              </div>
+  
+              <div>
+                <h2>Professional biography</h2>
+  
+                <p>
+                  Add an optional professional summary
+                  visible to Members.
+                </p>
+              </div>
+  
+            </header>
+  
+            <mat-form-field
+              appearance="outline"
+              class="biography-field"
+            >
+              <mat-label>Biography</mat-label>
+  
+              <textarea
+                matInput
+                formControlName="biography"
+                rows="7"
+                maxlength="1500"
+                placeholder="Describe the doctor's professional background, clinical interests, and experience"
+              ></textarea>
+  
+              <mat-hint align="end">
+                {{ doctorForm.controls.biography.value.length }}/1500
+              </mat-hint>
+  
+              @if (
+                doctorForm.controls.biography.touched
+                && doctorForm.controls.biography.hasError('maxlength')
+              ) {
+                <mat-error>
+                  Biography must not exceed 1500 characters.
+                </mat-error>
+              }
+            </mat-form-field>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <section class="information-notice">
+          <mat-icon>info</mat-icon>
+  
+          <div>
+            <strong>Doctor lifecycle</strong>
+  
+            <p>
+              The doctor will be created with ACTIVE status.
+              The medical registration number becomes permanent.
+              Weekly availability can be configured after the
+              doctor profile is created.
+            </p>
+          </div>
+        </section>
+  
+        <footer class="form-actions">
+  
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="doctorState.creating()"
+            (click)="goBack()"
+          >
+            <span>Cancel</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="submit"
+            class="create-button"
+            [disabled]="doctorState.creating()"
+          >
+            @if (doctorState.creating()) {
+              <mat-spinner diameter="22"></mat-spinner>
+              <span>Creating...</span>
+            } @else {
+              <mat-icon>person_add</mat-icon>
+              <span>Create doctor</span>
+            }
+          </button>
+  
+        </footer>
+  
+      </form>
+  
+    }
+  
+  </section>

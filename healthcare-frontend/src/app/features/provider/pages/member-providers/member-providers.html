@@ -1,0 +1,556 @@
+<section class="providers-page">
+
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">
+          Healthcare Network
+        </p>
+  
+        <h1>
+          Find healthcare Providers
+        </h1>
+  
+        <p class="description">
+          Browse active hospitals, clinics, diagnostic
+          facilities, specialty centers, rehabilitation
+          centers, and telemedicine Providers.
+        </p>
+      </div>
+  
+      <button
+        mat-stroked-button
+        type="button"
+        class="refresh-button"
+        [disabled]="providerState.loading()"
+        (click)="loadProviders()"
+      >
+        <mat-icon>
+          refresh
+        </mat-icon>
+  
+        <span>
+          Refresh
+        </span>
+      </button>
+    </header>
+  
+    <section class="summary-grid">
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--all">
+          <mat-icon>
+            business
+          </mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Available Providers
+          </span>
+  
+          <strong>
+            {{ providerState.providerCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--hospital">
+          <mat-icon>
+            local_hospital
+          </mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Hospitals
+          </span>
+  
+          <strong>
+            {{ providerState.hospitalCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--emergency">
+          <mat-icon>
+            emergency
+          </mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Emergency services
+          </span>
+  
+          <strong>
+            {{ providerState.emergencyProviderCount() }}
+          </strong>
+        </div>
+      </article>
+  
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--cities">
+          <mat-icon>
+            location_city
+          </mat-icon>
+        </div>
+  
+        <div>
+          <span>
+            Cities covered
+          </span>
+  
+          <strong>
+            {{ providerState.cityCount() }}
+          </strong>
+        </div>
+      </article>
+  
+    </section>
+  
+    <section class="filter-panel">
+  
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Search Providers
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          search
+        </mat-icon>
+  
+        <input
+          #providerSearch
+          matInput
+          type="search"
+          placeholder="Organization, city, state, or Provider type"
+          [value]="searchText()"
+          (input)="updateSearch(providerSearch.value)"
+        >
+  
+        @if (searchText().trim().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Clear Provider search"
+            (click)="updateSearch('')"
+          >
+            <mat-icon>
+              close
+            </mat-icon>
+          </button>
+        }
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Provider type
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          category
+        </mat-icon>
+  
+        <mat-select
+          [value]="selectedType()"
+          (selectionChange)="
+            updateProviderType($event.value)
+          "
+        >
+          <mat-option value="ALL">
+            All Provider types
+          </mat-option>
+  
+          <mat-option value="HOSPITAL">
+            Hospital
+          </mat-option>
+  
+          <mat-option value="CLINIC">
+            Clinic
+          </mat-option>
+  
+          <mat-option value="DIAGNOSTIC_CENTER">
+            Diagnostic Center
+          </mat-option>
+  
+          <mat-option value="SPECIALTY_CENTER">
+            Specialty Center
+          </mat-option>
+  
+          <mat-option value="REHABILITATION_CENTER">
+            Rehabilitation Center
+          </mat-option>
+  
+          <mat-option value="TELEMEDICINE_PROVIDER">
+            Telemedicine Provider
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Emergency services
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          emergency
+        </mat-icon>
+  
+        <mat-select
+          [value]="selectedEmergency()"
+          (selectionChange)="
+            updateEmergencyFilter($event.value)
+          "
+        >
+          <mat-option value="ALL">
+            All Providers
+          </mat-option>
+  
+          <mat-option value="AVAILABLE">
+            Emergency available
+          </mat-option>
+  
+          <mat-option value="NOT_AVAILABLE">
+            No emergency service
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>
+          Sort by
+        </mat-label>
+  
+        <mat-icon matPrefix>
+          sort
+        </mat-icon>
+  
+        <mat-select
+          [value]="selectedSort()"
+          (selectionChange)="
+            updateSort($event.value)
+          "
+        >
+          <mat-option value="NAME_ASCENDING">
+            Organization name
+          </mat-option>
+  
+          <mat-option value="CITY_ASCENDING">
+            City
+          </mat-option>
+  
+          <mat-option value="EMERGENCY_FIRST">
+            Emergency services first
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <button
+        mat-button
+        type="button"
+        class="clear-filter-button"
+        [disabled]="!filtersApplied()"
+        (click)="clearFilters()"
+      >
+        <mat-icon>
+          filter_alt_off
+        </mat-icon>
+  
+        <span>
+          Clear filters
+        </span>
+      </button>
+  
+      <span class="result-count">
+        {{ filteredProviders().length }}
+        result(s)
+      </span>
+  
+    </section>
+  
+    @if (providerState.loading()) {
+  
+      <section class="state-card loading-state">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading healthcare Providers
+        </strong>
+  
+        <p>
+          Please wait while active healthcare
+          organizations are retrieved.
+        </p>
+      </section>
+  
+    } @else if (providerState.errorMessage()) {
+  
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>
+            error_outline
+          </mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load healthcare Providers
+        </strong>
+  
+        <p>
+          {{ providerState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadProviders()"
+        >
+          <mat-icon>
+            refresh
+          </mat-icon>
+  
+          <span>
+            Try again
+          </span>
+        </button>
+      </section>
+  
+    } @else if (filteredProviders().length === 0) {
+  
+      <section class="state-card empty-state">
+        <div class="state-icon">
+          <mat-icon>
+            local_hospital
+          </mat-icon>
+        </div>
+  
+        <strong>
+          No healthcare Providers found
+        </strong>
+  
+        @if (filtersApplied()) {
+          <p>
+            No active healthcare Providers match the
+            selected search and filters.
+          </p>
+  
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="clearFilters()"
+          >
+            <mat-icon>
+              filter_alt_off
+            </mat-icon>
+  
+            <span>
+              Clear filters
+            </span>
+          </button>
+        } @else {
+          <p>
+            Active healthcare Providers will appear
+            here when they become available.
+          </p>
+        }
+      </section>
+  
+    } @else {
+  
+      <section class="provider-grid">
+  
+        @for (
+          provider of filteredProviders();
+          track provider.id
+        ) {
+  
+          <mat-card class="provider-card">
+            <mat-card-content>
+  
+              <header class="provider-header">
+  
+                <div class="provider-icon">
+                  <mat-icon>
+                    {{
+                      getProviderTypeIcon(
+                        provider.providerType
+                      )
+                    }}
+                  </mat-icon>
+                </div>
+  
+                <div class="provider-heading">
+                  <span class="provider-type">
+                    {{
+                      getProviderTypeLabel(
+                        provider.providerType
+                      )
+                    }}
+                  </span>
+  
+                  <h2>
+                    {{ provider.organizationName }}
+                  </h2>
+  
+                  <p>
+                    <mat-icon>
+                      location_on
+                    </mat-icon>
+  
+                    {{ provider.city }},
+                    {{ provider.state }}
+                  </p>
+                </div>
+  
+                @if (
+                  provider.emergencyServicesAvailable
+                ) {
+                  <span class="emergency-badge">
+                    <mat-icon>
+                      emergency
+                    </mat-icon>
+  
+                    Emergency
+                  </span>
+                }
+  
+              </header>
+  
+              <section class="provider-information">
+  
+                <div>
+                  <mat-icon>
+                    verified
+                  </mat-icon>
+  
+                  <span>
+                    License
+                  </span>
+  
+                  <strong>
+                    {{ provider.licenseNumber }}
+                  </strong>
+                </div>
+  
+                <div>
+                  <mat-icon>
+                    phone
+                  </mat-icon>
+  
+                  <span>
+                    Contact
+                  </span>
+  
+                  <strong>
+                    {{ provider.contactNumber }}
+                  </strong>
+                </div>
+  
+              </section>
+  
+              <address>
+                <mat-icon>
+                  map
+                </mat-icon>
+  
+                <span>
+                  {{ provider.addressLine }},
+                  {{ provider.city }},
+                  {{ provider.state }}
+                  {{ provider.postalCode }},
+                  {{ provider.country }}
+                </span>
+              </address>
+  
+              <section class="provider-features">
+  
+                <span>
+                  <mat-icon>
+                    check_circle
+                  </mat-icon>
+  
+                  Active healthcare Provider
+                </span>
+  
+                @if (
+                  provider.emergencyServicesAvailable
+                ) {
+                  <span class="emergency-feature">
+                    <mat-icon>
+                      emergency
+                    </mat-icon>
+  
+                    Emergency services available
+                  </span>
+                } @else {
+                  <span class="neutral-feature">
+                    <mat-icon>
+                      info
+                    </mat-icon>
+  
+                    No emergency department listed
+                  </span>
+                }
+  
+                @if (
+                  getWebsiteUrl(provider.website);
+                  as websiteUrl
+                ) {
+                  <a
+                    [href]="websiteUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <mat-icon>
+                      language
+                    </mat-icon>
+  
+                    Visit website
+                  </a>
+                }
+  
+              </section>
+  
+              <footer class="provider-actions">
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="viewProvider(provider)"
+                >
+                  <span>
+                    View Provider
+                  </span>
+  
+                  <mat-icon>
+                    arrow_forward
+                  </mat-icon>
+                </button>
+              </footer>
+  
+            </mat-card-content>
+          </mat-card>
+  
+        }
+  
+      </section>
+  
+    }
+  
+  </section>

@@ -1,0 +1,439 @@
+:host {
+  display: block;
+}
+
+.plans-page {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.page-header > div {
+  max-width: 760px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #0f7180;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #19384d;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 780;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.description {
+  margin: 12px 0 0;
+  color: #6d8290;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.refresh-button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  display: flex;
+  min-height: 105px;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #e0e9ee;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 9px 28px rgba(18, 48, 67, 0.05);
+}
+
+.summary-icon {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  place-items: center;
+  border-radius: 15px;
+  color: #176779;
+  background: #e9f6f7;
+}
+
+.payer-icon {
+  color: #694e00;
+  background: #fff4d7;
+}
+
+.result-icon {
+  color: #5c4a8b;
+  background: #f1edfb;
+}
+
+.summary-card > div:last-child {
+  display: grid;
+  gap: 5px;
+}
+
+.summary-card span {
+  color: #758894;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.summary-card strong {
+  color: #1c3b4f;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.filter-panel {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(190px, 250px)
+    minmax(190px, 250px)
+    auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e0e9ee;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.clear-filter-button {
+  min-height: 48px;
+  color: #4c7180;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.plan-card {
+  overflow: hidden;
+  border: 1px solid #dfe8ed;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 32px rgba(18, 48, 67, 0.055);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.plan-card:hover {
+  border-color: #b6d6dc;
+  box-shadow:
+    0 18px 42px rgba(18, 48, 67, 0.1);
+  transform: translateY(-2px);
+}
+
+.plan-card mat-card-content {
+  display: grid;
+  gap: 19px;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 22px;
+}
+
+.plan-header {
+  display: grid;
+  grid-template-columns:
+    52px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.plan-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #0f7180,
+      #34aaa7
+    );
+}
+
+.plan-icon mat-icon {
+  width: 27px;
+  height: 27px;
+  font-size: 27px;
+}
+
+.plan-heading {
+  min-width: 0;
+}
+
+.plan-code {
+  display: inline-block;
+  color: #0f7180;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.plan-heading h2 {
+  margin: 4px 0 0;
+  color: #233f52;
+  font-size: 18px;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.plan-heading p {
+  margin: 5px 0 0;
+  color: #738895;
+  font-size: 11px;
+}
+
+.active-badge {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #17653a;
+  background: #e8f7ee;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.plan-description {
+  display: -webkit-box;
+  min-height: 63px;
+  margin: 0;
+  overflow: hidden;
+  color: #647b89;
+  font-size: 13px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.financial-summary {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.financial-summary div {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f5f9fa;
+}
+
+.financial-summary span {
+  color: #7b8e99;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.financial-summary strong {
+  color: #173e50;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.plan-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 16px;
+  color: #637b88;
+  font-size: 11px;
+}
+
+.plan-facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.plan-facts mat-icon {
+  width: 17px;
+  height: 17px;
+  color: #4d7c89;
+  font-size: 17px;
+}
+
+.coverage-features {
+  display: grid;
+  gap: 9px;
+}
+
+.features-label {
+  color: #6e828e;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+mat-chip {
+  font-size: 10px;
+}
+
+mat-chip mat-icon {
+  color: #278354;
+}
+
+.plan-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.plan-actions button {
+  min-height: 43px;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #0f7180;
+}
+
+.state-card {
+  display: grid;
+  min-height: 340px;
+  box-sizing: border-box;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 40px;
+  border: 1px solid #e0e9ee;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 20px;
+  color: #537c89;
+  background: #e9f6f7;
+}
+
+.state-icon mat-icon {
+  width: 31px;
+  height: 31px;
+  font-size: 31px;
+}
+
+.state-card strong {
+  color: #28475a;
+  font-size: 16px;
+}
+
+.state-card p {
+  max-width: 430px;
+  margin: 0;
+  color: #788b98;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.error-state .state-icon {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.error-state button {
+  margin-top: 8px;
+  color: #ffffff;
+  background: #0f7180;
+}
+
+@media (max-width: 1050px) {
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-panel {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .refresh-button {
+    align-self: flex-start;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .clear-filter-button {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .plan-card mat-card-content {
+    padding: 18px;
+  }
+
+  .plan-header {
+    grid-template-columns:
+      48px minmax(0, 1fr);
+  }
+
+  .active-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .financial-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-actions button {
+    width: 100%;
+  }
+}

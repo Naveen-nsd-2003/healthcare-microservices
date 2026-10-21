@@ -1,0 +1,336 @@
+<section class="edit-availability-page">
+
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="availabilityState.updating()"
+      (click)="goBackToAvailability()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to availability</span>
+    </button>
+  
+    @if (availabilityState.detailsLoading()) {
+  
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>Loading availability</strong>
+  
+        <p>
+          Please wait while the weekly schedule
+          is retrieved.
+        </p>
+      </section>
+  
+    } @else if (
+      availabilityState.selectedAvailability()
+    ) {
+  
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">
+            Provider Administration
+          </p>
+  
+          <h1>Edit availability</h1>
+  
+          <p class="description">
+            Update the recurring weekday, consulting hours,
+            and appointment slot duration.
+          </p>
+        </div>
+      </header>
+  
+      <mat-card class="doctor-card">
+        <mat-card-content>
+  
+          <mat-icon>medical_services</mat-icon>
+  
+          <div>
+            <span>Doctor</span>
+  
+            <strong>
+              {{
+                availabilityState
+                  .selectedAvailability()!
+                  .doctorName
+              }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>Department</span>
+  
+            <strong>
+              {{
+                availabilityState
+                  .selectedAvailability()!
+                  .departmentName
+              }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>Status</span>
+  
+            <strong>
+              {{
+                availabilityState
+                  .selectedAvailability()!
+                  .status
+              }}
+            </strong>
+          </div>
+  
+        </mat-card-content>
+      </mat-card>
+  
+      <section class="read-only-notice">
+        <mat-icon>lock</mat-icon>
+  
+        <div>
+          <strong>Doctor assignment cannot be changed</strong>
+  
+          <p>
+            Create a new availability record if this
+            schedule must belong to another doctor.
+          </p>
+        </div>
+      </section>
+  
+      @if (availabilityState.errorMessage()) {
+        <section
+          class="form-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ availabilityState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <form
+        class="availability-form"
+        [formGroup]="availabilityForm"
+        (ngSubmit)="updateAvailability()"
+        novalidate
+      >
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+  
+            <h2>Weekly schedule</h2>
+  
+            <div class="form-grid">
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Day of week</mat-label>
+  
+                <mat-icon matPrefix>
+                  calendar_today
+                </mat-icon>
+  
+                <mat-select formControlName="dayOfWeek">
+                  @for (
+                    day of dayOptions;
+                    track day.value
+                  ) {
+                    <mat-option [value]="day.value">
+                      {{ day.label }}
+                    </mat-option>
+                  }
+                </mat-select>
+  
+                @if (
+                  availabilityForm.controls.dayOfWeek.touched
+                  && availabilityForm.controls.dayOfWeek
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    Day of week is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Start time</mat-label>
+  
+                <input
+                  matInput
+                  type="time"
+                  formControlName="startTime"
+                >
+  
+                @if (
+                  availabilityForm.controls.startTime.touched
+                  && availabilityForm.controls.startTime
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    Start time is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>End time</mat-label>
+  
+                <input
+                  matInput
+                  type="time"
+                  formControlName="endTime"
+                >
+  
+                @if (
+                  availabilityForm.controls.endTime.touched
+                  && availabilityForm.controls.endTime
+                    .hasError('required')
+                ) {
+                  <mat-error>
+                    End time is required.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="full-row"
+              >
+                <mat-label>Slot duration</mat-label>
+  
+                <mat-icon matPrefix>timer</mat-icon>
+  
+                <mat-select
+                  formControlName="slotDurationMinutes"
+                >
+                  @for (
+                    duration of slotDurationOptions;
+                    track duration
+                  ) {
+                    <mat-option [value]="duration">
+                      {{ duration }} minutes
+                    </mat-option>
+                  }
+                </mat-select>
+  
+                @if (
+                  availabilityForm.controls
+                    .slotDurationMinutes.touched
+                  && availabilityForm.controls
+                    .slotDurationMinutes.hasError('min')
+                ) {
+                  <mat-error>
+                    Slot duration must be at least 10 minutes.
+                  </mat-error>
+                }
+  
+                @if (
+                  availabilityForm.controls
+                    .slotDurationMinutes.touched
+                  && availabilityForm.controls
+                    .slotDurationMinutes.hasError('max')
+                ) {
+                  <mat-error>
+                    Slot duration must not exceed 120 minutes.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+            </div>
+  
+            <section class="schedule-summary">
+              <div>
+                <span>Schedule duration</span>
+  
+                <strong>
+                  {{ getScheduleDurationLabel() }}
+                </strong>
+              </div>
+  
+              <div>
+                <span>Estimated slots</span>
+  
+                <strong>
+                  {{ getEstimatedSlotCount() }}
+                </strong>
+              </div>
+            </section>
+  
+          </mat-card-content>
+        </mat-card>
+  
+        <section class="information-notice">
+          <mat-icon>info</mat-icon>
+  
+          <div>
+            <strong>Schedule status remains unchanged</strong>
+  
+            <p>
+              Updating this form changes only the weekday,
+              consulting hours, and slot duration. Activate or
+              deactivate the schedule from the availability list.
+            </p>
+          </div>
+        </section>
+  
+        <footer class="form-actions">
+  
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="availabilityState.updating()"
+            (click)="goBackToAvailability()"
+          >
+            Cancel
+          </button>
+  
+          <button
+            mat-flat-button
+            type="submit"
+            class="save-button"
+            [disabled]="availabilityState.updating()"
+          >
+            @if (availabilityState.updating()) {
+              <mat-spinner diameter="22"></mat-spinner>
+              <span>Saving...</span>
+            } @else {
+              <mat-icon>save</mat-icon>
+              <span>Save changes</span>
+            }
+          </button>
+  
+        </footer>
+  
+      </form>
+  
+    } @else {
+  
+      <section class="state-card error-state">
+        <mat-icon>error_outline</mat-icon>
+  
+        <strong>Availability information unavailable</strong>
+  
+        <p>
+          {{ availabilityState.errorMessage() }}
+        </p>
+  
+        <button
+          mat-flat-button
+          type="button"
+          (click)="loadAvailability()"
+        >
+          <mat-icon>refresh</mat-icon>
+          <span>Try again</span>
+        </button>
+      </section>
+  
+    }
+  
+  </section>

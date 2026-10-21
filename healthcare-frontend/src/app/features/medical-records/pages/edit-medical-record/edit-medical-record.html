@@ -1,0 +1,507 @@
+<section class="edit-medical-record-page">
+    <button
+      mat-button
+      type="button"
+      class="back-button"
+      [disabled]="medicalRecordState.updating()"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to medical record</span>
+    </button>
+  
+    <header class="page-header">
+      <div class="header-icon">
+        <mat-icon>edit_note</mat-icon>
+      </div>
+  
+      <div class="header-copy">
+        <p class="eyebrow">
+          Provider Medical Records
+        </p>
+  
+        <h1>
+          Edit medical record
+        </h1>
+  
+        <p>
+          Update the clinical consultation, diagnosis,
+          treatment and follow-up documentation.
+        </p>
+      </div>
+    </header>
+  
+    @if (medicalRecordState.detailsLoading()) {
+      <section class="state-card">
+        <mat-spinner diameter="44"></mat-spinner>
+  
+        <strong>
+          Loading medical record
+        </strong>
+  
+        <p>
+          Please wait while the existing clinical
+          information is retrieved.
+        </p>
+      </section>
+    } @else if (
+      medicalRecordState.selectedRecord();
+      as medicalRecord
+    ) {
+      <section class="record-context">
+        <div class="context-icon">
+          <mat-icon>medical_information</mat-icon>
+        </div>
+  
+        <div class="context-copy">
+          <span>
+            Medical record for
+          </span>
+  
+          <strong>
+            {{ medicalRecord.memberEmail }}
+          </strong>
+  
+          <p>
+            {{ medicalRecord.doctorName }}
+            ·
+            {{ medicalRecord.doctorSpecialization }}
+          </p>
+        </div>
+  
+        <div class="context-details">
+          <div>
+            <span>Date</span>
+  
+            <strong>
+              {{
+                medicalRecord.appointmentDate
+                  | date: 'MMM d, y'
+              }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>Time</span>
+  
+            <strong>
+              {{
+                getTimeRange(
+                  medicalRecord.appointmentStartTime,
+                  medicalRecord.appointmentEndTime
+                )
+              }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>Department</span>
+  
+            <strong>
+              {{ medicalRecord.departmentName }}
+            </strong>
+          </div>
+  
+          <div>
+            <span>Status</span>
+  
+            <strong>
+              {{ medicalRecord.status }}
+            </strong>
+          </div>
+        </div>
+      </section>
+  
+      <section class="immutable-notice">
+        <mat-icon>lock</mat-icon>
+  
+        <div>
+          <strong>
+            Appointment information is read-only
+          </strong>
+  
+          <p>
+            Member, organization, department, doctor and
+            appointment information comes from the completed
+            appointment and cannot be changed here.
+          </p>
+        </div>
+      </section>
+  
+      @if (medicalRecordState.errorMessage()) {
+        <section
+          class="form-error"
+          role="alert"
+        >
+          <mat-icon>error_outline</mat-icon>
+  
+          <span>
+            {{ medicalRecordState.errorMessage() }}
+          </span>
+        </section>
+      }
+  
+      <form
+        class="medical-record-form"
+        [formGroup]="medicalRecordForm"
+        (ngSubmit)="updateMedicalRecord()"
+        novalidate
+      >
+        <mat-card class="form-card">
+          <mat-card-content>
+            <div class="section-heading">
+              <div class="section-icon">
+                <mat-icon>personal_injury</mat-icon>
+              </div>
+  
+              <div>
+                <h2>
+                  Consultation details
+                </h2>
+  
+                <p>
+                  Update the patient's chief complaint,
+                  diagnosis and clinical observations.
+                </p>
+              </div>
+            </div>
+  
+            <div class="form-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Chief complaint
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="5"
+                  maxlength="1000"
+                  formControlName="chiefComplaint"
+                  placeholder="Describe the patient's primary complaint"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    medicalRecordForm.controls
+                      .chiefComplaint.value.length
+                  }}/1000
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .chiefComplaint.touched
+                  && medicalRecordForm.controls
+                    .chiefComplaint.hasError('required')
+                ) {
+                  <mat-error>
+                    Chief complaint is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  medicalRecordForm.controls
+                    .chiefComplaint.touched
+                  && medicalRecordForm.controls
+                    .chiefComplaint.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Chief complaint must not exceed
+                    1000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Diagnosis
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="6"
+                  maxlength="2000"
+                  formControlName="diagnosis"
+                  placeholder="Enter the clinical diagnosis"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    medicalRecordForm.controls
+                      .diagnosis.value.length
+                  }}/2000
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .diagnosis.touched
+                  && medicalRecordForm.controls
+                    .diagnosis.hasError('required')
+                ) {
+                  <mat-error>
+                    Diagnosis is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  medicalRecordForm.controls
+                    .diagnosis.touched
+                  && medicalRecordForm.controls
+                    .diagnosis.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Diagnosis must not exceed
+                    2000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Clinical observations
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="7"
+                  maxlength="3000"
+                  formControlName="clinicalObservations"
+                  placeholder="Enter examination findings and observations"
+                ></textarea>
+  
+                <mat-hint>
+                  Optional
+                </mat-hint>
+  
+                <mat-hint align="end">
+                  {{
+                    medicalRecordForm.controls
+                      .clinicalObservations.value.length
+                  }}/3000
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .clinicalObservations.touched
+                  && medicalRecordForm.controls
+                    .clinicalObservations.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Clinical observations must not exceed
+                    3000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+  
+        <mat-card class="form-card">
+          <mat-card-content>
+            <div class="section-heading">
+              <div class="section-icon treatment-icon">
+                <mat-icon>medication</mat-icon>
+              </div>
+  
+              <div>
+                <h2>
+                  Treatment and follow-up
+                </h2>
+  
+                <p>
+                  Update the treatment plan, prescription
+                  guidance and follow-up date.
+                </p>
+              </div>
+            </div>
+  
+            <div class="form-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Treatment plan
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="7"
+                  maxlength="3000"
+                  formControlName="treatmentPlan"
+                  placeholder="Describe the recommended treatment plan"
+                ></textarea>
+  
+                <mat-hint align="end">
+                  {{
+                    medicalRecordForm.controls
+                      .treatmentPlan.value.length
+                  }}/3000
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .treatmentPlan.touched
+                  && medicalRecordForm.controls
+                    .treatmentPlan.hasError('required')
+                ) {
+                  <mat-error>
+                    Treatment plan is required.
+                  </mat-error>
+                }
+  
+                @if (
+                  medicalRecordForm.controls
+                    .treatmentPlan.touched
+                  && medicalRecordForm.controls
+                    .treatmentPlan.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Treatment plan must not exceed
+                    3000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>
+                  Prescription notes
+                </mat-label>
+  
+                <textarea
+                  matInput
+                  rows="6"
+                  maxlength="3000"
+                  formControlName="prescriptionNotes"
+                  placeholder="Enter medication and dosage instructions"
+                ></textarea>
+  
+                <mat-hint>
+                  Optional
+                </mat-hint>
+  
+                <mat-hint align="end">
+                  {{
+                    medicalRecordForm.controls
+                      .prescriptionNotes.value.length
+                  }}/3000
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .prescriptionNotes.touched
+                  && medicalRecordForm.controls
+                    .prescriptionNotes.hasError('maxlength')
+                ) {
+                  <mat-error>
+                    Prescription notes must not exceed
+                    3000 characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field
+                appearance="outline"
+                class="date-field"
+              >
+                <mat-label>
+                  Follow-up date
+                </mat-label>
+  
+                <input
+                  matInput
+                  type="date"
+                  formControlName="followUpDate"
+                />
+  
+                <mat-icon matSuffix>
+                  calendar_month
+                </mat-icon>
+  
+                <mat-hint>
+                  Optional
+                </mat-hint>
+  
+                @if (
+                  medicalRecordForm.controls
+                    .followUpDate.touched
+                  && medicalRecordForm.controls
+                    .followUpDate.hasError('pastDate')
+                ) {
+                  <mat-error>
+                    A new follow-up date cannot be in the past.
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+  
+        <section class="form-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="medicalRecordState.updating()"
+            (click)="goBack()"
+          >
+            Cancel
+          </button>
+  
+          @if (medicalRecordState.updating()) {
+            <button
+              mat-flat-button
+              type="submit"
+              class="submit-button"
+              disabled
+            >
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Updating record...</span>
+            </button>
+          } @else {
+            <button
+              mat-flat-button
+              type="submit"
+              class="submit-button"
+            >
+              <mat-icon>save</mat-icon>
+              <span>Update medical record</span>
+            </button>
+          }
+        </section>
+      </form>
+    } @else {
+      <section class="state-card error-state">
+        <div class="state-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+  
+        <strong>
+          Unable to load medical record
+        </strong>
+  
+        <p>
+          {{
+            medicalRecordState.errorMessage()
+            || 'The medical record information is unavailable.'
+          }}
+        </p>
+  
+        <div class="state-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="goBackToMedicalRecords()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back to medical records</span>
+          </button>
+  
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button"
+            (click)="retryMedicalRecord()"
+          >
+            <mat-icon>refresh</mat-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </section>
+    }
+  </section>

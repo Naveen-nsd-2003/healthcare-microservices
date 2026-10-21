@@ -1,0 +1,954 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.member-dashboard-page {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  gap: 22px;
+}
+
+.dashboard-header,
+.section-header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.header-copy {
+  min-width: 0;
+}
+
+.eyebrow,
+.section-eyebrow {
+  margin: 0 0 7px;
+  color: #326f97;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #19384d;
+  font-size: clamp(29px, 3vw, 41px);
+  line-height: 1.2;
+}
+
+.description {
+  max-width: 790px;
+  margin: 10px 0 0;
+  color: #6d8290;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.header-actions,
+.section-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.header-actions button,
+.section-header button {
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: #176f88;
+}
+
+.dashboard-warning {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid #eccd8d;
+  border-radius: 13px;
+  color: #765714;
+  background: #fff9e8;
+}
+
+.dashboard-warning > mat-icon {
+  flex: 0 0 auto;
+}
+
+.dashboard-warning > div {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 4px;
+}
+
+.dashboard-warning strong {
+  font-size: 11px;
+}
+
+.dashboard-warning p {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.profile-banner,
+.profile-setup-banner {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    62px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 17px;
+  padding: 20px;
+  border: 1px solid #cddfe9;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      125deg,
+      #f2f8fc,
+      #ffffff
+    );
+}
+
+.profile-setup-banner {
+  border-color: #e6d49a;
+  background:
+    linear-gradient(
+      125deg,
+      #fff9e8,
+      #ffffff
+    );
+}
+
+.profile-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  border-radius: 18px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #33769f,
+      #59a7b4
+    );
+}
+
+.setup-icon {
+  background:
+    linear-gradient(
+      135deg,
+      #856315,
+      #c99e36
+    );
+}
+
+.profile-icon mat-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
+.profile-copy {
+  min-width: 0;
+}
+
+.profile-copy > p {
+  margin: 0;
+  color: #326f97;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.profile-copy h2 {
+  margin: 4px 0 8px;
+  color: #284b60;
+  font-size: 20px;
+}
+
+.profile-meta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.profile-meta span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  color: #6e8390;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.profile-meta mat-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  font-size: 16px;
+}
+
+.profile-actions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.profile-status {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #6a7478;
+  background: #edf1f2;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.profile-status mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+}
+
+.active-profile {
+  color: #247047;
+  background: #e5f5eb;
+}
+
+.profile-setup-banner > div:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.profile-setup-banner strong {
+  color: #665021;
+  font-size: 13px;
+}
+
+.profile-setup-banner p {
+  margin: 0;
+  color: #7b6b48;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.overview-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overview-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #dce7eb;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 22px rgba(18, 48, 67, 0.04);
+}
+
+.overview-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border-radius: 13px;
+}
+
+.overview-card > div:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.overview-card span {
+  color: #758a95;
+  font-size: 8px;
+}
+
+.overview-card strong {
+  color: #29475a;
+  font-size: 18px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.overview-card small {
+  color: #8899a0;
+  font-size: 8px;
+}
+
+.appointment-card .overview-icon {
+  color: #426e9a;
+  background: #eaf2fa;
+}
+
+.enrollment-card .overview-icon {
+  color: #75519b;
+  background: #f2eafa;
+}
+
+.policy-card .overview-icon {
+  color: #247047;
+  background: #e9f7ef;
+}
+
+.coverage-card .overview-icon {
+  color: #806019;
+  background: #fff4d5;
+}
+
+.record-card .overview-icon {
+  color: #176779;
+  background: #e7f5f6;
+}
+
+.claim-card .overview-icon {
+  color: #a05022;
+  background: #fff0e5;
+}
+
+.approved-card .overview-icon {
+  color: #247047;
+  background: #e5f5eb;
+}
+
+.notification-card .overview-icon {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.dashboard-section {
+  display: grid;
+  min-width: 0;
+  gap: 18px;
+  padding: 21px;
+  border: 1px solid #dde8ec;
+  border-radius: 19px;
+  background: #ffffff;
+  box-shadow:
+    0 8px 25px rgba(18, 48, 67, 0.035);
+}
+
+.section-header > div:first-child {
+  min-width: 0;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #284756;
+  font-size: 19px;
+}
+
+.section-header p:last-child {
+  max-width: 690px;
+  margin: 6px 0 0;
+  color: #788c95;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.status-grid,
+.insurance-summary-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.status-grid article,
+.insurance-summary-grid article,
+.claim-summary-grid > article {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  padding: 13px;
+  border: 1px solid #e0e8eb;
+  border-radius: 12px;
+  background: #fafcfc;
+}
+
+.status-grid span,
+.insurance-summary-grid span,
+.claim-summary-grid span {
+  color: #788c95;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.status-grid strong,
+.insurance-summary-grid strong,
+.claim-summary-grid strong {
+  color: #2f4e5b;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.entity-list,
+.compact-list {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.entity-row {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns:
+    auto minmax(0, 1fr)
+    minmax(110px, auto)
+    auto auto;
+  align-items: center;
+  gap: 11px;
+  padding: 11px;
+  border: 1px solid #e2e9eb;
+  border-radius: 11px;
+  color: inherit;
+  background: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.record-row {
+  grid-template-columns:
+    auto minmax(0, 1fr)
+    minmax(110px, auto)
+    minmax(110px, auto)
+    auto auto;
+}
+
+.entity-row:hover,
+.compact-row:hover {
+  border-color: #a9cbd0;
+  background: #f8fcfc;
+}
+
+.entity-row:focus-visible,
+.compact-row:focus-visible,
+.quick-action-card:focus-visible {
+  outline: 3px solid rgba(23, 111, 136, 0.2);
+  outline-offset: 2px;
+}
+
+.date-block,
+.entity-icon,
+.compact-icon {
+  display: grid;
+  width: 41px;
+  height: 41px;
+  place-items: center;
+  border-radius: 11px;
+}
+
+.date-block {
+  color: #326f97;
+  background: #eaf2fa;
+}
+
+.date-block strong {
+  font-size: 14px;
+}
+
+.date-block span {
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.record-icon {
+  color: #176779;
+  background: #e7f5f6;
+}
+
+.claim-icon {
+  color: #a05022;
+  background: #fff0e5;
+}
+
+.enrollment-icon {
+  color: #75519b;
+  background: #f2eafa;
+}
+
+.policy-icon {
+  color: #247047;
+  background: #e9f7ef;
+}
+
+.entity-primary {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.entity-primary strong {
+  color: #35535f;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.entity-primary span,
+.entity-primary small {
+  color: #7a8c94;
+  font-size: 8px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.entity-value {
+  display: grid;
+  min-width: 100px;
+  justify-items: end;
+  gap: 3px;
+}
+
+.entity-value span {
+  color: #87969b;
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.entity-value strong {
+  color: #40555d;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.status-pill {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #5f7077;
+  background: #edf1f2;
+  font-size: 7px;
+  font-weight: 850;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.booked-status,
+.pending-status,
+.submitted-status {
+  color: #216b81;
+  background: #e8f4f8;
+}
+
+.confirmed-status,
+.review-status {
+  color: #785d18;
+  background: #fff5d8;
+}
+
+.active-status,
+.approved-status {
+  color: #247047;
+  background: #e9f7ef;
+}
+
+.rejected-status {
+  color: #a22b25;
+  background: #fdecea;
+}
+
+.cancelled-status {
+  color: #696f75;
+  background: #eef1f2;
+}
+
+.row-arrow {
+  color: #8a999f;
+}
+
+.dual-content-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.content-panel {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #e0e8eb;
+  border-radius: 14px;
+  background: #fbfdfd;
+}
+
+.content-panel-header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.content-panel-header p {
+  margin: 0;
+  color: #326f97;
+  font-size: 7px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.content-panel-header h3 {
+  margin: 3px 0 0;
+  color: #365360;
+  font-size: 14px;
+}
+
+.compact-row {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid #e2e9eb;
+  border-radius: 10px;
+  color: inherit;
+  background: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.compact-row > div:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.compact-row strong {
+  color: #3b5662;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.compact-row span {
+  color: #7b8d95;
+  font-size: 8px;
+  overflow-wrap: anywhere;
+}
+
+.claim-summary-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.financial-card {
+  grid-column: span 2;
+  background: #f2f8fc !important;
+}
+
+.approved-amount-card {
+  border-color: #c7dfd1 !important;
+  background: #f0faf4 !important;
+}
+
+.compact-empty-state,
+.small-empty-state {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: #768b94;
+  text-align: center;
+}
+
+.small-empty-state {
+  min-height: 130px;
+}
+
+.compact-empty-state mat-icon,
+.small-empty-state mat-icon {
+  width: 31px;
+  height: 31px;
+  font-size: 31px;
+}
+
+.compact-empty-state strong {
+  color: #45606b;
+  font-size: 11px;
+}
+
+.compact-empty-state p,
+.small-empty-state p {
+  max-width: 430px;
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.compact-empty-state button {
+  min-height: 38px;
+  margin-top: 5px;
+  border-radius: 9px;
+}
+
+.quick-action-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.quick-action-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid #dfe8eb;
+  border-radius: 13px;
+  color: inherit;
+  background: #fbfdfd;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.quick-action-card:hover {
+  border-color: #a9cbd0;
+  background: #f3f9fa;
+}
+
+.quick-action-card > mat-icon {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  flex: 0 0 39px;
+  place-items: center;
+  border-radius: 11px;
+  color: #326f97;
+  background: #eaf2fa;
+}
+
+.quick-action-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.quick-action-card strong {
+  color: #35535f;
+  font-size: 10px;
+}
+
+.quick-action-card span {
+  color: #7d8e95;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.state-card {
+  display: grid;
+  width: 100%;
+  min-height: 360px;
+  box-sizing: border-box;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 36px;
+  border: 1px solid #dce6e9;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.state-card strong {
+  color: #284754;
+  font-size: 16px;
+}
+
+.state-card p {
+  max-width: 520px;
+  margin: 0;
+  color: #768b94;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1250px) {
+  .overview-grid,
+  .quick-action-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .status-grid,
+  .insurance-summary-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .claim-summary-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-header,
+  .section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header-actions,
+  .section-actions {
+    width: 100%;
+  }
+
+  .header-actions button,
+  .section-actions button {
+    flex: 1;
+  }
+
+  .profile-banner,
+  .profile-setup-banner {
+    grid-template-columns:
+      55px minmax(0, 1fr);
+  }
+
+  .profile-icon {
+    width: 55px;
+    height: 55px;
+  }
+
+  .profile-actions,
+  .profile-setup-banner > button {
+    grid-column: 1 / -1;
+    justify-items: stretch;
+  }
+
+  .profile-actions button,
+  .profile-setup-banner > button {
+    width: 100%;
+  }
+
+  .dual-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .entity-row,
+  .record-row {
+    grid-template-columns:
+      auto minmax(0, 1fr) auto;
+  }
+
+  .entity-value {
+    grid-column: 2;
+    justify-items: start;
+  }
+
+  .entity-row > .status-pill {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .entity-row > .row-arrow {
+    grid-column: 3;
+  }
+}
+
+@media (max-width: 650px) {
+  .overview-grid,
+  .status-grid,
+  .insurance-summary-grid,
+  .claim-summary-grid,
+  .quick-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .financial-card {
+    grid-column: auto;
+  }
+
+  .header-actions,
+  .section-actions {
+    flex-direction: column;
+  }
+
+  .profile-banner,
+  .profile-setup-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-section {
+    padding: 16px;
+  }
+
+  .entity-row,
+  .record-row {
+    grid-template-columns:
+      41px minmax(0, 1fr);
+  }
+
+  .entity-primary {
+    grid-column: 2;
+  }
+
+  .entity-value,
+  .entity-row > .status-pill,
+  .entity-row > .row-arrow {
+    grid-column: 2;
+    justify-items: start;
+  }
+
+  .entity-row > .status-pill {
+    grid-row: auto;
+    width: fit-content;
+  }
+
+  .compact-row {
+    grid-template-columns:
+      auto minmax(0, 1fr);
+  }
+
+  .compact-row > .status-pill {
+    grid-column: 2;
+    width: fit-content;
+  }
+}

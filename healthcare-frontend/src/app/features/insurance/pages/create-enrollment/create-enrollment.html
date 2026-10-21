@@ -1,0 +1,457 @@
+<section class="enrollment-page">
+  <button
+    mat-button
+    type="button"
+    class="back-button"
+    (click)="goBackToPlan()"
+  >
+    <mat-icon>
+      arrow_back
+    </mat-icon>
+
+    Back to plan details
+  </button>
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        Insurance Enrollment
+      </p>
+
+      <h1>
+        Submit an enrollment request
+      </h1>
+
+      <p>
+        Choose your preferred coverage start date
+        and provide nominee information.
+      </p>
+    </div>
+  </header>
+
+  @if (planState.detailsLoading()) {
+    <section class="state-card">
+      <mat-spinner
+        diameter="44"
+      ></mat-spinner>
+
+      <strong>
+        Loading selected plan
+      </strong>
+
+      <p>
+        Please wait while the insurance plan
+        information is retrieved.
+      </p>
+    </section>
+  } @else if (planState.errorMessage()) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <mat-icon>
+          error_outline
+        </mat-icon>
+      </div>
+
+      <strong>
+        Unable to load selected plan
+      </strong>
+
+      <p>
+        {{ planState.errorMessage() }}
+      </p>
+
+      <button
+        mat-flat-button
+        type="button"
+        (click)="goBackToPlans()"
+      >
+        Browse available plans
+      </button>
+    </section>
+  } @else if (
+    planState.selectedPlan();
+    as plan
+  ) {
+    <section class="selected-plan">
+      <div class="plan-icon">
+        <mat-icon>
+          health_and_safety
+        </mat-icon>
+      </div>
+
+      <div class="plan-copy">
+        <span>
+          {{ plan.planCode }}
+        </span>
+
+        <h2>
+          {{ plan.planName }}
+        </h2>
+
+        <p>
+          {{ plan.payerOrganizationName }}
+        </p>
+      </div>
+
+      <div class="plan-financial">
+        <span>
+          Coverage
+        </span>
+
+        <strong>
+          {{
+            plan.coverageAmount
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-0':
+                'en-IN'
+          }}
+        </strong>
+      </div>
+
+      <div class="plan-financial">
+        <span>
+          Monthly premium
+        </span>
+
+        <strong>
+          {{
+            plan.monthlyPremium
+              | currency:
+                'INR':
+                'symbol':
+                '1.0-2':
+                'en-IN'
+          }}
+        </strong>
+      </div>
+    </section>
+
+    @if (enrollmentState.errorMessage()) {
+      <section
+        class="form-error"
+        role="alert"
+      >
+        <mat-icon>
+          error_outline
+        </mat-icon>
+
+        <span>
+          {{ enrollmentState.errorMessage() }}
+        </span>
+      </section>
+    }
+
+    <form
+      class="enrollment-form"
+      [formGroup]="enrollmentForm"
+      (ngSubmit)="reviewAndSubmit()"
+      novalidate
+    >
+      <section class="form-section">
+        <header class="section-header">
+          <div class="section-icon">
+            <mat-icon>
+              event_available
+            </mat-icon>
+          </div>
+
+          <div>
+            <h2>
+              Coverage start date
+            </h2>
+
+            <p>
+              Choose today or a future date for
+              your requested policy coverage.
+            </p>
+          </div>
+        </header>
+
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>
+            Requested coverage start date
+          </mat-label>
+
+          <mat-icon matPrefix>
+            calendar_month
+          </mat-icon>
+
+          <input
+            matInput
+            formControlName="requestedCoverageStartDate"
+            [matDatepicker]="coverageDatePicker"
+            [min]="minimumCoverageStartDate"
+            readonly
+          >
+
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="coverageDatePicker"
+          ></mat-datepicker-toggle>
+
+          <mat-datepicker
+            #coverageDatePicker
+          ></mat-datepicker>
+
+          <mat-hint>
+            The date cannot be in the past.
+          </mat-hint>
+
+          @if (
+            enrollmentForm.controls
+              .requestedCoverageStartDate
+              .touched
+            && enrollmentForm.controls
+              .requestedCoverageStartDate
+              .hasError('required')
+          ) {
+            <mat-error>
+              Requested coverage start date is required.
+            </mat-error>
+          }
+        </mat-form-field>
+      </section>
+
+      <section class="form-section">
+        <header class="section-header">
+          <div class="section-icon nominee-icon">
+            <mat-icon>
+              contact_emergency
+            </mat-icon>
+          </div>
+
+          <div>
+            <h2>
+              Nominee information
+            </h2>
+
+            <p>
+              Provide accurate details of the person
+              nominated for this insurance enrollment.
+            </p>
+          </div>
+        </header>
+
+        <div class="form-grid">
+          <mat-form-field
+            appearance="outline"
+            class="full-row"
+          >
+            <mat-label>
+              Nominee full name
+            </mat-label>
+
+            <mat-icon matPrefix>
+              person_outline
+            </mat-icon>
+
+            <input
+              matInput
+              type="text"
+              formControlName="nomineeName"
+              maxlength="150"
+              placeholder="Enter nominee name"
+            >
+
+            <mat-hint align="end">
+              {{
+                enrollmentForm.controls
+                  .nomineeName
+                  .value
+                  .length
+              }}/150
+            </mat-hint>
+
+            @if (
+              enrollmentForm.controls
+                .nomineeName
+                .touched
+              && enrollmentForm.controls
+                .nomineeName
+                .hasError('required')
+            ) {
+              <mat-error>
+                Nominee name is required.
+              </mat-error>
+            }
+
+            @if (
+              enrollmentForm.controls
+                .nomineeName
+                .touched
+              && enrollmentForm.controls
+                .nomineeName
+                .hasError('pattern')
+            ) {
+              <mat-error>
+                Nominee name contains invalid characters.
+              </mat-error>
+            }
+
+            @if (
+              enrollmentForm.controls
+                .nomineeName
+                .touched
+              && enrollmentForm.controls
+                .nomineeName
+                .hasError('maxlength')
+            ) {
+              <mat-error>
+                Maximum 150 characters are allowed.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>
+              Relationship
+            </mat-label>
+
+            <mat-icon matPrefix>
+              family_restroom
+            </mat-icon>
+
+            <mat-select
+              formControlName="nomineeRelationship"
+            >
+              @for (
+                option of nomineeRelationshipOptions;
+                track option.value
+              ) {
+                <mat-option
+                  [value]="option.value"
+                >
+                  {{ option.label }}
+                </mat-option>
+              }
+            </mat-select>
+
+            @if (
+              enrollmentForm.controls
+                .nomineeRelationship
+                .touched
+              && enrollmentForm.controls
+                .nomineeRelationship
+                .hasError('required')
+            ) {
+              <mat-error>
+                Nominee relationship is required.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>
+              Nominee contact number
+            </mat-label>
+
+            <mat-icon matPrefix>
+              phone
+            </mat-icon>
+
+            <input
+              matInput
+              type="tel"
+              formControlName="nomineeContactNumber"
+              maxlength="20"
+              placeholder="+91 98765 43210"
+            >
+
+            @if (
+              enrollmentForm.controls
+                .nomineeContactNumber
+                .touched
+              && enrollmentForm.controls
+                .nomineeContactNumber
+                .hasError('required')
+            ) {
+              <mat-error>
+                Nominee contact number is required.
+              </mat-error>
+            }
+
+            @if (
+              enrollmentForm.controls
+                .nomineeContactNumber
+                .touched
+              && enrollmentForm.controls
+                .nomineeContactNumber
+                .hasError('pattern')
+            ) {
+              <mat-error>
+                Enter a valid contact number containing
+                10 to 20 supported characters.
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="information-panel">
+        <mat-icon>
+          info
+        </mat-icon>
+
+        <div>
+          <strong>
+            Before submitting
+          </strong>
+
+          <p>
+            The payer organization will review your
+            enrollment request. Policy coverage begins
+            only after the request is approved and a
+            policy is issued.
+          </p>
+        </div>
+      </section>
+
+      <footer class="form-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="enrollmentState.submitting()"
+          (click)="goBackToPlan()"
+        >
+          Cancel
+        </button>
+
+        <button
+  mat-flat-button
+  type="submit"
+  class="submit-button"
+  [disabled]="enrollmentState.submitting()"
+>
+  @if (
+    enrollmentState.submitting()
+  ) {
+
+    <mat-spinner
+      diameter="22"
+    ></mat-spinner>
+
+  } @else {
+
+    <ng-container>
+
+      <mat-icon>
+        assignment_turned_in
+      </mat-icon>
+
+      <span>
+        Review and submit
+      </span>
+
+    </ng-container>
+
+  }
+</button>
+      </footer>
+    </form>
+  }
+</section>
