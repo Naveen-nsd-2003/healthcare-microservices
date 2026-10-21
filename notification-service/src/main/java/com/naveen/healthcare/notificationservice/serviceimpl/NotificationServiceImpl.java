@@ -38,7 +38,7 @@ public class NotificationServiceImpl
         validateRecipientRole(recipientRole);
 
         return notificationRepository
-                .findAllByRecipientEmailIgnoreCaseAndRecipientRoleOrderByCreatedAtDesc(
+                .findAllByRecipientEmailIgnoreCaseAndRecipientRoleOrderByOccurredAtDescCreatedAtDesc(
                         normalizedEmail,
                         recipientRole
                 )
@@ -61,7 +61,7 @@ public class NotificationServiceImpl
         validateRecipientRole(recipientRole);
 
         return notificationRepository
-                .findAllByRecipientEmailIgnoreCaseAndRecipientRoleAndReadStatusFalseOrderByCreatedAtDesc(
+                .findAllByRecipientEmailIgnoreCaseAndRecipientRoleAndReadStatusFalseOrderByOccurredAtDescCreatedAtDesc(
                         normalizedEmail,
                         recipientRole
                 )

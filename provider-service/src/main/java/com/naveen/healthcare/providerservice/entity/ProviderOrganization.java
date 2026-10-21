@@ -67,7 +67,9 @@ import java.util.UUID;
 public class ProviderOrganization {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(
+            strategy = GenerationType.UUID
+    )
     private UUID id;
 
     @Column(
@@ -168,7 +170,36 @@ public class ProviderOrganization {
             length = 20
     )
     @Builder.Default
-    private ProviderStatus status = ProviderStatus.ACTIVE;
+    private ProviderStatus status =
+            ProviderStatus.ACTIVE;
+
+    @Column(
+            name = "submitted_at"
+    )
+    private LocalDateTime submittedAt;
+
+    @Column(
+            name = "reviewed_at"
+    )
+    private LocalDateTime reviewedAt;
+
+    @Column(
+            name = "reviewed_by_email",
+            length = 150
+    )
+    private String reviewedByEmail;
+
+    @Column(
+            name = "review_remarks",
+            length = 1000
+    )
+    private String reviewRemarks;
+
+    @Column(
+            name = "rejection_reason",
+            length = 1000
+    )
+    private String rejectionReason;
 
     @Column(
             name = "created_at",
@@ -186,7 +217,8 @@ public class ProviderOrganization {
     @PrePersist
     protected void onCreate() {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now =
+                LocalDateTime.now();
 
         createdAt = now;
         updatedAt = now;
@@ -195,6 +227,7 @@ public class ProviderOrganization {
     @PreUpdate
     protected void onUpdate() {
 
-        updatedAt = LocalDateTime.now();
+        updatedAt =
+                LocalDateTime.now();
     }
 }

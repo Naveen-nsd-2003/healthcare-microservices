@@ -107,6 +107,12 @@ public class Appointment {
             length = 200
     )
     private String providerOrganizationName;
+    @Column(
+            name = "provider_admin_email",
+            updatable = false,
+            length = 150
+    )
+    private String providerAdminEmail;
 
     @Column(
             name = "department_id",

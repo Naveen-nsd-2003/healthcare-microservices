@@ -24,6 +24,7 @@ public class ClaimAppointmentVerificationResponse {
     private UUID providerId;
 
     private String providerOrganizationName;
+    private String providerAdminEmail;
 
     private UUID departmentId;
 

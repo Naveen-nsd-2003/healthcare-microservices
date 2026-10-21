@@ -18,11 +18,15 @@ import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.UUID;
+
+import com.naveen.healthcare.claimservice.dto.response.ClaimSubmissionContextResponse;
+import com.naveen.healthcare.claimservice.dto.response.EligibleClaimPolicyResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -103,6 +107,70 @@ public class ClaimVerificationServiceImpl
                 .appointment(appointment)
                 .medicalRecord(medicalRecord)
                 .policy(policy)
+                .build();
+    }
+
+    @Override
+    public ClaimSubmissionContextResponse getClaimSubmissionContext(
+            UUID appointmentId,
+            UUID medicalRecordId
+    ) {
+
+        validateSubmissionContextRequest(
+                appointmentId,
+                medicalRecordId
+        );
+
+        ClaimAppointmentVerificationResponse appointment =
+                retrieveAppointmentVerification(
+                        appointmentId
+                );
+
+        validateAppointmentResponse(
+                appointment,
+                appointmentId
+        );
+
+        ClaimMedicalRecordVerificationResponse medicalRecord =
+                retrieveMedicalRecordVerification(
+                        medicalRecordId,
+                        appointmentId
+                );
+
+        validateMedicalRecordResponse(
+                medicalRecord,
+                medicalRecordId,
+                appointmentId
+        );
+
+        crossCheckAppointmentAndMedicalRecord(
+                appointment,
+                medicalRecord
+        );
+
+        List<EligibleClaimPolicyResponse> eligiblePolicies =
+                retrieveEligiblePolicies(
+                        appointment.getMemberId(),
+                        appointment.getAppointmentDate()
+                );
+
+        return ClaimSubmissionContextResponse
+                .builder()
+                .message(
+                        eligiblePolicies.isEmpty()
+                                ? "No eligible insurance policy was found "
+                                + "for the appointment service date"
+                                : "Claim submission context loaded successfully"
+                )
+                .appointment(
+                        appointment
+                )
+                .medicalRecord(
+                        medicalRecord
+                )
+                .eligiblePolicies(
+                        eligiblePolicies
+                )
                 .build();
     }
 
@@ -188,6 +256,62 @@ public class ClaimVerificationServiceImpl
 
             throw new RemoteServiceCommunicationException(
                     "Payers Service returned an unexpected response",
+                    exception
+            );
+        }
+    }
+
+    private List<EligibleClaimPolicyResponse>
+    retrieveEligiblePolicies(
+            UUID memberId,
+            LocalDate serviceDate
+    ) {
+
+        if (memberId == null) {
+            throw new RemoteServiceCommunicationException(
+                    "Verified appointment does not contain "
+                            + "a Member ID"
+            );
+        }
+
+        if (serviceDate == null) {
+            throw new RemoteServiceCommunicationException(
+                    "Verified appointment does not contain "
+                            + "a service date"
+            );
+        }
+
+        try {
+            List<EligibleClaimPolicyResponse> eligiblePolicies =
+                    payersServiceClient
+                            .getEligiblePoliciesForClaim(
+                                    memberId,
+                                    serviceDate
+                            );
+
+            if (eligiblePolicies == null) {
+                throw new RemoteServiceCommunicationException(
+                        "Payers Service returned an empty "
+                                + "eligible-policy response"
+                );
+            }
+
+            return eligiblePolicies;
+
+        } catch (RetryableException exception) {
+            throw new RemoteServiceCommunicationException(
+                    "Eligible policy lookup is temporarily unavailable",
+                    exception
+            );
+
+        } catch (FeignException exception) {
+            handleEligiblePolicyFeignException(
+                    exception
+            );
+
+            throw new RemoteServiceCommunicationException(
+                    "Payers Service returned an unexpected "
+                            + "eligible-policy response",
                     exception
             );
         }
@@ -341,6 +465,49 @@ public class ClaimVerificationServiceImpl
         );
     }
 
+    private void handleEligiblePolicyFeignException(
+            FeignException exception
+    ) {
+
+        int status = exception.status();
+
+        if (status == 400) {
+            throw new ClaimPolicyVerificationException(
+                    "Eligible policies could not be loaded "
+                            + "for the appointment service date"
+            );
+        }
+
+        if (status == 401) {
+            throw new RemoteServiceCommunicationException(
+                    "Payers Service rejected the forwarded "
+                            + "authentication token",
+                    exception
+            );
+        }
+
+        if (status == 403) {
+            throw new RemoteServiceCommunicationException(
+                    "Payers Service rejected the forwarded "
+                            + "Provider authorization",
+                    exception
+            );
+        }
+
+        if (status == 503) {
+            throw new RemoteServiceCommunicationException(
+                    "Eligible policy lookup is temporarily unavailable",
+                    exception
+            );
+        }
+
+        throw new RemoteServiceCommunicationException(
+                "Payers Service returned an unexpected "
+                        + "eligible-policy response",
+                exception
+        );
+    }
+
     private void validateRequest(
             ClaimVerificationTestRequest request
     ) {
@@ -369,6 +536,24 @@ public class ClaimVerificationServiceImpl
             );
         }
     }
+    private void validateSubmissionContextRequest(
+            UUID appointmentId,
+            UUID medicalRecordId
+    ) {
+
+        if (appointmentId == null) {
+            throw new ClaimAppointmentVerificationException(
+                    "Appointment ID is required"
+            );
+        }
+
+        if (medicalRecordId == null) {
+            throw new ClaimMedicalRecordVerificationException(
+                    "Medical Record ID is required"
+            );
+        }
+    }
+
 
     private void validateAppointmentResponse(
             ClaimAppointmentVerificationResponse appointment,

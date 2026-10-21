@@ -254,6 +254,9 @@ public class ProviderBookingVerificationServiceImpl
                 .providerOrganizationName(
                         providerOrganization.getOrganizationName()
                 )
+                .providerAdminEmail(
+                        providerOrganization.getAdminEmail()
+                )
                 .departmentId(
                         department.getId()
                 )

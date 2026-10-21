@@ -47,6 +47,16 @@ claim:
     topics:
       claim-events: healthcare.claim.events
 
+  outbox:
+    publisher:
+      fixed-delay-ms: 2000
+      batch-size: 50
+      maximum-retries: 10
+      initial-retry-delay-seconds: 5
+      maximum-retry-delay-seconds: 3600
+      processing-timeout-seconds: 300
+      send-timeout-seconds: 30
+
 eureka:
   client:
     register-with-eureka: true

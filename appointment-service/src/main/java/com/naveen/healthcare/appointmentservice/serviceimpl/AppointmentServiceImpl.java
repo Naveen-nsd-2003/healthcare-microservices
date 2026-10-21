@@ -88,6 +88,9 @@ public class AppointmentServiceImpl
                         request.getAppointmentDate(),
                         request.getStartTime()
                 );
+        validateProviderBookingVerification(
+                providerVerification
+        );
 
         validateDoctorSlotIsNotBooked(
                 providerVerification.getDoctorId(),
@@ -118,6 +121,12 @@ public class AppointmentServiceImpl
                                 normalizeRequiredText(
                                         providerVerification
                                                 .getProviderOrganizationName()
+                                )
+                        )
+                        .providerAdminEmail(
+                                normalizeEmail(
+                                        providerVerification
+                                                .getProviderAdminEmail()
                                 )
                         )
                         .departmentId(
@@ -499,7 +508,14 @@ public class AppointmentServiceImpl
         );
 
         Appointment updatedAppointment =
-                appointmentRepository.save(appointment);
+                appointmentRepository.saveAndFlush(
+                        appointment
+                );
+
+        appointmentEventPublisher
+                .publishAppointmentNoShow(
+                        updatedAppointment
+                );
 
         return mapToResponse(updatedAppointment);
     }
@@ -939,6 +955,86 @@ public class AppointmentServiceImpl
                 .toLowerCase(Locale.ROOT);
     }
 
+    private void validateProviderBookingVerification(
+            ProviderBookingVerificationResponse response
+    ) {
+
+        if (response == null) {
+            throw new ProviderVerificationException(
+                    "Provider Service returned an empty "
+                            + "booking verification response"
+            );
+        }
+
+        if (response.getProviderId() == null) {
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain a Provider ID"
+            );
+        }
+
+        if (response.getProviderOrganizationName() == null
+                || response
+                .getProviderOrganizationName()
+                .isBlank()) {
+
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain an organization name"
+            );
+        }
+
+        if (response.getProviderAdminEmail() == null
+                || response
+                .getProviderAdminEmail()
+                .isBlank()) {
+
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain an administrator email"
+            );
+        }
+
+        if (response.getDepartmentId() == null
+                || response.getDepartmentName() == null
+                || response.getDepartmentName().isBlank()) {
+
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain complete Department information"
+            );
+        }
+
+        if (response.getDoctorId() == null
+                || response.getDoctorName() == null
+                || response.getDoctorName().isBlank()) {
+
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain complete Doctor information"
+            );
+        }
+
+        if (response.getAppointmentDate() == null
+                || response.getStartTime() == null
+                || response.getEndTime() == null) {
+
+            throw new ProviderVerificationException(
+                    "Provider booking verification does not "
+                            + "contain complete appointment timing"
+            );
+        }
+
+        if (!Boolean.TRUE.equals(
+                response.getAvailable()
+        )) {
+
+            throw new ProviderVerificationException(
+                    "The selected Doctor appointment slot "
+                            + "is not available"
+            );
+        }
+    }
     private String normalizeRequiredText(
             String value
     ) {

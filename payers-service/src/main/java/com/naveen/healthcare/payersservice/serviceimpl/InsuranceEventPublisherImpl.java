@@ -1,3 +1,4 @@
+
 package com.naveen.healthcare.payersservice.serviceimpl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,20 +7,21 @@ import com.naveen.healthcare.payersservice.dto.event.HealthcareEvent;
 import com.naveen.healthcare.payersservice.entity.InsuranceEnrollment;
 import com.naveen.healthcare.payersservice.entity.InsurancePlan;
 import com.naveen.healthcare.payersservice.entity.InsurancePolicy;
+import com.naveen.healthcare.payersservice.entity.OutboxEvent;
 import com.naveen.healthcare.payersservice.entity.PayerOrganization;
 import com.naveen.healthcare.payersservice.enums.NotificationType;
+import com.naveen.healthcare.payersservice.enums.OutboxEventStatus;
 import com.naveen.healthcare.payersservice.enums.RecipientRole;
 import com.naveen.healthcare.payersservice.enums.ReferenceType;
+import com.naveen.healthcare.payersservice.repository.OutboxEventRepository;
 import com.naveen.healthcare.payersservice.service.InsuranceEventPublisher;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -29,17 +31,20 @@ import java.util.UUID;
 public class InsuranceEventPublisherImpl
         implements InsuranceEventPublisher {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(
-                    InsuranceEventPublisherImpl.class
-            );
+    private static final String ENROLLMENT_AGGREGATE =
+            "ENROLLMENT";
 
-    private final KafkaTemplate<String, String>
-            kafkaTemplate;
+    private static final String POLICY_AGGREGATE =
+            "POLICY";
 
     private final ObjectMapper objectMapper;
 
-    @Value("${insurance.kafka.topics.insurance-events}")
+    private final OutboxEventRepository
+            outboxEventRepository;
+
+    @Value(
+            "${insurance.kafka.topics.insurance-events}"
+    )
     private String insuranceEventsTopic;
 
     @Override
@@ -47,13 +52,58 @@ public class InsuranceEventPublisherImpl
             InsuranceEnrollment enrollment
     ) {
 
-        publishEnrollmentEvent(
-                enrollment,
-                NotificationType.ENROLLMENT_SUBMITTED,
-                "Enrollment Submitted",
-                "Your enrollment request for "
-                        + getEnrollmentPlanNameSafely(enrollment)
-                        + " has been submitted successfully."
+        validateEnrollment(
+                enrollment
+        );
+
+        PayerOrganization payer =
+                enrollment.getPayerOrganization();
+
+        LocalDateTime occurredAt =
+                resolveEnrollmentOccurredAt(
+                        enrollment,
+                        NotificationType.ENROLLMENT_SUBMITTED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEnrollmentEvent(
+                        enrollment,
+                        NotificationType.ENROLLMENT_SUBMITTED,
+                        RecipientRole.MEMBER,
+                        enrollment.getMemberEmail(),
+                        "Enrollment Submitted",
+                        "Your enrollment request for "
+                                + getPlanName(enrollment)
+                                + " has been submitted successfully.",
+                        occurredAt
+                );
+
+        HealthcareEvent payerEvent =
+                buildEnrollmentEvent(
+                        enrollment,
+                        NotificationType.ENROLLMENT_SUBMITTED,
+                        RecipientRole.PAYER,
+                        payer.getAdminEmail(),
+                        "New Enrollment Request",
+                        "A new enrollment request for "
+                                + getPlanName(enrollment)
+                                + " was submitted by "
+                                + enrollment.getMemberEmail()
+                                + " and requires review.",
+                        occurredAt
+                );
+
+        outboxEventRepository.saveAllAndFlush(
+                List.of(
+                        buildEnrollmentOutbox(
+                                enrollment,
+                                memberEvent
+                        ),
+                        buildEnrollmentOutbox(
+                                enrollment,
+                                payerEvent
+                        )
+                )
         );
     }
 
@@ -62,12 +112,14 @@ public class InsuranceEventPublisherImpl
             InsuranceEnrollment enrollment
     ) {
 
-        publishEnrollmentEvent(
+        saveEnrollmentEvent(
                 enrollment,
                 NotificationType.ENROLLMENT_APPROVED,
+                RecipientRole.MEMBER,
+                enrollment.getMemberEmail(),
                 "Enrollment Approved",
                 "Your enrollment request for "
-                        + getEnrollmentPlanNameSafely(enrollment)
+                        + getPlanName(enrollment)
                         + " has been approved."
         );
     }
@@ -77,13 +129,85 @@ public class InsuranceEventPublisherImpl
             InsuranceEnrollment enrollment
     ) {
 
-        publishEnrollmentEvent(
+        String message =
+                "Your enrollment request for "
+                        + getPlanName(enrollment)
+                        + " has been rejected.";
+
+        if (enrollment.getReviewRemarks() != null
+                && !enrollment.getReviewRemarks().isBlank()) {
+
+            message += " Remarks: "
+                    + enrollment.getReviewRemarks().trim();
+        }
+
+        saveEnrollmentEvent(
                 enrollment,
                 NotificationType.ENROLLMENT_REJECTED,
+                RecipientRole.MEMBER,
+                enrollment.getMemberEmail(),
                 "Enrollment Rejected",
-                "Your enrollment request for "
-                        + getEnrollmentPlanNameSafely(enrollment)
-                        + " has been rejected."
+                message
+        );
+    }
+
+    @Override
+    public void publishEnrollmentCancelled(
+            InsuranceEnrollment enrollment
+    ) {
+
+        validateEnrollment(
+                enrollment
+        );
+
+        PayerOrganization payer =
+                enrollment.getPayerOrganization();
+
+        LocalDateTime occurredAt =
+                resolveEnrollmentOccurredAt(
+                        enrollment,
+                        NotificationType.ENROLLMENT_CANCELLED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEnrollmentEvent(
+                        enrollment,
+                        NotificationType.ENROLLMENT_CANCELLED,
+                        RecipientRole.MEMBER,
+                        enrollment.getMemberEmail(),
+                        "Enrollment Cancelled",
+                        "Your enrollment request for "
+                                + getPlanName(enrollment)
+                                + " has been cancelled.",
+                        occurredAt
+                );
+
+        HealthcareEvent payerEvent =
+                buildEnrollmentEvent(
+                        enrollment,
+                        NotificationType.ENROLLMENT_CANCELLED,
+                        RecipientRole.PAYER,
+                        payer.getAdminEmail(),
+                        "Enrollment Cancelled by Member",
+                        "The enrollment request for "
+                                + getPlanName(enrollment)
+                                + " submitted by "
+                                + enrollment.getMemberEmail()
+                                + " was cancelled by the Member.",
+                        occurredAt
+                );
+
+        outboxEventRepository.saveAllAndFlush(
+                List.of(
+                        buildEnrollmentOutbox(
+                                enrollment,
+                                memberEvent
+                        ),
+                        buildEnrollmentOutbox(
+                                enrollment,
+                                payerEvent
+                        )
+                )
         );
     }
 
@@ -92,12 +216,12 @@ public class InsuranceEventPublisherImpl
             InsurancePolicy policy
     ) {
 
-        publishPolicyEvent(
+        savePolicyEvent(
                 policy,
                 NotificationType.POLICY_ACTIVATED,
                 "Policy Activated",
                 "Your insurance policy "
-                        + getPolicyNumberSafely(policy)
+                        + getPolicyNumber(policy)
                         + " is now active."
         );
     }
@@ -107,13 +231,28 @@ public class InsuranceEventPublisherImpl
             InsurancePolicy policy
     ) {
 
-        publishPolicyEvent(
+        savePolicyEvent(
                 policy,
                 NotificationType.POLICY_SUSPENDED,
                 "Policy Suspended",
                 "Your insurance policy "
-                        + getPolicyNumberSafely(policy)
+                        + getPolicyNumber(policy)
                         + " has been suspended."
+        );
+    }
+
+    @Override
+    public void publishPolicyCancelled(
+            InsurancePolicy policy
+    ) {
+
+        savePolicyEvent(
+                policy,
+                NotificationType.POLICY_CANCELLED,
+                "Policy Cancelled",
+                "Your insurance policy "
+                        + getPolicyNumber(policy)
+                        + " has been cancelled."
         );
     }
 
@@ -122,179 +261,272 @@ public class InsuranceEventPublisherImpl
             InsurancePolicy policy
     ) {
 
-        publishPolicyEvent(
+        savePolicyEvent(
                 policy,
                 NotificationType.POLICY_EXPIRED,
                 "Policy Expired",
                 "Your insurance policy "
-                        + getPolicyNumberSafely(policy)
+                        + getPolicyNumber(policy)
                         + " has expired."
         );
     }
 
-    private void publishEnrollmentEvent(
+    private void saveEnrollmentEvent(
             InsuranceEnrollment enrollment,
-            NotificationType eventType,
+            NotificationType notificationType,
+            RecipientRole recipientRole,
+            String recipientEmail,
             String title,
             String message
     ) {
 
-        try {
+        validateEnrollment(
+                enrollment
+        );
 
-            validateEnrollmentForPublishing(
-                    enrollment
-            );
+        HealthcareEvent event =
+                buildEnrollmentEvent(
+                        enrollment,
+                        notificationType,
+                        recipientRole,
+                        recipientEmail,
+                        title,
+                        message,
+                        resolveEnrollmentOccurredAt(
+                                enrollment,
+                                notificationType
+                        )
+                );
 
-            HealthcareEvent event =
-                    buildEnrollmentEvent(
-                            enrollment,
-                            eventType,
-                            title,
-                            message
-                    );
-
-            String messageKey =
-                    enrollment.getId().toString();
-
-            publishEvent(
-                    messageKey,
-                    enrollment.getId(),
-                    eventType,
-                    event
-            );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to publish {} event to Kafka. "
-                            + "Enrollment ID: {}. "
-                            + "The enrollment operation remains successful.",
-                    eventType,
-                    enrollment == null
-                            ? null
-                            : enrollment.getId(),
-                    exception
-            );
-        }
-    }
-
-    private void publishPolicyEvent(
-            InsurancePolicy policy,
-            NotificationType eventType,
-            String title,
-            String message
-    ) {
-
-        try {
-
-            validatePolicyForPublishing(
-                    policy
-            );
-
-            HealthcareEvent event =
-                    buildPolicyEvent(
-                            policy,
-                            eventType,
-                            title,
-                            message
-                    );
-
-            String messageKey =
-                    policy.getId().toString();
-
-            publishEvent(
-                    messageKey,
-                    policy.getId(),
-                    eventType,
-                    event
-            );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to publish {} event to Kafka. "
-                            + "Policy ID: {}. "
-                            + "The policy operation remains successful.",
-                    eventType,
-                    policy == null
-                            ? null
-                            : policy.getId(),
-                    exception
-            );
-        }
-    }
-
-    private void publishEvent(
-            String messageKey,
-            UUID referenceId,
-            NotificationType eventType,
-            HealthcareEvent event
-    ) {
-
-        String eventJson =
-                convertEventToJson(
+        outboxEventRepository.saveAndFlush(
+                buildEnrollmentOutbox(
+                        enrollment,
                         event
-                );
-
-        kafkaTemplate
-                .send(
-                        insuranceEventsTopic,
-                        messageKey,
-                        eventJson
                 )
-                .whenComplete(
-                        (sendResult, exception) -> {
+        );
+    }
 
-                            if (exception != null) {
+    private void savePolicyEvent(
+            InsurancePolicy policy,
+            NotificationType notificationType,
+            String title,
+            String message
+    ) {
 
-                                LOGGER.error(
-                                        "Failed to publish {} event. "
-                                                + "Reference ID: {}, "
-                                                + "event ID: {}",
-                                        eventType,
-                                        referenceId,
-                                        event.getEventId(),
-                                        exception
-                                );
+        validatePolicy(
+                policy
+        );
 
-                                return;
-                            }
-
-                            LOGGER.info(
-                                    "Published {} event. "
-                                            + "Reference ID: {}, "
-                                            + "event ID: {}, "
-                                            + "topic: {}, "
-                                            + "partition: {}, "
-                                            + "offset: {}",
-                                    eventType,
-                                    referenceId,
-                                    event.getEventId(),
-                                    sendResult
-                                            .getRecordMetadata()
-                                            .topic(),
-                                    sendResult
-                                            .getRecordMetadata()
-                                            .partition(),
-                                    sendResult
-                                            .getRecordMetadata()
-                                            .offset()
-                            );
-                        }
+        HealthcareEvent event =
+                buildPolicyEvent(
+                        policy,
+                        notificationType,
+                        title,
+                        message
                 );
+
+        outboxEventRepository.saveAndFlush(
+                buildPolicyOutbox(
+                        policy,
+                        event
+                )
+        );
     }
 
     private HealthcareEvent buildEnrollmentEvent(
             InsuranceEnrollment enrollment,
-            NotificationType eventType,
+            NotificationType notificationType,
+            RecipientRole recipientRole,
+            String recipientEmail,
+            String title,
+            String message,
+            LocalDateTime occurredAt
+    ) {
+
+        return HealthcareEvent.builder()
+                .eventId(
+                        UUID.randomUUID()
+                )
+                .eventType(
+                        notificationType
+                )
+                .occurredAt(
+                        occurredAt
+                )
+                .recipientEmail(
+                        normalizeEmail(
+                                recipientEmail
+                        )
+                )
+                .recipientRole(
+                        recipientRole
+                )
+                .referenceType(
+                        ReferenceType.ENROLLMENT
+                )
+                .referenceId(
+                        enrollment.getId()
+                )
+                .title(
+                        normalizeText(
+                                title,
+                                "Notification title"
+                        )
+                )
+                .message(
+                        normalizeText(
+                                message,
+                                "Notification message"
+                        )
+                )
+                .metadata(
+                        buildEnrollmentMetadata(
+                                enrollment
+                        )
+                )
+                .build();
+    }
+
+    private HealthcareEvent buildPolicyEvent(
+            InsurancePolicy policy,
+            NotificationType notificationType,
             String title,
             String message
     ) {
 
-        InsurancePlan insurancePlan =
+        return HealthcareEvent.builder()
+                .eventId(
+                        UUID.randomUUID()
+                )
+                .eventType(
+                        notificationType
+                )
+                .occurredAt(
+                        resolvePolicyOccurredAt(
+                                policy
+                        )
+                )
+                .recipientEmail(
+                        normalizeEmail(
+                                policy.getMemberEmail()
+                        )
+                )
+                .recipientRole(
+                        RecipientRole.MEMBER
+                )
+                .referenceType(
+                        ReferenceType.POLICY
+                )
+                .referenceId(
+                        policy.getId()
+                )
+                .title(
+                        normalizeText(
+                                title,
+                                "Notification title"
+                        )
+                )
+                .message(
+                        normalizeText(
+                                message,
+                                "Notification message"
+                        )
+                )
+                .metadata(
+                        buildPolicyMetadata(
+                                policy
+                        )
+                )
+                .build();
+    }
+
+    private OutboxEvent buildEnrollmentOutbox(
+            InsuranceEnrollment enrollment,
+            HealthcareEvent event
+    ) {
+
+        return buildOutboxEvent(
+                event,
+                ENROLLMENT_AGGREGATE,
+                enrollment.getId()
+        );
+    }
+
+    private OutboxEvent buildPolicyOutbox(
+            InsurancePolicy policy,
+            HealthcareEvent event
+    ) {
+
+        return buildOutboxEvent(
+                event,
+                POLICY_AGGREGATE,
+                policy.getId()
+        );
+    }
+
+    private OutboxEvent buildOutboxEvent(
+            HealthcareEvent event,
+            String aggregateType,
+            UUID aggregateId
+    ) {
+
+        validateEvent(
+                event
+        );
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        return OutboxEvent.builder()
+                .id(
+                        UUID.randomUUID()
+                )
+                .eventId(
+                        event.getEventId()
+                )
+                .aggregateType(
+                        aggregateType
+                )
+                .aggregateId(
+                        aggregateId
+                )
+                .eventType(
+                        event.getEventType().name()
+                )
+                .topicName(
+                        normalizeText(
+                                insuranceEventsTopic,
+                                "Insurance Kafka topic"
+                        )
+                )
+                .messageKey(
+                        aggregateId.toString()
+                )
+                .payload(
+                        serializeEvent(event)
+                )
+                .status(
+                        OutboxEventStatus.PENDING
+                )
+                .retryCount(0)
+                .nextAttemptAt(now)
+                .processingStartedAt(null)
+                .lastAttemptAt(null)
+                .publishedAt(null)
+                .lastError(null)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+    }
+
+    private Map<String, Object> buildEnrollmentMetadata(
+            InsuranceEnrollment enrollment
+    ) {
+
+        InsurancePlan plan =
                 enrollment.getInsurancePlan();
 
-        PayerOrganization payerOrganization =
+        PayerOrganization payer =
                 enrollment.getPayerOrganization();
 
         Map<String, Object> metadata =
@@ -307,47 +539,49 @@ public class InsuranceEventPublisherImpl
 
         metadata.put(
                 "memberId",
-                enrollment.getMemberId()
+                enrollment.getMemberId().toString()
         );
 
         metadata.put(
                 "planId",
-                insurancePlan.getId()
+                plan.getId().toString()
         );
 
         metadata.put(
                 "planCode",
-                insurancePlan.getPlanCode()
+                plan.getPlanCode()
         );
 
         metadata.put(
                 "planName",
-                insurancePlan.getPlanName()
+                plan.getPlanName()
         );
 
         metadata.put(
                 "coverageAmount",
-                insurancePlan.getCoverageAmount()
+                plan.getCoverageAmount()
         );
 
         metadata.put(
                 "monthlyPremium",
-                insurancePlan.getMonthlyPremium()
+                plan.getMonthlyPremium()
         );
 
         metadata.put(
                 "payerId",
-                payerOrganization.getId()
+                payer.getId().toString()
         );
 
         metadata.put(
                 "payerOrganizationName",
-                payerOrganization.getOrganizationName()
+                payer.getOrganizationName()
         );
 
         metadata.put(
                 "requestedCoverageStartDate",
-                enrollment.getRequestedCoverageStartDate()
+                enrollment
+                        .getRequestedCoverageStartDate()
+                        .toString()
         );
 
         metadata.put(
@@ -355,61 +589,25 @@ public class InsuranceEventPublisherImpl
                 enrollment.getStatus().name()
         );
 
-        metadata.put(
-                "reviewRemarks",
-                enrollment.getReviewRemarks()
-        );
+        if (enrollment.getReviewRemarks() != null) {
 
-        return HealthcareEvent.builder()
-                .eventId(
-                        UUID.randomUUID()
-                )
-                .eventType(
-                        eventType
-                )
-                .occurredAt(
-                        resolveEnrollmentOccurredAt(
-                                enrollment,
-                                eventType
-                        )
-                )
-                .recipientEmail(
-                        normalizeEmail(
-                                enrollment.getMemberEmail()
-                        )
-                )
-                .recipientRole(
-                        RecipientRole.MEMBER
-                )
-                .referenceType(
-                        ReferenceType.ENROLLMENT
-                )
-                .referenceId(
-                        enrollment.getId()
-                )
-                .title(
-                        title
-                )
-                .message(
-                        message
-                )
-                .metadata(
-                        metadata
-                )
-                .build();
+            metadata.put(
+                    "reviewRemarks",
+                    enrollment.getReviewRemarks()
+            );
+        }
+
+        return metadata;
     }
 
-    private HealthcareEvent buildPolicyEvent(
-            InsurancePolicy policy,
-            NotificationType eventType,
-            String title,
-            String message
+    private Map<String, Object> buildPolicyMetadata(
+            InsurancePolicy policy
     ) {
 
-        InsurancePlan insurancePlan =
+        InsurancePlan plan =
                 policy.getInsurancePlan();
 
-        PayerOrganization payerOrganization =
+        PayerOrganization payer =
                 policy.getPayerOrganization();
 
         Map<String, Object> metadata =
@@ -438,12 +636,12 @@ public class InsuranceEventPublisherImpl
 
         metadata.put(
                 "memberId",
-                policy.getMemberId()
+                policy.getMemberId().toString()
         );
 
         metadata.put(
                 "planId",
-                insurancePlan.getId()
+                plan.getId().toString()
         );
 
         metadata.put(
@@ -468,22 +666,22 @@ public class InsuranceEventPublisherImpl
 
         metadata.put(
                 "payerId",
-                payerOrganization.getId()
+                payer.getId().toString()
         );
 
         metadata.put(
                 "payerOrganizationName",
-                payerOrganization.getOrganizationName()
+                payer.getOrganizationName()
         );
 
         metadata.put(
                 "coverageStartDate",
-                policy.getCoverageStartDate()
+                policy.getCoverageStartDate().toString()
         );
 
         metadata.put(
                 "coverageEndDate",
-                policy.getCoverageEndDate()
+                policy.getCoverageEndDate().toString()
         );
 
         metadata.put(
@@ -491,57 +689,24 @@ public class InsuranceEventPublisherImpl
                 policy.getStatus().name()
         );
 
-        return HealthcareEvent.builder()
-                .eventId(
-                        UUID.randomUUID()
-                )
-                .eventType(
-                        eventType
-                )
-                .occurredAt(
-                        resolvePolicyOccurredAt(policy)
-                )
-                .recipientEmail(
-                        normalizeEmail(
-                                policy.getMemberEmail()
-                        )
-                )
-                .recipientRole(
-                        RecipientRole.MEMBER
-                )
-                .referenceType(
-                        ReferenceType.POLICY
-                )
-                .referenceId(
-                        policy.getId()
-                )
-                .title(
-                        title
-                )
-                .message(
-                        message
-                )
-                .metadata(
-                        metadata
-                )
-                .build();
+        return metadata;
     }
 
     private LocalDateTime resolveEnrollmentOccurredAt(
             InsuranceEnrollment enrollment,
-            NotificationType eventType
+            NotificationType notificationType
     ) {
 
-        if (eventType
+        if (notificationType
                 == NotificationType.ENROLLMENT_SUBMITTED
                 && enrollment.getCreatedAt() != null) {
 
             return enrollment.getCreatedAt();
         }
 
-        if ((eventType
+        if ((notificationType
                 == NotificationType.ENROLLMENT_APPROVED
-                || eventType
+                || notificationType
                 == NotificationType.ENROLLMENT_REJECTED)
                 && enrollment.getReviewedAt() != null) {
 
@@ -570,7 +735,7 @@ public class InsuranceEventPublisherImpl
         return LocalDateTime.now();
     }
 
-    private String convertEventToJson(
+    private String serializeEvent(
             HealthcareEvent event
     ) {
 
@@ -583,179 +748,121 @@ public class InsuranceEventPublisherImpl
         } catch (JsonProcessingException exception) {
 
             throw new IllegalStateException(
-                    "Unable to convert Insurance event to JSON",
+                    "Unable to serialize insurance event",
                     exception
             );
         }
     }
 
-    private void validateEnrollmentForPublishing(
-            InsuranceEnrollment enrollment
+    private void validateEvent(
+            HealthcareEvent event
     ) {
 
-        if (enrollment == null) {
+        if (event == null
+                || event.getEventId() == null
+                || event.getEventType() == null
+                || event.getRecipientRole() == null
+                || event.getReferenceType() == null
+                || event.getReferenceId() == null) {
 
             throw new IllegalArgumentException(
-                    "Insurance enrollment is required"
+                    "Complete healthcare event information "
+                            + "is required"
             );
         }
 
-        if (enrollment.getId() == null) {
+        normalizeEmail(
+                event.getRecipientEmail()
+        );
 
-            throw new IllegalArgumentException(
-                    "Enrollment ID is required"
-            );
-        }
+        normalizeText(
+                event.getTitle(),
+                "Healthcare event title"
+        );
 
-        if (enrollment.getMemberEmail() == null
-                || enrollment.getMemberEmail().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment Member email is required"
-            );
-        }
-
-        if (enrollment.getStatus() == null) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment status is required"
-            );
-        }
-
-        if (enrollment.getInsurancePlan() == null) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment insurance plan is required"
-            );
-        }
-
-        if (enrollment.getInsurancePlan().getId() == null) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment insurance plan ID is required"
-            );
-        }
-
-        if (enrollment.getPayerOrganization() == null) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment Payer organization is required"
-            );
-        }
-
-        if (enrollment.getPayerOrganization().getId() == null) {
-
-            throw new IllegalArgumentException(
-                    "Enrollment Payer organization ID is required"
-            );
-        }
+        normalizeText(
+                event.getMessage(),
+                "Healthcare event message"
+        );
     }
 
-    private void validatePolicyForPublishing(
-            InsurancePolicy policy
-    ) {
-
-        if (policy == null) {
-
-            throw new IllegalArgumentException(
-                    "Insurance policy is required"
-            );
-        }
-
-        if (policy.getId() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy ID is required"
-            );
-        }
-
-        if (policy.getPolicyNumber() == null
-                || policy.getPolicyNumber().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Policy number is required"
-            );
-        }
-
-        if (policy.getMemberEmail() == null
-                || policy.getMemberEmail().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Policy Member email is required"
-            );
-        }
-
-        if (policy.getStatus() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy status is required"
-            );
-        }
-
-        if (policy.getInsurancePlan() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy insurance plan is required"
-            );
-        }
-
-        if (policy.getInsurancePlan().getId() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy insurance plan ID is required"
-            );
-        }
-
-        if (policy.getPayerOrganization() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy Payer organization is required"
-            );
-        }
-
-        if (policy.getPayerOrganization().getId() == null) {
-
-            throw new IllegalArgumentException(
-                    "Policy Payer organization ID is required"
-            );
-        }
-    }
-
-    private String getEnrollmentPlanNameSafely(
+    private void validateEnrollment(
             InsuranceEnrollment enrollment
     ) {
 
         if (enrollment == null
+                || enrollment.getId() == null
+                || enrollment.getMemberId() == null
+                || enrollment.getStatus() == null
                 || enrollment.getInsurancePlan() == null
-                || enrollment.getInsurancePlan()
-                .getPlanName() == null
-                || enrollment.getInsurancePlan()
-                .getPlanName()
-                .isBlank()) {
+                || enrollment.getInsurancePlan().getId() == null
+                || enrollment.getPayerOrganization() == null
+                || enrollment.getPayerOrganization().getId() == null) {
 
-            return "the selected insurance plan";
+            throw new IllegalArgumentException(
+                    "Complete enrollment information "
+                            + "is required for notification"
+            );
         }
 
-        return enrollment
-                .getInsurancePlan()
-                .getPlanName()
-                .trim();
+        normalizeEmail(
+                enrollment.getMemberEmail()
+        );
+
+        normalizeEmail(
+                enrollment.getPayerOrganization()
+                        .getAdminEmail()
+        );
     }
 
-    private String getPolicyNumberSafely(
+    private void validatePolicy(
             InsurancePolicy policy
     ) {
 
         if (policy == null
-                || policy.getPolicyNumber() == null
-                || policy.getPolicyNumber().isBlank()) {
+                || policy.getId() == null
+                || policy.getMemberId() == null
+                || policy.getStatus() == null
+                || policy.getInsurancePlan() == null
+                || policy.getInsurancePlan().getId() == null
+                || policy.getPayerOrganization() == null
+                || policy.getPayerOrganization().getId() == null) {
 
-            return "";
+            throw new IllegalArgumentException(
+                    "Complete policy information "
+                            + "is required for notification"
+            );
         }
 
-        return policy
-                .getPolicyNumber()
-                .trim();
+        normalizeEmail(
+                policy.getMemberEmail()
+        );
+
+        normalizeText(
+                policy.getPolicyNumber(),
+                "Policy number"
+        );
+    }
+
+    private String getPlanName(
+            InsuranceEnrollment enrollment
+    ) {
+
+        return normalizeText(
+                enrollment.getInsurancePlan()
+                        .getPlanName(),
+                "Insurance plan name"
+        );
+    }
+
+    private String getPolicyNumber(
+            InsurancePolicy policy
+    ) {
+
+        return normalizeText(
+                policy.getPolicyNumber(),
+                "Policy number"
+        );
     }
 
     private String normalizeEmail(
@@ -765,7 +872,7 @@ public class InsuranceEventPublisherImpl
         if (email == null || email.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Member email is required"
+                    "Notification recipient email is required"
             );
         }
 
@@ -774,32 +881,18 @@ public class InsuranceEventPublisherImpl
                 .toLowerCase(Locale.ROOT);
     }
 
-    @Override
-    public void publishEnrollmentCancelled(
-            InsuranceEnrollment enrollment
+    private String normalizeText(
+            String value,
+            String fieldName
     ) {
 
-        publishEnrollmentEvent(
-                enrollment,
-                NotificationType.ENROLLMENT_CANCELLED,
-                "Enrollment Cancelled",
-                "Your enrollment request for "
-                        + getEnrollmentPlanNameSafely(enrollment)
-                        + " has been cancelled."
-        );
-    }
-    @Override
-    public void publishPolicyCancelled(
-            InsurancePolicy policy
-    ) {
+        if (value == null || value.isBlank()) {
 
-        publishPolicyEvent(
-                policy,
-                NotificationType.POLICY_CANCELLED,
-                "Policy Cancelled",
-                "Your insurance policy "
-                        + getPolicyNumberSafely(policy)
-                        + " has been cancelled."
-        );
+            throw new IllegalArgumentException(
+                    fieldName + " is required"
+            );
+        }
+
+        return value.trim();
     }
 }

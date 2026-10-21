@@ -11,17 +11,54 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/healthcare_provider_db
     username: root
-    password: Naveen@001
+    password: ${PROVIDER_DB_PASSWORD:Naveen@001}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
 
     show-sql: true
+    open-in-view: false
 
     properties:
       hibernate:
         format_sql: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.in.flight.requests.per.connection: 5
+
+provider:
+  kafka:
+    topics:
+      medical-record-events: healthcare.medical-record.events
+      organization-events: healthcare.organization.events
+
+  outbox:
+    publisher:
+      fixed-delay-ms: 2000
+      batch-size: 50
+      maximum-retries: 10
+      initial-retry-delay-seconds: 5
+      maximum-retry-delay-seconds: 3600
+      processing-timeout-seconds: 300
+      send-timeout-seconds: 30
+
+platform:
+  admin:
+    notification-email: ${PLATFORM_ADMIN_NOTIFICATION_EMAIL:admin@healthcare-test.local}
 
 eureka:
   client:
@@ -35,7 +72,7 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: 12345678901234567890123456789012345678901234567890
+  secret: ${JWT_SECRET:12345678901234567890123456789012345678901234567890}
 
 management:
   endpoints:
@@ -51,5 +88,8 @@ management:
 
 logging:
   level:
+    root: INFO
     org.springframework.security: INFO
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
     com.naveen.healthcare.providerservice: DEBUG

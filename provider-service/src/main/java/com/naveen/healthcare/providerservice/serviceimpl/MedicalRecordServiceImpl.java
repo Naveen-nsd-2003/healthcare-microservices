@@ -22,6 +22,8 @@ import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.naveen.healthcare.providerservice.service.MedicalRecordEventPublisher;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +44,8 @@ public class MedicalRecordServiceImpl
 
     private final AppointmentServiceClient appointmentServiceClient;
 
+    private final MedicalRecordEventPublisher
+            medicalRecordEventPublisher;
     @Override
     @Transactional
     public MedicalRecordResponse createMedicalRecord(
@@ -178,7 +182,14 @@ public class MedicalRecordServiceImpl
                         .build();
 
         MedicalRecord savedMedicalRecord =
-                medicalRecordRepository.save(medicalRecord);
+                medicalRecordRepository.saveAndFlush(
+                        medicalRecord
+                );
+
+        medicalRecordEventPublisher
+                .publishMedicalRecordCreated(
+                        savedMedicalRecord
+                );
 
         return mapToResponse(savedMedicalRecord);
     }
@@ -318,7 +329,14 @@ public class MedicalRecordServiceImpl
         );
 
         MedicalRecord updatedMedicalRecord =
-                medicalRecordRepository.save(medicalRecord);
+                medicalRecordRepository.saveAndFlush(
+                        medicalRecord
+                );
+
+        medicalRecordEventPublisher
+                .publishMedicalRecordAmended(
+                        updatedMedicalRecord
+                );
 
         return mapToResponse(updatedMedicalRecord);
     }

@@ -1,11 +1,14 @@
 package com.naveen.healthcare.payersservice.enums;
 
-
 public enum PayerStatus {
+
+    PENDING_APPROVAL,
 
     ACTIVE,
 
-    INACTIVE,
+    REJECTED,
 
-    SUSPENDED
+    SUSPENDED,
+
+    INACTIVE
 }

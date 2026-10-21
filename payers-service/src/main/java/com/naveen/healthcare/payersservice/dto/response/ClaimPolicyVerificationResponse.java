@@ -27,6 +27,7 @@ public class ClaimPolicyVerificationResponse {
     private UUID payerId;
 
     private String payerOrganizationName;
+    private String payerAdminEmail;
 
     private UUID planId;
 

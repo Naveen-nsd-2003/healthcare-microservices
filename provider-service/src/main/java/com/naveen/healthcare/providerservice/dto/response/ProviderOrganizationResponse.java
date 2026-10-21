@@ -44,6 +44,16 @@ public class ProviderOrganizationResponse {
 
     private ProviderStatus status;
 
+    private LocalDateTime submittedAt;
+
+    private LocalDateTime reviewedAt;
+
+    private String reviewedByEmail;
+
+    private String reviewRemarks;
+
+    private String rejectionReason;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

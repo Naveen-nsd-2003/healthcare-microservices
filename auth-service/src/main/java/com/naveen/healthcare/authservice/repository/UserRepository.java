@@ -1,20 +1,47 @@
 package com.naveen.healthcare.authservice.repository;
 
 import com.naveen.healthcare.authservice.entity.User;
+import com.naveen.healthcare.authservice.enums.RoleType;
+import com.naveen.healthcare.authservice.enums.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository
+        extends JpaRepository<User, UUID> {
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findByUsername(
+            String username
+    );
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(
+            String email
+    );
 
-    boolean existsByUsername(String username);
+    boolean existsByUsername(
+            String username
+    );
 
-    boolean existsByEmail(String email);
+    boolean existsByEmail(
+            String email
+    );
+
+    long countByRoleRoleName(
+            RoleType roleType
+    );
+
+    long countByStatus(
+            UserStatus status
+    );
+
+    long countByAccountLockedTrue();
+
+    long countByFirstLoginTrue();
+
+    List<User>
+    findTop10ByOrderByCreatedAtDesc();
 }

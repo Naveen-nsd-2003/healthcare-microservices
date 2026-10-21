@@ -2,9 +2,13 @@ package com.naveen.healthcare.providerservice.enums;
 
 public enum ProviderStatus {
 
+    PENDING_APPROVAL,
+
     ACTIVE,
 
-    INACTIVE,
+    REJECTED,
 
-    SUSPENDED
+    SUSPENDED,
+
+    INACTIVE
 }

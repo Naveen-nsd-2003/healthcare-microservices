@@ -260,7 +260,12 @@ public class AppointmentClaimVerificationServiceImpl
                 .providerOrganizationName(
                         appointment.getProviderOrganizationName()
                 )
-                .departmentId(appointment.getDepartmentId())
+                .providerAdminEmail(
+                        appointment.getProviderAdminEmail()
+                )
+                .departmentId(
+                        appointment.getDepartmentId()
+                )
                 .departmentName(appointment.getDepartmentName())
                 .doctorId(appointment.getDoctorId())
                 .doctorName(appointment.getDoctorName())

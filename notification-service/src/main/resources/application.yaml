@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/healthcare_notification_db
     username: root
-    password: Naveen@001
+    password: ${NOTIFICATION_DB_PASSWORD:Naveen@001}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,33 +19,53 @@ spring:
       ddl-auto: update
 
     show-sql: true
+    open-in-view: false
 
     properties:
       hibernate:
         format_sql: true
 
-    open-in-view: false
-
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     consumer:
       group-id: notification-service-group
       auto-offset-reset: earliest
       enable-auto-commit: false
-
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        max.in.flight.requests.per.connection: 5
 
     listener:
       ack-mode: record
       missing-topics-fatal: false
 
-    properties:
-      spring:
-        json:
-          trusted:
-            packages: com.naveen.healthcare.notificationservice.dto.event
+notification:
+  kafka:
+    topics:
+      appointment-events: healthcare.appointment.events
+      claim-events: healthcare.claim.events
+      insurance-events: healthcare.insurance.events
+      medical-record-events: healthcare.medical-record.events
+      organization-events: healthcare.organization.events
+
+    dead-letter-topics:
+      appointment-events: healthcare.appointment.events.DLT
+      claim-events: healthcare.claim.events.DLT
+      insurance-events: healthcare.insurance.events.DLT
+      medical-record-events: healthcare.medical-record.events.DLT
+      organization-events: healthcare.organization.events.DLT
 
 eureka:
   client:
@@ -59,19 +79,7 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: 12345678901234567890123456789012345678901234567890
-
-notification:
-  kafka:
-    topics:
-      appointment-events: healthcare.appointment.events
-      claim-events: healthcare.claim.events
-      insurance-events: healthcare.insurance.events
-
-    dead-letter-topics:
-      appointment-events: healthcare.appointment.events.DLT
-      claim-events: healthcare.claim.events.DLT
-      insurance-events: healthcare.insurance.events.DLT
+  secret: ${JWT_SECRET:12345678901234567890123456789012345678901234567890}
 
 management:
   endpoints:

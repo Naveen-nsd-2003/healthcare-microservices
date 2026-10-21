@@ -159,6 +159,13 @@ public class Claim {
     private String providerOrganizationName;
 
     @Column(
+            name = "provider_admin_email",
+            updatable = false,
+            length = 150
+    )
+    private String providerAdminEmail;
+
+    @Column(
             name = "department_id",
             nullable = false,
             updatable = false
@@ -210,6 +217,13 @@ public class Claim {
             length = 200
     )
     private String payerOrganizationName;
+
+    @Column(
+            name = "payer_admin_email",
+            updatable = false,
+            length = 150
+    )
+    private String payerAdminEmail;
 
     @Column(
             name = "plan_id",

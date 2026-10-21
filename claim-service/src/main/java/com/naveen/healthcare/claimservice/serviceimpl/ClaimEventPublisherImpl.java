@@ -1,24 +1,25 @@
-/*
 package com.naveen.healthcare.claimservice.serviceimpl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naveen.healthcare.claimservice.dto.event.HealthcareEvent;
 import com.naveen.healthcare.claimservice.entity.Claim;
+import com.naveen.healthcare.claimservice.entity.OutboxEvent;
+import com.naveen.healthcare.claimservice.enums.ClaimStatus;
 import com.naveen.healthcare.claimservice.enums.NotificationType;
+import com.naveen.healthcare.claimservice.enums.OutboxEventStatus;
 import com.naveen.healthcare.claimservice.enums.RecipientRole;
 import com.naveen.healthcare.claimservice.enums.ReferenceType;
+import com.naveen.healthcare.claimservice.repository.OutboxEventRepository;
 import com.naveen.healthcare.claimservice.service.ClaimEventPublisher;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import com.naveen.healthcare.claimservice.enums.ClaimStatus;
 
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -28,131 +29,80 @@ import java.util.UUID;
 public class ClaimEventPublisherImpl
         implements ClaimEventPublisher {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(
-                    ClaimEventPublisherImpl.class
-            );
-
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private static final String AGGREGATE_TYPE =
+            "CLAIM";
 
     private final ObjectMapper objectMapper;
 
-    @Value("${claim.kafka.topics.claim-events}")
+    private final OutboxEventRepository
+            outboxEventRepository;
+
+    @Value(
+            "${claim.kafka.topics.claim-events}"
+    )
     private String claimEventsTopic;
 
-    */
-/*@Override
-    public void publishClaimApproved(
-            Claim claim
-    ) {
-
-        validateClaimForPublishing(claim);
-
-        HealthcareEvent event =
-                buildClaimApprovedEvent(claim);
-
-        String eventJson =
-                convertEventToJson(event);
-
-        String messageKey =
-                claim.getId().toString();
-
-        try {
-
-            kafkaTemplate
-                    .send(
-                            claimEventsTopic,
-                            messageKey,
-                            eventJson
-                    )
-                    .whenComplete(
-                            (sendResult, exception) -> {
-
-                                if (exception != null) {
-
-                                    LOGGER.error(
-                                            "Failed to publish "
-                                                    + "CLAIM_APPROVED event. "
-                                                    + "Claim ID: {}, "
-                                                    + "event ID: {}",
-                                            claim.getId(),
-                                            event.getEventId(),
-                                            exception
-                                    );
-
-                                    return;
-                                }
-
-                                LOGGER.info(
-                                        "Published CLAIM_APPROVED event. "
-                                                + "Claim ID: {}, "
-                                                + "event ID: {}, "
-                                                + "topic: {}, "
-                                                + "partition: {}, "
-                                                + "offset: {}",
-                                        claim.getId(),
-                                        event.getEventId(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .topic(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .partition(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .offset()
-                                );
-                            }
-                    );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to submit CLAIM_APPROVED event "
-                            + "to Kafka. Claim ID: {}, event ID: {}",
-                    claim.getId(),
-                    event.getEventId(),
-                    exception
-            );
-        }
-    }*//*
-
-
-    @Override
-    public void publishClaimApproved(
-            Claim claim
-    ) {
-
-        String approvedAmount =
-                claim != null
-                        && claim.getApprovedAmount() != null
-                        ? claim.getApprovedAmount()
-                        .setScale(2)
-                        .toPlainString()
-                        : "0.00";
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_APPROVED,
-                "Claim Approved",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " has been approved for INR "
-                        + approvedAmount
-                        + "."
-        );
-    }
     @Override
     public void publishClaimSubmitted(
             Claim claim
     ) {
-        publishClaimEvent(
+
+        validateClaim(
+                claim
+        );
+
+        validateMemberRecipient(
+                claim
+        );
+
+        validatePayerRecipient(
+                claim
+        );
+
+        LocalDateTime occurredAt =
+                resolveOccurredAt(
+                        claim,
+                        NotificationType.CLAIM_SUBMITTED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_SUBMITTED,
+                        RecipientRole.MEMBER,
+                        claim.getMemberEmail(),
+                        "Claim Submitted",
+                        "Insurance claim "
+                                + getClaimNumber(claim)
+                                + " was submitted by "
+                                + claim.getProviderOrganizationName()
+                                + ".",
+                        occurredAt
+                );
+
+        HealthcareEvent payerEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_SUBMITTED,
+                        RecipientRole.PAYER,
+                        claim.getPayerAdminEmail(),
+                        "New Claim Submitted",
+                        "A new insurance claim "
+                                + getClaimNumber(claim)
+                                + " was submitted by "
+                                + claim.getProviderOrganizationName()
+                                + " for Member "
+                                + claim.getMemberEmail()
+                                + " and requires review.",
+                        occurredAt
+                );
+
+        saveEvents(
                 claim,
-                NotificationType.CLAIM_SUBMITTED,
-                "Claim Submitted",
-                "Your insurance claim "
-                        + claim.getClaimNumber()
-                        + " has been submitted successfully."
+                List.of(
+                        memberEvent,
+                        payerEvent
+                )
         );
     }
 
@@ -161,13 +111,140 @@ public class ClaimEventPublisherImpl
             Claim claim
     ) {
 
-        publishClaimEvent(
+        validateClaim(
+                claim
+        );
+
+        validateMemberRecipient(
+                claim
+        );
+
+        validateProviderRecipient(
+                claim
+        );
+
+        LocalDateTime occurredAt =
+                resolveOccurredAt(
+                        claim,
+                        NotificationType.CLAIM_UNDER_REVIEW
+                );
+
+        HealthcareEvent memberEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_UNDER_REVIEW,
+                        RecipientRole.MEMBER,
+                        claim.getMemberEmail(),
+                        "Claim Under Review",
+                        "Your insurance claim "
+                                + getClaimNumber(claim)
+                                + " is currently under review by "
+                                + claim.getPayerOrganizationName()
+                                + ".",
+                        occurredAt
+                );
+
+        HealthcareEvent providerEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_UNDER_REVIEW,
+                        RecipientRole.PROVIDER,
+                        claim.getProviderAdminEmail(),
+                        "Claim Under Review",
+                        "Insurance claim "
+                                + getClaimNumber(claim)
+                                + " is currently under review by "
+                                + claim.getPayerOrganizationName()
+                                + ".",
+                        occurredAt
+                );
+
+        saveEvents(
                 claim,
-                NotificationType.CLAIM_UNDER_REVIEW,
-                "Claim Under Review",
-                "Your insurance claim "
-                        + claim.getClaimNumber()
-                        + " is currently under review."
+                List.of(
+                        memberEvent,
+                        providerEvent
+                )
+        );
+    }
+
+    @Override
+    public void publishClaimApproved(
+            Claim claim
+    ) {
+
+        validateClaim(
+                claim
+        );
+
+        if (claim.getApprovedAmount() == null) {
+
+            throw new IllegalArgumentException(
+                    "Approved amount is required for "
+                            + "an APPROVED Claim notification"
+            );
+        }
+
+        validateMemberRecipient(
+                claim
+        );
+
+        validateProviderRecipient(
+                claim
+        );
+
+        String approvedAmount =
+                claim.getApprovedAmount()
+                        .setScale(
+                                2,
+                                RoundingMode.HALF_UP
+                        )
+                        .toPlainString();
+
+        LocalDateTime occurredAt =
+                resolveOccurredAt(
+                        claim,
+                        NotificationType.CLAIM_APPROVED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_APPROVED,
+                        RecipientRole.MEMBER,
+                        claim.getMemberEmail(),
+                        "Claim Approved",
+                        "Your insurance claim "
+                                + getClaimNumber(claim)
+                                + " has been approved for INR "
+                                + approvedAmount
+                                + ".",
+                        occurredAt
+                );
+
+        HealthcareEvent providerEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_APPROVED,
+                        RecipientRole.PROVIDER,
+                        claim.getProviderAdminEmail(),
+                        "Claim Approved",
+                        "Insurance claim "
+                                + getClaimNumber(claim)
+                                + " has been approved for INR "
+                                + approvedAmount
+                                + " by "
+                                + claim.getPayerOrganizationName()
+                                + ".",
+                        occurredAt
+                );
+
+        saveEvents(
+                claim,
+                List.of(
+                        memberEvent,
+                        providerEvent
+                )
         );
     }
 
@@ -176,13 +253,77 @@ public class ClaimEventPublisherImpl
             Claim claim
     ) {
 
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_REJECTED,
-                "Claim Rejected",
+        validateClaim(
+                claim
+        );
+
+        validateMemberRecipient(
+                claim
+        );
+
+        validateProviderRecipient(
+                claim
+        );
+
+        String memberMessage =
                 "Your insurance claim "
-                        + claim.getClaimNumber()
-                        + " has been rejected."
+                        + getClaimNumber(claim)
+                        + " has been rejected.";
+
+        String providerMessage =
+                "Insurance claim "
+                        + getClaimNumber(claim)
+                        + " has been rejected by "
+                        + claim.getPayerOrganizationName()
+                        + ".";
+
+        if (claim.getRejectionReason() != null
+                && !claim.getRejectionReason().isBlank()) {
+
+            String reason =
+                    claim.getRejectionReason().trim();
+
+            memberMessage +=
+                    " Reason: " + reason;
+
+            providerMessage +=
+                    " Reason: " + reason;
+        }
+
+        LocalDateTime occurredAt =
+                resolveOccurredAt(
+                        claim,
+                        NotificationType.CLAIM_REJECTED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_REJECTED,
+                        RecipientRole.MEMBER,
+                        claim.getMemberEmail(),
+                        "Claim Rejected",
+                        memberMessage,
+                        occurredAt
+                );
+
+        HealthcareEvent providerEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_REJECTED,
+                        RecipientRole.PROVIDER,
+                        claim.getProviderAdminEmail(),
+                        "Claim Rejected",
+                        providerMessage,
+                        occurredAt
+                );
+
+        saveEvents(
+                claim,
+                List.of(
+                        memberEvent,
+                        providerEvent
+                )
         );
     }
 
@@ -191,83 +332,145 @@ public class ClaimEventPublisherImpl
             Claim claim
     ) {
 
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_CANCELLED,
-                "Claim Cancelled",
+        validateClaim(
+                claim
+        );
+
+        validateMemberRecipient(
+                claim
+        );
+
+        validatePayerRecipient(
+                claim
+        );
+
+        String memberMessage =
                 "Your insurance claim "
-                        + claim.getClaimNumber()
-                        + " has been cancelled."
+                        + getClaimNumber(claim)
+                        + " has been cancelled by "
+                        + claim.getProviderOrganizationName()
+                        + ".";
+
+        String payerMessage =
+                "Insurance claim "
+                        + getClaimNumber(claim)
+                        + " was cancelled by "
+                        + claim.getProviderOrganizationName()
+                        + ".";
+
+        if (claim.getCancellationReason() != null
+                && !claim.getCancellationReason().isBlank()) {
+
+            String reason =
+                    claim.getCancellationReason().trim();
+
+            memberMessage +=
+                    " Reason: " + reason;
+
+            payerMessage +=
+                    " Reason: " + reason;
+        }
+
+        LocalDateTime occurredAt =
+                resolveOccurredAt(
+                        claim,
+                        NotificationType.CLAIM_CANCELLED
+                );
+
+        HealthcareEvent memberEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_CANCELLED,
+                        RecipientRole.MEMBER,
+                        claim.getMemberEmail(),
+                        "Claim Cancelled",
+                        memberMessage,
+                        occurredAt
+                );
+
+        HealthcareEvent payerEvent =
+                buildEvent(
+                        claim,
+                        NotificationType.CLAIM_CANCELLED,
+                        RecipientRole.PAYER,
+                        claim.getPayerAdminEmail(),
+                        "Claim Cancelled",
+                        payerMessage,
+                        occurredAt
+                );
+
+        saveEvents(
+                claim,
+                List.of(
+                        memberEvent,
+                        payerEvent
+                )
         );
     }
 
-    private HealthcareEvent buildClaimEvent(
+    private void saveEvents(
             Claim claim,
-            NotificationType eventType,
-            String title,
-            String message
+            List<HealthcareEvent> events
     ) {
 
-        LocalDateTime occurredAt =
-                claim.getResolvedAt() != null
-                        ? claim.getResolvedAt()
-                        : LocalDateTime.now();
+        List<OutboxEvent> outboxEvents =
+                events.stream()
+                        .map(event ->
+                                buildOutboxEvent(
+                                        claim,
+                                        event
+                                )
+                        )
+                        .toList();
 
-        Map<String, Object> metadata =
-                new LinkedHashMap<>();
-
-        metadata.put(
-                "claimId",
-                claim.getId()
+        outboxEventRepository.saveAllAndFlush(
+                outboxEvents
         );
+    }
 
-        metadata.put(
-                "claimNumber",
-                claim.getClaimNumber()
-        );
+    private HealthcareEvent buildEvent(
+            Claim claim,
+            NotificationType notificationType,
+            RecipientRole recipientRole,
+            String recipientEmail,
+            String title,
+            String message,
+            LocalDateTime occurredAt
+    ) {
 
-        metadata.put(
-                "claimedAmount",
-                claim.getClaimedAmount()
-        );
+        if (notificationType == null) {
 
-        metadata.put(
-                "approvedAmount",
-                claim.getApprovedAmount()
-        );
+            throw new IllegalArgumentException(
+                    "Claim notification type is required"
+            );
+        }
 
-        metadata.put(
-                "status",
-                claim.getStatus().name()
-        );
+        if (recipientRole == null) {
 
-        metadata.put(
-                "providerOrganizationName",
-                claim.getProviderOrganizationName()
-        );
-
-        metadata.put(
-                "payerOrganizationName",
-                claim.getPayerOrganizationName()
-        );
+            throw new IllegalArgumentException(
+                    "Claim notification recipient role is required"
+            );
+        }
 
         return HealthcareEvent.builder()
                 .eventId(
                         UUID.randomUUID()
                 )
                 .eventType(
-                        eventType
+                        notificationType
                 )
                 .occurredAt(
-                        occurredAt
+                        occurredAt == null
+                                ? LocalDateTime.now()
+                                : occurredAt
                 )
                 .recipientEmail(
                         normalizeEmail(
-                                claim.getMemberEmail()
+                                recipientEmail
                         )
                 )
                 .recipientRole(
-                        RecipientRole.MEMBER
+                        recipientRole
                 )
                 .referenceType(
                         ReferenceType.CLAIM
@@ -276,597 +479,99 @@ public class ClaimEventPublisherImpl
                         claim.getId()
                 )
                 .title(
-                        title
+                        normalizeText(
+                                title,
+                                "Notification title"
+                        )
                 )
                 .message(
-                        message
-                )
-                .metadata(
-                        metadata
-                )
-                .build();
-    }
-
-    private HealthcareEvent buildClaimApprovedEvent(
-            Claim claim
-    ) {
-
-        UUID eventId =
-                UUID.randomUUID();
-
-        LocalDateTime occurredAt =
-                claim.getResolvedAt() != null
-                        ? claim.getResolvedAt()
-                        : LocalDateTime.now();
-
-        Map<String, Object> metadata =
-                new LinkedHashMap<>();
-
-        metadata.put(
-                "claimId",
-                claim.getId().toString()
-        );
-
-        metadata.put(
-                "claimNumber",
-                claim.getClaimNumber()
-        );
-
-        metadata.put(
-                "claimedAmount",
-                claim.getClaimedAmount()
-        );
-
-        metadata.put(
-                "approvedAmount",
-                claim.getApprovedAmount()
-        );
-
-        metadata.put(
-                "status",
-                claim.getStatus().name()
-        );
-
-        metadata.put(
-                "payerOrganizationName",
-                claim.getPayerOrganizationName()
-        );
-
-        metadata.put(
-                "providerOrganizationName",
-                claim.getProviderOrganizationName()
-        );
-
-        String message =
-                "Your insurance claim "
-                        + claim.getClaimNumber()
-                        + " has been approved for INR "
-                        + claim.getApprovedAmount()
-                        .setScale(2)
-                        .toPlainString()
-                        + ".";
-
-        return HealthcareEvent.builder()
-                .eventId(eventId)
-                .eventType(
-                        NotificationType.CLAIM_APPROVED
-                )
-                .occurredAt(occurredAt)
-                .recipientEmail(
-                        normalizeEmail(
-                                claim.getMemberEmail()
+                        normalizeText(
+                                message,
+                                "Notification message"
                         )
                 )
-                .recipientRole(
-                        RecipientRole.MEMBER
+                .metadata(
+                        buildMetadata(
+                                claim
+                        )
                 )
-                .referenceType(
-                        ReferenceType.CLAIM
-                )
-                .referenceId(
-                        claim.getId()
-                )
-                .title(
-                        "Claim Approved"
-                )
-                .message(message)
-                .metadata(metadata)
                 .build();
     }
 
-    private String convertEventToJson(
+    private OutboxEvent buildOutboxEvent(
+            Claim claim,
             HealthcareEvent event
     ) {
 
-        try {
-
-            return objectMapper.writeValueAsString(event);
-
-        } catch (JsonProcessingException exception) {
-
-            throw new IllegalStateException(
-                    "Unable to convert CLAIM_APPROVED "
-                            + "event to JSON",
-                    exception
-            );
-        }
-    }
-
-    private void validateClaimForPublishing(
-            Claim claim
-    ) {
-
-        if (claim == null) {
-            throw new IllegalArgumentException(
-                    "Claim is required for event publishing"
-            );
-        }
-
-        if (claim.getId() == null) {
-            throw new IllegalArgumentException(
-                    "Claim ID is required for event publishing"
-            );
-        }
-
-        if (claim.getClaimNumber() == null
-                || claim.getClaimNumber().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Claim number is required "
-                            + "for event publishing"
-            );
-        }
-
-        if (claim.getMemberEmail() == null
-                || claim.getMemberEmail().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Claim Member email is required "
-                            + "for event publishing"
-            );
-        }
-
-        if (claim.getStatus() == ClaimStatus.APPROVED
-                && claim.getApprovedAmount() == null) {
-
-            throw new IllegalArgumentException(
-                    "Approved amount is required "
-                            + "for APPROVED claim event publishing"
-            );
-        }
-
-
-        if (claim.getStatus() == null) {
-            throw new IllegalArgumentException(
-                    "Claim status is required "
-                            + "for event publishing"
-            );
-        }
-    }
-
-    private String normalizeEmail(
-            String email
-    ) {
-
-        return email
-                .trim()
-                .toLowerCase(Locale.ROOT);
-    }
-
-    */
-/*private void publishClaimEvent(
-            Claim claim,
-            NotificationType eventType,
-            String title,
-            String message
-    ) {
-
-        validateClaimForPublishing(claim);
-
-        HealthcareEvent event =
-                buildClaimEvent(
-                        claim,
-                        eventType,
-                        title,
-                        message
-                );
-
-        String eventJson =
-                convertEventToJson(event);
-
-        String messageKey =
-                claim.getId().toString();
-
-        try {
-
-            kafkaTemplate
-                    .send(
-                            claimEventsTopic,
-                            messageKey,
-                            eventJson
-                    )
-                    .whenComplete(
-                            (sendResult, exception) -> {
-
-                                if (exception != null) {
-
-                                    LOGGER.error(
-                                            "Failed to publish {} event. "
-                                                    + "Claim ID: {}, "
-                                                    + "Event ID: {}",
-                                            eventType,
-                                            claim.getId(),
-                                            event.getEventId(),
-                                            exception
-                                    );
-
-                                    return;
-                                }
-
-                                LOGGER.info(
-                                        "Published {} event. "
-                                                + "Claim ID: {}, "
-                                                + "Event ID: {}, "
-                                                + "Topic: {}, "
-                                                + "Partition: {}, "
-                                                + "Offset: {}",
-                                        eventType,
-                                        claim.getId(),
-                                        event.getEventId(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .topic(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .partition(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .offset()
-                                );
-                            }
-                    );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to submit {} event to Kafka. "
-                            + "Claim ID: {}, "
-                            + "Event ID: {}",
-                    eventType,
-                    claim.getId(),
-                    event.getEventId(),
-                    exception
-            );
-        }
-    }*//*
-
-    private void publishClaimEvent(
-            Claim claim,
-            NotificationType eventType,
-            String title,
-            String message
-    ) {
-
-        try {
-
-            validateClaimForPublishing(
-                    claim
-            );
-
-            HealthcareEvent event =
-                    buildClaimEvent(
-                            claim,
-                            eventType,
-                            title,
-                            message
-                    );
-
-            String eventJson =
-                    convertEventToJson(
-                            event
-                    );
-
-            String messageKey =
-                    claim.getId().toString();
-
-            kafkaTemplate
-                    .send(
-                            claimEventsTopic,
-                            messageKey,
-                            eventJson
-                    )
-                    .whenComplete(
-                            (sendResult, exception) -> {
-
-                                if (exception != null) {
-
-                                    LOGGER.error(
-                                            "Failed to publish {} event. "
-                                                    + "Claim ID: {}, "
-                                                    + "Event ID: {}",
-                                            eventType,
-                                            claim.getId(),
-                                            event.getEventId(),
-                                            exception
-                                    );
-
-                                    return;
-                                }
-
-                                LOGGER.info(
-                                        "Published {} event. "
-                                                + "Claim ID: {}, "
-                                                + "Event ID: {}, "
-                                                + "Topic: {}, "
-                                                + "Partition: {}, "
-                                                + "Offset: {}",
-                                        eventType,
-                                        claim.getId(),
-                                        event.getEventId(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .topic(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .partition(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .offset()
-                                );
-                            }
-                    );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to publish {} event to Kafka. "
-                            + "Claim ID: {}. "
-                            + "The Claim operation remains successful.",
-                    eventType,
-                    claim == null
-                            ? null
-                            : claim.getId(),
-                    exception
-            );
-        }
-    }
-    private String getClaimNumberSafely(
-            Claim claim
-    ) {
-
-        if (claim == null
-                || claim.getClaimNumber() == null
-                || claim.getClaimNumber().isBlank()) {
-
-            return "";
-        }
-
-        return claim.getClaimNumber().trim();
-    }
-}*/
-
-
-
-
-package com.naveen.healthcare.claimservice.serviceimpl;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naveen.healthcare.claimservice.dto.event.HealthcareEvent;
-import com.naveen.healthcare.claimservice.entity.Claim;
-import com.naveen.healthcare.claimservice.enums.ClaimStatus;
-import com.naveen.healthcare.claimservice.enums.NotificationType;
-import com.naveen.healthcare.claimservice.enums.RecipientRole;
-import com.naveen.healthcare.claimservice.enums.ReferenceType;
-import com.naveen.healthcare.claimservice.service.ClaimEventPublisher;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
-
-@Service
-@RequiredArgsConstructor
-public class ClaimEventPublisherImpl
-        implements ClaimEventPublisher {
-
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(
-                    ClaimEventPublisherImpl.class
-            );
-
-    private final KafkaTemplate<String, String>
-            kafkaTemplate;
-
-    private final ObjectMapper objectMapper;
-
-    @Value("${claim.kafka.topics.claim-events}")
-    private String claimEventsTopic;
-
-    @Override
-    public void publishClaimSubmitted(
-            Claim claim
-    ) {
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_SUBMITTED,
-                "Claim Submitted",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " has been submitted successfully."
+        validateEvent(
+                event
         );
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        return OutboxEvent.builder()
+                .id(
+                        UUID.randomUUID()
+                )
+                .eventId(
+                        event.getEventId()
+                )
+                .aggregateType(
+                        AGGREGATE_TYPE
+                )
+                .aggregateId(
+                        claim.getId()
+                )
+                .eventType(
+                        event.getEventType().name()
+                )
+                .topicName(
+                        normalizeText(
+                                claimEventsTopic,
+                                "Claim Kafka topic"
+                        )
+                )
+                .messageKey(
+                        claim.getId().toString()
+                )
+                .payload(
+                        serializeEvent(
+                                event
+                        )
+                )
+                .status(
+                        OutboxEventStatus.PENDING
+                )
+                .retryCount(
+                        0
+                )
+                .nextAttemptAt(
+                        now
+                )
+                .processingStartedAt(
+                        null
+                )
+                .lastAttemptAt(
+                        null
+                )
+                .publishedAt(
+                        null
+                )
+                .lastError(
+                        null
+                )
+                .createdAt(
+                        now
+                )
+                .updatedAt(
+                        now
+                )
+                .build();
     }
 
-    @Override
-    public void publishClaimUnderReview(
+    private Map<String, Object> buildMetadata(
             Claim claim
-    ) {
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_UNDER_REVIEW,
-                "Claim Under Review",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " is currently under review."
-        );
-    }
-
-    @Override
-    public void publishClaimApproved(
-            Claim claim
-    ) {
-
-        String approvedAmount =
-                getApprovedAmountSafely(claim);
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_APPROVED,
-                "Claim Approved",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " has been approved for INR "
-                        + approvedAmount
-                        + "."
-        );
-    }
-
-    @Override
-    public void publishClaimRejected(
-            Claim claim
-    ) {
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_REJECTED,
-                "Claim Rejected",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " has been rejected."
-        );
-    }
-
-    @Override
-    public void publishClaimCancelled(
-            Claim claim
-    ) {
-
-        publishClaimEvent(
-                claim,
-                NotificationType.CLAIM_CANCELLED,
-                "Claim Cancelled",
-                "Your insurance claim "
-                        + getClaimNumberSafely(claim)
-                        + " has been cancelled."
-        );
-    }
-
-    private void publishClaimEvent(
-            Claim claim,
-            NotificationType eventType,
-            String title,
-            String message
-    ) {
-
-        try {
-
-            validateClaimForPublishing(
-                    claim
-            );
-
-            HealthcareEvent event =
-                    buildClaimEvent(
-                            claim,
-                            eventType,
-                            title,
-                            message
-                    );
-
-            String eventJson =
-                    convertEventToJson(
-                            event
-                    );
-
-            String messageKey =
-                    claim.getId().toString();
-
-            kafkaTemplate
-                    .send(
-                            claimEventsTopic,
-                            messageKey,
-                            eventJson
-                    )
-                    .whenComplete(
-                            (sendResult, exception) -> {
-
-                                if (exception != null) {
-
-                                    LOGGER.error(
-                                            "Failed to publish {} event. "
-                                                    + "Claim ID: {}, "
-                                                    + "event ID: {}",
-                                            eventType,
-                                            claim.getId(),
-                                            event.getEventId(),
-                                            exception
-                                    );
-
-                                    return;
-                                }
-
-                                LOGGER.info(
-                                        "Published {} event. "
-                                                + "Claim ID: {}, "
-                                                + "event ID: {}, "
-                                                + "topic: {}, "
-                                                + "partition: {}, "
-                                                + "offset: {}",
-                                        eventType,
-                                        claim.getId(),
-                                        event.getEventId(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .topic(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .partition(),
-                                        sendResult
-                                                .getRecordMetadata()
-                                                .offset()
-                                );
-                            }
-                    );
-
-        } catch (RuntimeException exception) {
-
-            LOGGER.error(
-                    "Unable to publish {} event to Kafka. "
-                            + "Claim ID: {}. "
-                            + "The Claim operation remains successful.",
-                    eventType,
-                    claim == null
-                            ? null
-                            : claim.getId(),
-                    exception
-            );
-        }
-    }
-
-    private HealthcareEvent buildClaimEvent(
-            Claim claim,
-            NotificationType eventType,
-            String title,
-            String message
     ) {
 
         Map<String, Object> metadata =
@@ -883,28 +588,33 @@ public class ClaimEventPublisherImpl
         );
 
         metadata.put(
-                "claimedAmount",
-                claim.getClaimedAmount()
+                "appointmentId",
+                claim.getAppointmentId().toString()
         );
 
         metadata.put(
-                "approvedAmount",
-                claim.getApprovedAmount()
+                "medicalRecordId",
+                claim.getMedicalRecordId().toString()
         );
 
         metadata.put(
-                "status",
-                claim.getStatus().name()
+                "policyId",
+                claim.getPolicyId().toString()
+        );
+
+        metadata.put(
+                "policyNumber",
+                claim.getPolicyNumber()
         );
 
         metadata.put(
                 "memberId",
-                claim.getMemberId()
+                claim.getMemberId().toString()
         );
 
         metadata.put(
                 "providerId",
-                claim.getProviderId()
+                claim.getProviderId().toString()
         );
 
         metadata.put(
@@ -914,7 +624,7 @@ public class ClaimEventPublisherImpl
 
         metadata.put(
                 "payerId",
-                claim.getPayerId()
+                claim.getPayerId().toString()
         );
 
         metadata.put(
@@ -924,7 +634,7 @@ public class ClaimEventPublisherImpl
 
         metadata.put(
                 "planId",
-                claim.getPlanId()
+                claim.getPlanId().toString()
         );
 
         metadata.put(
@@ -937,77 +647,104 @@ public class ClaimEventPublisherImpl
                 claim.getPlanName()
         );
 
-        LocalDateTime occurredAt =
-                resolveOccurredAt(
-                        claim,
-                        eventType
-                );
+        metadata.put(
+                "claimedAmount",
+                claim.getClaimedAmount()
+        );
 
-        return HealthcareEvent.builder()
-                .eventId(
-                        UUID.randomUUID()
-                )
-                .eventType(
-                        eventType
-                )
-                .occurredAt(
-                        occurredAt
-                )
-                .recipientEmail(
-                        normalizeEmail(
-                                claim.getMemberEmail()
-                        )
-                )
-                .recipientRole(
-                        RecipientRole.MEMBER
-                )
-                .referenceType(
-                        ReferenceType.CLAIM
-                )
-                .referenceId(
-                        claim.getId()
-                )
-                .title(
-                        title
-                )
-                .message(
-                        message
-                )
-                .metadata(
-                        metadata
-                )
-                .build();
+        metadata.put(
+                "approvedAmount",
+                claim.getApprovedAmount()
+        );
+
+        metadata.put(
+                "status",
+                claim.getStatus().name()
+        );
+
+        metadata.put(
+                "serviceDate",
+                claim.getServiceDate().toString()
+        );
+
+        if (claim.getReviewRemarks() != null
+                && !claim.getReviewRemarks().isBlank()) {
+
+            metadata.put(
+                    "reviewRemarks",
+                    claim.getReviewRemarks().trim()
+            );
+        }
+
+        if (claim.getRejectionReason() != null
+                && !claim.getRejectionReason().isBlank()) {
+
+            metadata.put(
+                    "rejectionReason",
+                    claim.getRejectionReason().trim()
+            );
+        }
+
+        if (claim.getCancellationReason() != null
+                && !claim.getCancellationReason().isBlank()) {
+
+            metadata.put(
+                    "cancellationReason",
+                    claim.getCancellationReason().trim()
+            );
+        }
+
+        return metadata;
     }
 
     private LocalDateTime resolveOccurredAt(
             Claim claim,
-            NotificationType eventType
+            NotificationType notificationType
     ) {
 
-        if (eventType == NotificationType.CLAIM_SUBMITTED
+        if (notificationType
+                == NotificationType.CLAIM_SUBMITTED
                 && claim.getSubmittedAt() != null) {
 
             return claim.getSubmittedAt();
         }
 
-        if (eventType == NotificationType.CLAIM_UNDER_REVIEW
+        if (notificationType
+                == NotificationType.CLAIM_UNDER_REVIEW
                 && claim.getReviewedAt() != null) {
 
             return claim.getReviewedAt();
         }
 
-        if ((eventType == NotificationType.CLAIM_APPROVED
-                || eventType == NotificationType.CLAIM_REJECTED
-                || eventType == NotificationType.CLAIM_CANCELLED)
+        if ((notificationType
+                == NotificationType.CLAIM_APPROVED
+                || notificationType
+                == NotificationType.CLAIM_REJECTED)
                 && claim.getResolvedAt() != null) {
 
             return claim.getResolvedAt();
         }
 
+        if (notificationType
+                == NotificationType.CLAIM_CANCELLED) {
+
+            if (claim.getCancelledAt() != null) {
+                return claim.getCancelledAt();
+            }
+
+            if (claim.getResolvedAt() != null) {
+                return claim.getResolvedAt();
+            }
+        }
+
+        if (claim.getUpdatedAt() != null) {
+            return claim.getUpdatedAt();
+        }
+
         return LocalDateTime.now();
     }
 
-    private String convertEventToJson(
+    private String serializeEvent(
             HealthcareEvent event
     ) {
 
@@ -1020,115 +757,228 @@ public class ClaimEventPublisherImpl
         } catch (JsonProcessingException exception) {
 
             throw new IllegalStateException(
-                    "Unable to convert Claim event to JSON",
+                    "Unable to serialize Claim event",
                     exception
             );
         }
     }
 
-    private void validateClaimForPublishing(
+    private void validateEvent(
+            HealthcareEvent event
+    ) {
+
+        if (event == null
+                || event.getEventId() == null
+                || event.getEventType() == null
+                || event.getOccurredAt() == null
+                || event.getRecipientRole() == null
+                || event.getReferenceType() == null
+                || event.getReferenceId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Complete Claim event information is required"
+            );
+        }
+
+        normalizeEmail(
+                event.getRecipientEmail()
+        );
+
+        normalizeText(
+                event.getTitle(),
+                "Claim event title"
+        );
+
+        normalizeText(
+                event.getMessage(),
+                "Claim event message"
+        );
+    }
+
+    private void validateClaim(
             Claim claim
     ) {
 
         if (claim == null) {
 
             throw new IllegalArgumentException(
-                    "Claim is required for event publishing"
+                    "Claim is required"
             );
         }
 
         if (claim.getId() == null) {
 
             throw new IllegalArgumentException(
-                    "Claim ID is required for event publishing"
+                    "Claim ID is required"
             );
         }
 
-        if (claim.getClaimNumber() == null
-                || claim.getClaimNumber().isBlank()) {
+        if (claim.getMemberId() == null) {
 
             throw new IllegalArgumentException(
-                    "Claim number is required "
-                            + "for event publishing"
+                    "Claim Member ID is required"
             );
         }
 
-        if (claim.getMemberEmail() == null
-                || claim.getMemberEmail().isBlank()) {
+        if (claim.getProviderId() == null) {
 
             throw new IllegalArgumentException(
-                    "Claim Member email is required "
-                            + "for event publishing"
+                    "Claim Provider ID is required"
+            );
+        }
+
+        if (claim.getPayerId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim Payer ID is required"
+            );
+        }
+
+        if (claim.getAppointmentId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim Appointment ID is required"
+            );
+        }
+
+        if (claim.getMedicalRecordId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim Medical Record ID is required"
+            );
+        }
+
+        if (claim.getPolicyId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim Policy ID is required"
+            );
+        }
+
+        if (claim.getPlanId() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim Plan ID is required"
             );
         }
 
         if (claim.getStatus() == null) {
 
             throw new IllegalArgumentException(
-                    "Claim status is required "
-                            + "for event publishing"
+                    "Claim status is required"
             );
         }
 
-        if (claim.getStatus() == ClaimStatus.APPROVED
+        if (claim.getServiceDate() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claim service date is required"
+            );
+        }
+
+        if (claim.getClaimedAmount() == null) {
+
+            throw new IllegalArgumentException(
+                    "Claimed amount is required"
+            );
+        }
+
+        if (claim.getStatus()
+                == ClaimStatus.APPROVED
                 && claim.getApprovedAmount() == null) {
 
             throw new IllegalArgumentException(
                     "Approved amount is required "
-                            + "for APPROVED Claim event publishing"
+                            + "for an APPROVED Claim"
             );
         }
+
+        normalizeText(
+                claim.getClaimNumber(),
+                "Claim number"
+        );
+
+        normalizeText(
+                claim.getProviderOrganizationName(),
+                "Provider organization name"
+        );
+
+        normalizeText(
+                claim.getPayerOrganizationName(),
+                "Payer organization name"
+        );
+
+        normalizeText(
+                claim.getPlanName(),
+                "Plan name"
+        );
     }
 
-    private String getClaimNumberSafely(
+    private void validateMemberRecipient(
             Claim claim
     ) {
 
-        if (claim == null
-                || claim.getClaimNumber() == null
-                || claim.getClaimNumber().isBlank()) {
-
-            return "";
-        }
-
-        return claim
-                .getClaimNumber()
-                .trim();
+        normalizeEmail(
+                claim.getMemberEmail()
+        );
     }
 
-    private String getApprovedAmountSafely(
+    private void validateProviderRecipient(
             Claim claim
     ) {
 
-        if (claim == null
-                || claim.getApprovedAmount() == null) {
+        normalizeEmail(
+                claim.getProviderAdminEmail()
+        );
+    }
 
-            return "0.00";
-        }
+    private void validatePayerRecipient(
+            Claim claim
+    ) {
 
-        return claim
-                .getApprovedAmount()
-                .setScale(
-                        2,
-                        RoundingMode.HALF_UP
-                )
-                .toPlainString();
+        normalizeEmail(
+                claim.getPayerAdminEmail()
+        );
+    }
+
+    private String getClaimNumber(
+            Claim claim
+    ) {
+
+        return normalizeText(
+                claim.getClaimNumber(),
+                "Claim number"
+        );
     }
 
     private String normalizeEmail(
             String email
     ) {
 
-        if (email == null
-                || email.isBlank()) {
+        if (email == null || email.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Claim Member email is required"
+                    "Notification recipient email is required"
             );
         }
 
         return email
                 .trim()
                 .toLowerCase(Locale.ROOT);
+    }
+
+    private String normalizeText(
+            String value,
+            String fieldName
+    ) {
+
+        if (value == null || value.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    fieldName + " is required"
+            );
+        }
+
+        return value.trim();
     }
 }

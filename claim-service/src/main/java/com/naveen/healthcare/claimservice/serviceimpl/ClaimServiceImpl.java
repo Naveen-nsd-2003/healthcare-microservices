@@ -118,16 +118,14 @@ public class ClaimServiceImpl implements ClaimService {
                         policy
                 );
 
+        Claim savedClaim;
+
         try {
 
-            Claim savedClaim =
-                    claimRepository.saveAndFlush(claim);
-
-            claimEventPublisher.publishClaimSubmitted(
-                    savedClaim
-            );
-
-            return mapToResponse(savedClaim);
+            savedClaim =
+                    claimRepository.saveAndFlush(
+                            claim
+                    );
 
         } catch (DataIntegrityViolationException exception) {
 
@@ -136,6 +134,12 @@ public class ClaimServiceImpl implements ClaimService {
                             + "appointment or Medical Record"
             );
         }
+
+        claimEventPublisher.publishClaimSubmitted(
+                savedClaim
+        );
+
+        return mapToResponse(savedClaim);
     }
 
     @Override
@@ -552,6 +556,12 @@ public class ClaimServiceImpl implements ClaimService {
                                 "Provider organization name"
                         )
                 )
+                .providerAdminEmail(
+                        normalizeEmail(
+                                appointment.getProviderAdminEmail(),
+                                "Provider administrator email"
+                        )
+                )
                 .departmentId(
                         appointment.getDepartmentId()
                 )
@@ -584,6 +594,12 @@ public class ClaimServiceImpl implements ClaimService {
                         normalizeRequiredText(
                                 policy.getPayerOrganizationName(),
                                 "Payer organization name"
+                        )
+                )
+                .payerAdminEmail(
+                        normalizeEmail(
+                                policy.getPayerAdminEmail(),
+                                "Payer administrator email"
                         )
                 )
                 .planId(
@@ -1219,6 +1235,16 @@ public class ClaimServiceImpl implements ClaimService {
                 appointment.getMemberEmail(),
                 policy.getMemberEmail(),
                 "Appointment and Policy Member emails do not match"
+        );
+
+        normalizeEmail(
+                appointment.getProviderAdminEmail(),
+                "Provider administrator email"
+        );
+
+        normalizeEmail(
+                policy.getPayerAdminEmail(),
+                "Payer administrator email"
         );
 
         if (!Boolean.TRUE.equals(

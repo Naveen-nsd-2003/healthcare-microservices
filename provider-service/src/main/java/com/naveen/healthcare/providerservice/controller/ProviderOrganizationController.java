@@ -1,6 +1,9 @@
 package com.naveen.healthcare.providerservice.controller;
 
+import com.naveen.healthcare.providerservice.dto.request.ApproveProviderOrganizationRequest;
+import com.naveen.healthcare.providerservice.dto.request.CreateMyProviderOrganizationRequest;
 import com.naveen.healthcare.providerservice.dto.request.CreateProviderOrganizationRequest;
+import com.naveen.healthcare.providerservice.dto.request.RejectProviderOrganizationRequest;
 import com.naveen.healthcare.providerservice.dto.request.UpdateProviderOrganizationRequest;
 import com.naveen.healthcare.providerservice.dto.request.UpdateProviderStatusRequest;
 import com.naveen.healthcare.providerservice.dto.response.ProviderOrganizationResponse;
@@ -42,7 +45,31 @@ public class ProviderOrganizationController {
 
         ProviderOrganizationResponse response =
                 providerOrganizationService
-                        .createProviderOrganization(request);
+                        .createProviderOrganization(
+                                request
+                        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PostMapping("/me")
+    public ResponseEntity<ProviderOrganizationResponse>
+    createMyProviderOrganization(
+            Authentication authentication,
+            @Valid
+            @RequestBody
+            CreateMyProviderOrganizationRequest request
+    ) {
+
+        ProviderOrganizationResponse response =
+                providerOrganizationService
+                        .createMyProviderOrganization(
+                                authentication.getName(),
+                                request
+                        );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -58,7 +85,9 @@ public class ProviderOrganizationController {
                 providerOrganizationService
                         .getAllProviderOrganizations();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
     }
 
     @PreAuthorize("hasRole('PROVIDER')")
@@ -74,7 +103,9 @@ public class ProviderOrganizationController {
                                 authentication.getName()
                         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
     }
 
     @PreAuthorize("hasRole('PROVIDER')")
@@ -94,7 +125,9 @@ public class ProviderOrganizationController {
                                 request
                         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
     }
 
     @PreAuthorize("hasRole('MEMBER')")
@@ -106,28 +139,105 @@ public class ProviderOrganizationController {
                 providerOrganizationService
                         .getAvailableProviders();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
     }
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/available/{providerId}")
     public ResponseEntity<ProviderOrganizationResponse>
     getAvailableProviderById(
-            @PathVariable UUID providerId
+            @PathVariable
+            UUID providerId
     ) {
 
         ProviderOrganizationResponse response =
                 providerOrganizationService
-                        .getAvailableProviderById(providerId);
+                        .getAvailableProviderById(
+                                providerId
+                        );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{providerId}")
+    public ResponseEntity<ProviderOrganizationResponse>
+    getProviderOrganizationById(
+            @PathVariable
+            UUID providerId
+    ) {
+
+        ProviderOrganizationResponse response =
+                providerOrganizationService
+                        .getProviderOrganizationById(
+                                providerId
+                        );
+
+        return ResponseEntity.ok(
+                response
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{providerId}/approve")
+    public ResponseEntity<ProviderOrganizationResponse>
+    approveProviderOrganization(
+            @PathVariable
+            UUID providerId,
+            Authentication authentication,
+            @Valid
+            @RequestBody
+            ApproveProviderOrganizationRequest request
+    ) {
+
+        ProviderOrganizationResponse response =
+                providerOrganizationService
+                        .approveProviderOrganization(
+                                providerId,
+                                authentication.getName(),
+                                request
+                        );
+
+        return ResponseEntity.ok(
+                response
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{providerId}/reject")
+    public ResponseEntity<ProviderOrganizationResponse>
+    rejectProviderOrganization(
+            @PathVariable
+            UUID providerId,
+            Authentication authentication,
+            @Valid
+            @RequestBody
+            RejectProviderOrganizationRequest request
+    ) {
+
+        ProviderOrganizationResponse response =
+                providerOrganizationService
+                        .rejectProviderOrganization(
+                                providerId,
+                                authentication.getName(),
+                                request
+                        );
+
+        return ResponseEntity.ok(
+                response
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{providerId}/status")
     public ResponseEntity<ProviderOrganizationResponse>
     updateProviderStatus(
-            @PathVariable UUID providerId,
+            @PathVariable
+            UUID providerId,
             @Valid
             @RequestBody
             UpdateProviderStatusRequest request
@@ -140,20 +250,8 @@ public class ProviderOrganizationController {
                                 request
                         );
 
-        return ResponseEntity.ok(response);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{providerId}")
-    public ResponseEntity<ProviderOrganizationResponse>
-    getProviderOrganizationById(
-            @PathVariable UUID providerId
-    ) {
-
-        ProviderOrganizationResponse response =
-                providerOrganizationService
-                        .getProviderOrganizationById(providerId);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                response
+        );
     }
 }
