@@ -25,6 +25,9 @@ import java.time.LocalTime;
 import java.util.Locale;
 import java.util.UUID;
 
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import com.naveen.healthcare.claimservice.dto.response.ClaimSubmissionContextResponse;
 import com.naveen.healthcare.claimservice.dto.response.EligibleClaimPolicyResponse;
 
@@ -46,7 +49,11 @@ public class ClaimVerificationServiceImpl
     private final PayersServiceClient payersServiceClient;
 
     @Override
-    public CombinedClaimVerificationResponse verifyClaimRequirements(
+    @Retry(name = "claimVerification")
+    @CircuitBreaker(
+            name = "claimVerification",
+            fallbackMethod = "claimVerificationFallback"
+    )    public CombinedClaimVerificationResponse verifyClaimRequirements(
             ClaimVerificationTestRequest request
     ) {
 
@@ -110,7 +117,25 @@ public class ClaimVerificationServiceImpl
                 .build();
     }
 
+    private CombinedClaimVerificationResponse
+    claimVerificationFallback(
+            ClaimVerificationTestRequest request,
+            Throwable throwable
+    ) {
+
+        throw new RemoteServiceCommunicationException(
+                "Claim verification is temporarily unavailable. "
+                        + "Please try again later.",
+                throwable
+        );
+    }
+
     @Override
+    @Retry(name = "claimVerification")
+    @CircuitBreaker(
+            name = "claimVerification",
+            fallbackMethod = "claimSubmissionContextFallback"
+    )
     public ClaimSubmissionContextResponse getClaimSubmissionContext(
             UUID appointmentId,
             UUID medicalRecordId
@@ -174,6 +199,19 @@ public class ClaimVerificationServiceImpl
                 .build();
     }
 
+    private ClaimSubmissionContextResponse
+    claimSubmissionContextFallback(
+            UUID appointmentId,
+            UUID medicalRecordId,
+            Throwable throwable
+    ) {
+
+        throw new RemoteServiceCommunicationException(
+                "Claim submission context is temporarily unavailable. "
+                        + "Please try again later.",
+                throwable
+        );
+    }
     private ClaimAppointmentVerificationResponse
     retrieveAppointmentVerification(
             UUID appointmentId

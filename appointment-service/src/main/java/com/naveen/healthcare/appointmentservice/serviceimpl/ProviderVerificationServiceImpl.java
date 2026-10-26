@@ -9,6 +9,8 @@ import feign.FeignException;
 import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,6 +24,11 @@ public class ProviderVerificationServiceImpl
     private final ProviderServiceClient providerServiceClient;
 
     @Override
+    @Retry(name = "providerVerification")
+    @CircuitBreaker(
+            name = "providerVerification",
+            fallbackMethod = "providerVerificationFallback"
+    )
     public ProviderBookingVerificationResponse verifyBookingSlot(
             UUID doctorId,
             LocalDate appointmentDate,
@@ -49,6 +56,21 @@ public class ProviderVerificationServiceImpl
         );
 
         return response;
+    }
+
+    private ProviderBookingVerificationResponse
+    providerVerificationFallback(
+            UUID doctorId,
+            LocalDate appointmentDate,
+            LocalTime startTime,
+            Throwable throwable
+    ) {
+
+        throw new RemoteServiceCommunicationException(
+                "Provider verification is temporarily unavailable. "
+                        + "Please try again later.",
+                throwable
+        );
     }
 
     private ProviderBookingVerificationResponse

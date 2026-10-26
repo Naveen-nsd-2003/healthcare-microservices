@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
-
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 @Service
 @RequiredArgsConstructor
 public class MemberVerificationServiceImpl
@@ -22,6 +23,11 @@ public class MemberVerificationServiceImpl
     private final MemberServiceClient memberServiceClient;
 
     @Override
+    @Retry(name = "memberVerification")
+    @CircuitBreaker(
+            name = "memberVerification",
+            fallbackMethod = "memberVerificationFallback"
+    )
     public MemberVerificationResponse verifyActiveMember(
             String authenticatedEmail
     ) {
@@ -38,6 +44,19 @@ public class MemberVerificationServiceImpl
         );
 
         return response;
+    }
+
+    private MemberVerificationResponse
+    memberVerificationFallback(
+            String authenticatedEmail,
+            Throwable throwable
+    ) {
+
+        throw new MemberServiceCommunicationException(
+                "Member verification is temporarily unavailable. "
+                        + "Please try again later.",
+                throwable
+        );
     }
 
     private MemberVerificationResponse retrieveMemberVerification() {

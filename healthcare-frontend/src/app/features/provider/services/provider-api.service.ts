@@ -58,6 +58,7 @@ export class ProviderApiService {
       `${this.baseUrl}/me`
     );
   }
+  
 
   createMyProviderOrganization(
     request: CreateProviderOrganizationRequest

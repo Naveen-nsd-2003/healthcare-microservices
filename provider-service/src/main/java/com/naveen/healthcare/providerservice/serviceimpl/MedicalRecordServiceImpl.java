@@ -24,6 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.naveen.healthcare.providerservice.service.MedicalRecordEventPublisher;
 
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,6 +51,11 @@ public class MedicalRecordServiceImpl
             medicalRecordEventPublisher;
     @Override
     @Transactional
+    @Retry(name = "appointmentVerification")
+    @CircuitBreaker(
+            name = "appointmentVerification",
+            fallbackMethod = "createMedicalRecordFallback"
+    )
     public MedicalRecordResponse createMedicalRecord(
             String authenticatedProviderEmail,
             CreateMedicalRecordRequest request
@@ -192,6 +200,20 @@ public class MedicalRecordServiceImpl
                 );
 
         return mapToResponse(savedMedicalRecord);
+    }
+
+    private MedicalRecordResponse
+    createMedicalRecordFallback(
+            String authenticatedProviderEmail,
+            CreateMedicalRecordRequest request,
+            Throwable throwable
+    ) {
+
+        throw new AppointmentServiceCommunicationException(
+                "Appointment verification is temporarily unavailable. "
+                        + "Please try again later.",
+                throwable
+        );
     }
 
     @Override
